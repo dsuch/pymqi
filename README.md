@@ -7,6 +7,7 @@ PyMQI allows one to connect to queue managers to issue MQAI and PCF requests.
 Consider the code below which establishes a connection, puts a message
 on a queue and disconnects.
 
+```python
     import pymqi
     
     queue_manager = 'QM01'
@@ -24,6 +25,7 @@ on a queue and disconnects.
     queue.close()
     
     qmgr.disconnect()
+```
 
 
 More usage examples can be found here https://pythonhosted.org/pymqi/examples.html
