@@ -1,0 +1,15 @@
+
+How to run the PyMQI's test suite
+================================
+
+* The test suite itself requires at least Python 2.5 because of its reliance
+  on the 'uuid' module which has been introduced in 2.5
+
+* Install nose and testfixtures
+  $ sudo pip install nose
+  $ sudo pip install testfixtures
+
+* Use nose to execute the tests
+  $ nosetests
+
+* (That's all)

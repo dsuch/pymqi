@@ -1,0 +1,106 @@
+diff -Naur src/dco2.c newsrc/dco2.c
+--- src/dco2.c	Thu Mar  7 15:13:33 2002
++++ newsrc/dco2.c	Thu Mar  7 15:12:47 2002
+@@ -177,6 +177,7 @@
+ 	OCIServer	*srvhp;			/* Server handle	*/
+ 	OCISession	*usrhp;			/* User handle		*/
+ 	OCISvcCtx	*svchp;			/* Service Context	*/
++        int             usingXA;                /* Using XA to connect */
+ } ServerContext;
+ 
+ staticforward PyTypeObject ServerContextType;
+@@ -447,6 +448,7 @@
+ 
+ static PyObject *RaiseOCIError1(dvoid *hp, ub4 handle_type, int setpy);
+ static PyObject *Connect(PyObject *self, PyObject *args);
++static PyObject *ConnectXA(PyObject *self, PyObject *args);
+ static void ServerContext_dealloc(ServerContext *self);
+ static PyObject *ServerContext_getattr(ServerContext *self, char *name);
+ static PyObject *ServerContext_cursor(ServerContext *self, PyObject *args);
+@@ -922,6 +924,8 @@
+ 		"allocate a LobLocator"},
+ 	{"connect", (PyCFunction) Connect, METH_VARARGS,
+ 		"connect to the database"},
++	{"connectXA", (PyCFunction) ConnectXA, METH_VARARGS,
++		"connect to the database using XA"},
+ 	{"TypeTable", (PyCFunction) TypeTable_lookup, METH_VARARGS,
+ 		"Type Table functions"},
+ 	{"Traceback", (PyCFunction) Traceback, METH_VARARGS,
+@@ -1237,6 +1241,7 @@
+ 	sc->svchp = NULL;
+ 	sc->srvhp = NULL;
+ 	sc->usrhp = NULL;
++	sc->usingXA = 0;
+ 
+ #ifdef COMMONENVIRONMENT
+ 	if (GLBenvs == 0) {
+@@ -1439,6 +1444,41 @@
+ 	return OBJECT(sc);
+ }
+ 
++
++/*
++ * Connect using TM XA Interface.
++ */
++#ifdef ORACLE8i 
++
++static PyObject *ConnectXA(PyObject *self, PyObject *args) {
++  char *database;
++  int databaselen;
++  ServerContext *sc;
++  
++  TRACE(T_ENTRY,("S","ConnectXA",database));
++  
++  if (!PyArg_ParseTuple(args, "s#", &database, &databaselen))
++    return NULL;
++  if (databaselen == 0) {
++    database = NULL;
++  }
++
++  if ((sc = PyObject_NEW(ServerContext, &ServerContextType)) == NULL)
++    return NULL;
++  
++  sc->envhp = xaoEnv(database);
++  OCIHandleAlloc(sc->envhp, (dvoid **)&sc->errhp, OCI_HTYPE_ERROR, 0, NULL);
++  sc->svchp = sc->svchp = xaoSvcCtx(database);
++  sc->usrhp = NULL;
++  sc->srvhp = NULL;
++  sc->usingXA = 1;
++  TRACE(T_EXIT,("sA","ConnectXA",sc));
++  return OBJECT(sc);
++}
++
++#endif
++
++
+ /*
+ ** ServerContext_dealloc
+ **
+@@ -1453,7 +1493,11 @@
+ 	char errbuf[OCI_ERROR_MAXMSG_SIZE];
+ 
+ 	TRACE(T_ENTRY, ("sA", "ServerContext_dealloc", self));
+-	
++
++	if (self->usingXA) {
++	  return;
++	}
++
+ 	/* End the session */
+ 
+ 	if (self->svchp) {
+diff -Naur DCOracle2/DCOracle2.py newDCOracle2/DCOracle2.py
+--- DCOracle2/DCOracle2.py	Thu Mar  7 15:14:07 2002
++++ newDCOracle2/DCOracle2.py	Thu Mar  7 15:13:12 2002
+@@ -119,6 +119,10 @@
+ 
+ Connect=connect     # For DCO 1 compatibility
+ 
++
++def connectXA(xaName = ''):
++    return connection(dco2.connectXA(xaName))
++
+ # NONAPI
+ def traceback(format=0):
+     """Generate a trace table list, either raw or formatted with newlines."""
+
