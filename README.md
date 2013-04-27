@@ -46,4 +46,4 @@ or contacting the author dsuch@gefira.pl in order to discuss paid support option
 More information
 ================
 
-Please visit the main documentation at https://pythonhosted.org/pymqi/examples.html for more information
+Please visit the main documentation at https://pythonhosted.org/pymqi/examples.html for more information.
