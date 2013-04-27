@@ -4,8 +4,8 @@ PyMQI 1.3 - Python interface to WebSphere MQ (MQSeries)
 
 PyMQI allows one to connect to queue managers to issue MQAI and PCF requests.
 
-Consider the code below which establishes a connection and puts a message
-on a queue.
+Consider the code below which establishes a connection, puts a message
+on a queue and disconnects.
 
     import pymqi
     
@@ -13,9 +13,16 @@ on a queue.
     channel = 'SVRCONN.1'
     host = '192.168.1.135'
     port = '1434'
+    queue_name = 'TEST.1'
+    message = 'Hello from Python!'
     conn_info = '%s(%s)' % (host, port)
     
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
+    
+    queue = pymqi.Queue(qmgr, queue_name)
+    queue.put(message)
+    queue.close()
+    
     qmgr.disconnect()
 
 
