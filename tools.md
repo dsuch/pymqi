@@ -14,7 +14,12 @@ PyMQI 1.3
     <tr>
         <td>Linux x86, 64-bit, MQ 7.0</td>
         <td>CZJ3ZML</td>
-        <td></td>
+        <td>
+Name:        WebSphere MQ <br/>
+Version:     7.0.1.3 <br/>
+CMVC level:  p701-103-100813 <br/>
+BuildType:   IKAP - (Production)
+        </td>
     </tr>
     <tr>
         <td>Linux x86, 64-bit, MQ 7.1</td>
@@ -69,6 +74,22 @@ sudo apt-get install rpm sharutils
 ```
 
 <table>
+    <tr>
+        <td>7.0 64-bit</td>
+        <td>
+sudo mkdir -p /tmp/mq_license/license/ && \
+sudo touch /tmp/mq_license/license/status.dat && \
+sudo rpm -iavh --nodeps --force-debian \
+./MQSeriesRuntime-7.0.1-3.x86_64.rpm \
+./MQSeriesJava-7.0.1-3.x86_64.rpm \
+./MQSeriesClient-7.0.1-3.x86_64.rpm \
+./MQSeriesServer-7.0.1-3.x86_64.rpm \
+./MQSeriesSDK-7.0.1-3.x86_64.rpm \
+./MQSeriesSamples-7.0.1-3.x86_64.rpm \
+./MQSeriesMan-7.0.1-3.x86_64.rpm \
+&& sudo usermod -s /bin/bash mqm 
+        </td>
+    </tr>
     <tr>
         <td>7.1 64-bit</td>
         <td>
