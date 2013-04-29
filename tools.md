@@ -12,43 +12,14 @@ PyMQI 1.3
         <th>dspmqver</th>
     </tr>
     <tr>
-        <td>Linux x86, 32-bit, MQ 7.0</td>
-        <td>CZJ3YML</td>
-        <td></td>
-    </tr>
-    <tr>
         <td>Linux x86, 64-bit, MQ 7.0</td>
         <td>CZJ3ZML</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Linux x86, 32-bit, MQ 7.1</td>
-        <td>WSMQ_LNX_ON_X86_32_7.1.0.2_EIM</td>
         <td></td>
     </tr>
     <tr>
         <td>Linux x86, 64-bit, MQ 7.1</td>
         <td>WSMQ_LNX_ON_X86_64_7.1.0.2_EIM</td>
         <td></td>
-    </tr>
-    <tr>
-        <td>Linux x86, 32-bit, MQ 7.5</td>
-        <td>WS_MQ_LIN_X86_32-BIT_7.5.0.1_EIM</td>
-        <td>
-Name:        WebSphere MQ <br/>
-Version:     7.5.0.0 <br/>
-Level:       p000-L120604 <br/>
-BuildType:   IKAP - (Production) <br/>
-Platform:    WebSphere MQ for Linux (x86 platform) <br/>
-Mode:        32-bit <br/>
-O/S:         Linux 3.2.0-40-generic <br/>
-InstName:    Installation1 <br/>
-InstDesc:     <br/>
-InstPath:    /opt/mqm <br/>
-DataPath:    /var/mqm <br/>
-Primary:     No <br/>
-MaxCmdLevel: 750
-        </td>
     </tr>
     <tr>
         <td>Linux x86, 64-bit, MQ 7.5</td>
@@ -75,13 +46,13 @@ sudo apt-get install rpm sharutils
         <td>
 
 sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
-    ./MQSeriesRuntime-7.5.0-0.i386.rpm \ <br/>
-    ./MQSeriesJava-7.5.0-0.i386.rpm \ <br/>
-    ./MQSeriesClient-7.5.0-0.i386.rpm \ <br/>
-    ./MQSeriesServer-7.5.0-0.i386.rpm \ <br/>
-    ./MQSeriesSDK-7.5.0-0.i386.rpm \ <br/>
-    ./MQSeriesSamples-7.5.0-0.i386.rpm \ <br/>
-    ./MQSeriesMan-7.5.0-0.i386.rpm \ <br/>
+    ./MQSeriesRuntime-7.5.0-0.x86_64.rpm \ <br/>
+    ./MQSeriesJava-7.5.0-0.x86_64.rpm \ <br/>
+    ./MQSeriesClient-7.5.0-0.x86_64.rpm \ <br/>
+    ./MQSeriesServer-7.5.0-0.x86_64.rpm \ <br/>
+    ./MQSeriesSDK-7.5.0-0.x86_64.rpm \ <br/>
+    ./MQSeriesSamples-7.5.0-0.x86_64.rpm \ <br/>
+    ./MQSeriesMan-7.5.0-0.x86_64.rpm \ <br/>
     && sudo usermod -s /bin/bash mqm
         </td>
 </table>
