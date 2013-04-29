@@ -76,6 +76,7 @@ Test environment
 
 (As user mqm)
 
+``` bash
 /opt/mqm/bin/crtmqm QM01
 /opt/mqm/bin/strmqm QM01
 
@@ -85,6 +86,7 @@ echo "alter qmgr chlauth(disabled)" >> commands.in # Dangerous!
 /opt/mqm/bin/runmqsc QM01 < commands.in
 
 /opt/mqm/bin/runmqlsr -m QM01 -t tcp -p 1434 &
+```
 
 Removing
 --------
