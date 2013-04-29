@@ -42,7 +42,7 @@ sudo apt-get install rpm sharutils
 
 <table>
     <tr>
-        <td>7.5.0.0 32-bit</td>
+        <td>7.5.0.0 64-bit</td>
         <td>
 
 sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
