@@ -77,16 +77,16 @@ sudo apt-get install rpm sharutils
     <tr>
         <td>7.0 64-bit</td>
         <td>
-sudo mkdir -p /tmp/mq_license/license/ && \
-sudo touch /tmp/mq_license/license/status.dat && \
-sudo rpm -iavh --nodeps --force-debian \
-./MQSeriesRuntime-7.0.1-3.x86_64.rpm \
-./MQSeriesJava-7.0.1-3.x86_64.rpm \
-./MQSeriesClient-7.0.1-3.x86_64.rpm \
-./MQSeriesServer-7.0.1-3.x86_64.rpm \
-./MQSeriesSDK-7.0.1-3.x86_64.rpm \
-./MQSeriesSamples-7.0.1-3.x86_64.rpm \
-./MQSeriesMan-7.0.1-3.x86_64.rpm \
+sudo mkdir -p /tmp/mq_license/license/ && \ <br/>
+sudo touch /tmp/mq_license/license/status.dat && \ <br/>
+sudo rpm -iavh --nodeps --force-debian \ <br/>
+./MQSeriesRuntime-7.0.1-3.x86_64.rpm \ <br/>
+./MQSeriesJava-7.0.1-3.x86_64.rpm \ <br/>
+./MQSeriesClient-7.0.1-3.x86_64.rpm \ <br/>
+./MQSeriesServer-7.0.1-3.x86_64.rpm \ <br/>
+./MQSeriesSDK-7.0.1-3.x86_64.rpm \ <br/>
+./MQSeriesSamples-7.0.1-3.x86_64.rpm \ <br/>
+./MQSeriesMan-7.0.1-3.x86_64.rpm \ <br/>
 && sudo usermod -s /bin/bash mqm 
         </td>
     </tr>
