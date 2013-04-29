@@ -1,8 +1,8 @@
 
-PyMQI 1.3 - Python interface to WebSphere MQ (MQSeries)
+PyMQI - Python interface to WebSphere MQ (MQSeries)
 -------------------------------------------------------
 
-PyMQI allows one to connect to queue managers and issue MQAI and PCF requests.
+PyMQI allows one to connect to queue managers to issue MQAI and PCF requests.
 
 Consider the code below which establishes a connection, puts a message
 on a queue and disconnects.
