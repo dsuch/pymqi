@@ -921,7 +921,7 @@ class cd(MQOpts):
                      ['ClientChannelWeight', 0, MQLONG_TYPE],
                      ['ConnectionAffinity', 1, MQLONG_TYPE]]  # 1 = MQCAFTY_PREFERRED
             
-        if '7.5' in pymqe.__mqlevels__:
+        if '7.1' in pymqe.__mqlevels__:
             opts += [['BatchDataLimit', 5000, MQLONG_TYPE],
                      ['UseDLQ', 2, MQLONG_TYPE],
                      ['DefReconnect', 0, MQLONG_TYPE]]
@@ -929,7 +929,7 @@ class cd(MQOpts):
         # In theory, the pad should've been placed right before the 'MsgExitPtr'
         # attribute, however setting it there makes no effect and that's why
         # it's being set here, as a last element in the list.
-        if '7.5' not in pymqe.__mqlevels__:
+        if '7.1' not in pymqe.__mqlevels__:
             if MQLONG_TYPE == 'i':
                 opts += [['pad','', '4s']]
 
