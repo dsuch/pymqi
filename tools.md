@@ -1,8 +1,9 @@
 
 Which MQ versions PyMQI has been tested with?
+=============================================
 
 PyMQI 1.3
-=========
+---------
 
 <table>
     <tr>
@@ -41,3 +42,17 @@ PyMQI 1.3
         <td></td>
     </tr>
 </table>
+
+Installing and removing MQ on Linux
+===================================
+
+Everything is based on http://www.gefira.pl/blog/2010/07/03/websphere-mq-and-ubuntu-howto/
+
+Prerequisites
+-------------
+
+``` bash
+$ sudo apt-get install rpm sharutils
+$ sudo ./mqlicense.sh
+```
+    
