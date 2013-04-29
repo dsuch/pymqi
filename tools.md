@@ -19,7 +19,21 @@ PyMQI 1.3
     <tr>
         <td>Linux x86, 64-bit, MQ 7.1</td>
         <td>WSMQ_LNX_ON_X86_64_7.1.0.2_EIM</td>
-        <td></td>
+        <td>
+Name:        WebSphere MQ <br/>
+Version:     7.1.0.2 <br/>
+Level:       p710-002-121029 <br/>
+BuildType:   IKAP - (Production) <br/>
+Platform:    WebSphere MQ for Linux (x86-64 platform) <br/>
+Mode:        64-bit <br/>
+O/S:         Linux 3.2.0-40-generic <br/>
+InstName:    Installation1 <br/>
+InstDesc:     <br/>
+InstPath:    /opt/mqm <br/>
+DataPath:    /var/mqm <br/>
+Primary:     No <br/>
+MaxCmdLevel: 711
+        </td>
     </tr>
     <tr>
         <td>Linux x86, 64-bit, MQ 7.5</td>
