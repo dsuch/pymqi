@@ -43,8 +43,8 @@ PyMQI 1.3
     </tr>
 </table>
 
-Installing and removing MQ on Linux
-===================================
+Installing and removing MQ on Ubuntu
+====================================
 
 Everything is based on http://www.gefira.pl/blog/2010/07/03/websphere-mq-and-ubuntu-howto/
 
@@ -52,7 +52,31 @@ Prerequisites
 -------------
 
 ``` bash
-$ sudo apt-get install rpm sharutils
-$ sudo ./mqlicense.sh
+sudo apt-get install rpm sharutils
 ```
+
+<table>
+    <tr>
+        <td>7.5.0.0 32-bit</td>
+        <td>
+``` bash
+sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \
+    ./MQSeriesRuntime-7.5.0-0.i386.rpm \
+    ./MQSeriesJava-7.5.0-0.i386.rpm \
+    ./MQSeriesClient-7.5.0-0.i386.rpm \
+    ./MQSeriesServer-7.5.0-0.i386.rpm \
+    ./MQSeriesSDK-7.5.0-0.i386.rpm \
+    ./MQSeriesSamples-7.5.0-0.i386.rpm \
+    ./MQSeriesMan-7.5.0-0.i386.rpm \
+    && sudo usermod -s /bin/bash mqm
+```
+        </td>
+</table>
     
+    
+Removing
+--------
+sudo rpm -qa | grep "MQSeries" | xargs sudo rpm -e --force-debian --noscripts
+sudo rm -rf /opt/mqm
+sudo rm -rf /var/mqm
+sudo userdel mqm
