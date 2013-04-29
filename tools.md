@@ -9,7 +9,7 @@ PyMQI 1.3
     <tr>
         <th>System, architecture and MQ version</th>
         <th>IBM code name</th>
-        <th>mqver</th>
+        <th>dspmqver</th>
     </tr>
     <tr>
         <td>Linux x86, 32-bit, MQ 7.0</td>
@@ -34,7 +34,21 @@ PyMQI 1.3
     <tr>
         <td>Linux x86, 32-bit, MQ 7.5</td>
         <td>WS_MQ_LIN_X86_32-BIT_7.5.0.1_EIM</td>
-        <td></td>
+        <td>
+Name:        WebSphere MQ <br/>
+Version:     7.5.0.0 <br/>
+Level:       p000-L120604 <br/>
+BuildType:   IKAP - (Production) <br/>
+Platform:    WebSphere MQ for Linux (x86 platform) <br/>
+Mode:        32-bit <br/>
+O/S:         Linux 3.2.0-40-generic <br/>
+InstName:    Installation1 <br/>
+InstDesc:     <br/>
+InstPath:    /opt/mqm <br/>
+DataPath:    /var/mqm <br/>
+Primary:     No <br/>
+MaxCmdLevel: 750
+        </td>
     </tr>
     <tr>
         <td>Linux x86, 64-bit, MQ 7.5</td>
@@ -75,7 +89,10 @@ sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
     
 Removing
 --------
+
+``` bash
 sudo rpm -qa | grep "MQSeries" | xargs sudo rpm -e --force-debian --noscripts
 sudo rm -rf /opt/mqm
 sudo rm -rf /var/mqm
 sudo userdel mqm
+```
