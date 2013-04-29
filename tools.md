@@ -59,17 +59,16 @@ sudo apt-get install rpm sharutils
     <tr>
         <td>7.5.0.0 32-bit</td>
         <td>
-``` bash
-sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \
-    ./MQSeriesRuntime-7.5.0-0.i386.rpm \
-    ./MQSeriesJava-7.5.0-0.i386.rpm \
-    ./MQSeriesClient-7.5.0-0.i386.rpm \
-    ./MQSeriesServer-7.5.0-0.i386.rpm \
-    ./MQSeriesSDK-7.5.0-0.i386.rpm \
-    ./MQSeriesSamples-7.5.0-0.i386.rpm \
-    ./MQSeriesMan-7.5.0-0.i386.rpm \
+
+sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
+    ./MQSeriesRuntime-7.5.0-0.i386.rpm \ <br/>
+    ./MQSeriesJava-7.5.0-0.i386.rpm \ <br/>
+    ./MQSeriesClient-7.5.0-0.i386.rpm \ <br/>
+    ./MQSeriesServer-7.5.0-0.i386.rpm \ <br/>
+    ./MQSeriesSDK-7.5.0-0.i386.rpm \ <br/>
+    ./MQSeriesSamples-7.5.0-0.i386.rpm \ <br/>
+    ./MQSeriesMan-7.5.0-0.i386.rpm \ <br/>
     && sudo usermod -s /bin/bash mqm
-```
         </td>
 </table>
     
