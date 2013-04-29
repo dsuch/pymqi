@@ -7,10 +7,8 @@ Support, consulting and contact
 Public tracker
 --------------
 
-`PyMQI uses Launchpad <https://launchpad.net/pymqi>`_'s infrastructure for tracking public issues and questions,
-feel free to submit anything you feel is a bug here https://bugs.launchpad.net/pymqi.
-If you have any questions related to general PyMQI's usage, please use the
-*Answers tracker* here https://answers.launchpad.net/pymqi.
+`PyMQI uses GitHub <https://github.com/dsuch/pymqi>`_'s infrastructure for tracking public issues and questions,
+feel free to submit anything here https://github.com/dsuch/pymqi/issues.
 
 Support and consulting
 ----------------------
@@ -23,6 +21,12 @@ Support and consulting
   for Python, MQ, Linux/Unix & C/C++ consulting assignments.
   `See here for his CV and more details <http://www.open-networks.co.uk>`_.
 
+Platforms other than Linux
+--------------------------
+
+Note that the author has access to Linux 64-bit only hence the free support can
+be provided for that platform only. Please contact dsuch@gefira.pl to discuss terms
+of paid support on other systems, such as AIX, Solaris, Windows or any other.
 
 Security
 ------------

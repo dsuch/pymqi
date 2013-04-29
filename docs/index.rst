@@ -77,12 +77,12 @@ Download, build & install
 Automated install using pip
 ---------------------------
 
-On Linux and UNIX one can use `pip <http://pypi.python.org/pypi/pip>`_
+On Linux and UNIX one can use `pip <https://pypi.python.org/pypi/pip>`_
 - PyMQI is a Python package and as such can be installed 
 using pip, which is a specialized installer for Python applications. pip will 
 connect to PyPI which is a central repository of Python packages, available 
-at http://pypi.python.org/pypi and will then look up PyMQI, download it 
-from http://pypi.python.org/pypi/pymqi and install it locally on your system.
+at https://pypi.python.org/pypi and will then look up PyMQI, download it 
+from https://pypi.python.org/pypi/pymqi and install it locally on your system.
 
 First you need to install pip itself.
 
@@ -105,15 +105,9 @@ only (this will be installed to $HOME/.local)::
 
   $ pip install --user pymqi
 
-  
-Windows
--------
-
-`Download one of the precompiled package here <https://launchpad.net/pymqi/+download>`_
-
 Compiling from source
 ---------------------
-`Download the latest version here <https://launchpad.net/pymqi/+download>`_.
+`Download the latest version here <https://pypi.python.org/pypi/pymqi>`_.
 The download package is a source
 distribution with a Distutils setup.py file. Download, unzip & untar the
 file, then cd into the pymqi directory. Note that compiling from source needs access
