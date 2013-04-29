@@ -34,7 +34,7 @@ Supported MQ versions
 =====================
 
 Any MQ version between 5.0 and 7.5 will work however the author is able to provide
-free support only for Linux x86 64-bit and MQ versions 7.x.
+free support only for Linux x86 64-bit, MQ versions 7.x and Python 2.7.x.
 
 Support for other versions and systems needs either someone from the commnuity to step up
 or contacting the author dsuch@gefira.pl in order to discuss paid support options.

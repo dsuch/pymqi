@@ -24,7 +24,21 @@ PyMQI 1.3
     <tr>
         <td>Linux x86, 64-bit, MQ 7.5</td>
         <td>WS_MQ_LIN_ON_X86-64_V7.5.0.1_EIM</td>
-        <td></td>
+        <td>
+Name:        WebSphere MQ <br/>
+Version:     7.5.0.0 <br/>
+Level:       p000-L120604 <br/>
+BuildType:   IKAP - (Production) <br/>
+Platform:    WebSphere MQ for Linux (x86-64 platform) <br/>
+Mode:        64-bit <br/>
+O/S:         Linux 3.2.0-40-generic <br/>
+InstName:    Installation1 <br/>
+InstDesc:     <br/>
+InstPath:    /opt/mqm <br/>
+DataPath:    /var/mqm <br/>
+Primary:     No <br/>
+MaxCmdLevel: 750
+        </td>
     </tr>
 </table>
 
@@ -42,7 +56,7 @@ sudo apt-get install rpm sharutils
 
 <table>
     <tr>
-        <td>7.5.0.0 64-bit</td>
+        <td>7.5 64-bit</td>
         <td>
 
 sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
@@ -56,8 +70,22 @@ sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
     && sudo usermod -s /bin/bash mqm
         </td>
 </table>
-    
-    
+
+Test environment
+----------------
+
+(As user mqm)
+
+/opt/mqm/bin/crtmqm QM01
+/opt/mqm/bin/strmqm QM01
+
+echo "define qlocal(q1)" > commands.in
+echo "define channel(svrconn.1) chltype(svrconn) mcauser('mqm')" >> commands.in # Note mcauser!
+echo "alter qmgr chlauth(disabled)" >> commands.in # Dangerous!
+/opt/mqm/bin/runmqsc QM01 < commands.in
+
+/opt/mqm/bin/runmqlsr -m QM01 -t tcp -p 1434 &
+
 Removing
 --------
 

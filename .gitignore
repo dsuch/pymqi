@@ -1,5 +1,6 @@
 code/build/*
 code/develop-eggs/*
+code/pymqe.so
 docs/sphinx/_build/
 *.pyc
 *.pyo

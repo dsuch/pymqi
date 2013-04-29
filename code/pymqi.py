@@ -1256,6 +1256,7 @@ class QueueManager:
 
         Connect immediately to the Queue Manager 'name'."""
 
+        print(33333333, name)
         rv = pymqe.MQCONN(name)
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
