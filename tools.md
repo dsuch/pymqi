@@ -110,13 +110,13 @@ sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
         <td>
 
 sudo ./mqlicense.sh -accept && sudo rpm -iavh --nodeps --force-debian \ <br/>
-    ./MQSeriesRuntime-7.1.0-2.x86_64.rpm  \ <br/>
-    ./MQSeriesJava-7.1.0-2.x86_64.rpm  \ <br/>
-    ./MQSeriesClient-7.1.0-2.x86_64.rpm  \ <br/>
-    ./MQSeriesServer-7.1.0-2.x86_64.rpm  \ <br/>
-    ./MQSeriesSDK-7.1.0-2.x86_64.rpm  \ <br/>
-    ./MQSeriesSamples-7.1.0-2.x86_64.rpm  \ <br/>
-    ./MQSeriesMan-7.1.0-2.x86_64.rpm  \ <br/>
+    ./MQSeriesRuntime-7.5.0-0.x86_64.rpm  \ <br/>
+    ./MQSeriesJava-7.5.0-0.x86_64.rpm  \ <br/>
+    ./MQSeriesClient-7.5.0-0.x86_64.rpm  \ <br/>
+    ./MQSeriesServer-7.5.0-0.x86_64.rpm  \ <br/>
+    ./MQSeriesSDK-7.5.0-0.x86_64.rpm  \ <br/>
+    ./MQSeriesSamples-7.5.0-0.x86_64.rpm  \ <br/>
+    ./MQSeriesMan-7.5.0-0.x86_64.rpm  \ <br/>
     && sudo usermod -s /bin/bash mqm
         </td>
     </tr>
