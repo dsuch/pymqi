@@ -192,6 +192,9 @@ class MQOpts:
 
         self.__list = list[:]
         self.__format = ''
+        # Dict to store c_char arrays to prevent memory addresses
+        # from getting overwritten
+        self.__vs_ctype_store = {}
         # Creat the structure members as instance attributes and build
         # the struct.pack/unpack format string. The attribute name is
         # identical to the 'C' structure member name.
@@ -345,6 +348,8 @@ class MQOpts:
         self[vs_name_vsbuffsize] = vs_buffer_size
         self[vs_name_vslength] = len(vs_value)
         self[vs_name_vsccsid] = vs_ccsid
+        #store c_char array object so memory location does not get overwritten
+        self.__vs_ctype_store[vs_name] = c_vs_value
 
     def get_vs(self, vs_name):
         """get_vs(vs_name)
