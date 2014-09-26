@@ -98,6 +98,7 @@ import exceptions
 import types
 import threading
 import ctypes
+from pprint import pprint
 # import xml parser.  lxml/etree only available since python 2.5
 use_minidom = False
 try:

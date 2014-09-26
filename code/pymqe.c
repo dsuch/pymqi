@@ -130,6 +130,7 @@ static PyObject *ErrorObj;
 #define PYMQI_MQIMPO_SIZEOF sizeof(MQIMPO)
 #define PYMQI_MQPD_SIZEOF sizeof(MQPD)
 #endif
+#define PYMQI_MQCSP_SIZEOF sizeof(MQCSP)
 
 /* Macro for cleaning up MQAI filters-related object.
 */
@@ -198,7 +199,14 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   MQLONG compCode, compReason;
   char*    mqcdBuf = 0;
   int mqcdBufLen = 0;
+
+  char*     mqcspBuf = 0;
+  int mqcspBufLen = 0;
+
   MQCNO connectOpts = {MQCNO_DEFAULT};
+
+  MQCSP    ClientAuthentication = {MQCSP_DEFAULT};
+ 
 
   /*  Note: MQLONG is an int on 64 bit platforms and MQHCONN is an MQLONG
    */
@@ -206,10 +214,11 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   long lOptions = MQCNO_NONE;
 
 #ifdef PYMQI_FEATURE_SSL
+  
   char *mqscoBuf = 0;
   int mqscoBufLen = 0;
-
-  if (!PyArg_ParseTuple(args, "sls#|s#", &name, &lOptions, &mqcdBuf, &mqcdBufLen, &mqscoBuf, &mqscoBufLen)) {
+  
+  if (!PyArg_ParseTuple(args, "sls#s#|s#", &name, &lOptions, &mqcdBuf, &mqcdBufLen, &mqcspBuf, &mqcspBufLen, &mqscoBuf, &mqscoBufLen)) {
     return 0;
   }
   if (mqscoBuf && checkArgSize(mqscoBufLen, PYMQI_MQSCO_SIZEOF, "MQSCO")) {
@@ -225,19 +234,27 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
     return NULL;
   }
 
+  if (checkArgSize(mqcspBufLen, PYMQI_MQCSP_SIZEOF, "MQCSP")) {
+    return NULL;
+  }
+
   /*
    * Setup client connection fields appropriate to the version of MQ
    * we've been built with.
    */
 #ifdef PYMQI_FEATURE_SSL
-  connectOpts.Version = MQCNO_VERSION_4;
+
+  connectOpts.Version = MQCNO_VERSION_5;
   connectOpts.SSLConfigPtr =  (MQSCO*)mqscoBuf;
+
 #else
   connectOpts.Version = MQCNO_VERSION_2;
 #endif
 
   connectOpts.ClientConnPtr = (MQCD*)mqcdBuf;
   connectOpts.Options = (MQLONG) lOptions;
+
+  connectOpts.SecurityParmsPtr = (MQCSP*)mqcspBuf;
 
   Py_BEGIN_ALLOW_THREADS
   MQCONNX(name, &connectOpts, &handle, &compCode, &compReason);
