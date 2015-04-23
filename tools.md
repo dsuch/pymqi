@@ -2,7 +2,7 @@
 Which MQ versions PyMQI has been tested with?
 =============================================
 
-PyMQI 1.3
+PyMQI 1.4
 ---------
 
 <table>
@@ -64,7 +64,7 @@ MaxCmdLevel: 750
 Installing and removing MQ on Ubuntu
 ====================================
 
-Everything is based on http://www.gefira.pl/blog/2010/07/03/websphere-mq-and-ubuntu-howto/
+Everything is based on http://www.zato.io/blog/2010/07/03/websphere-mq-and-ubuntu-howto/
 
 Prerequisites
 -------------

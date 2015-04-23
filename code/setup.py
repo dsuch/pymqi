@@ -14,7 +14,7 @@ except ImportError:
 
 from distutils.core import Extension
 
-version = "1.3"
+version = "1.4"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -130,7 +130,7 @@ setup(name = "pymqi",
     description = "Python IBM MQI Extension for WebSphere MQ (formerly known as MQSeries).",
     long_description= "PyMQI is a Python library for working with WebSphere MQ (formerly known as MQSeries) implementing MQI and PCF protocols.",
     author="Dariusz Suchojad",
-    author_email="dsuch at gefira.pl",
+    author_email="dsuch at zato.io",
     url="https://pythonhosted.org/pymqi/",
     download_url="https://pypi.python.org/pypi/pymqi",
     platforms="OS Independent",

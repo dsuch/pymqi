@@ -33,7 +33,7 @@ PERFORMANCE OF THIS SOFTWARE.
  * low-level interface to the MQI 'C' library.
  *
  * Author: L. Smithson (lsmithson@open-networks.co.uk)
- * Author: Dariusz Suchojad (dsuch at gefira.pl)
+ * Author: Dariusz Suchojad (dsuch at zato.io)
  *
  * DISCLAIMER
  * You are free to use this code in any way you like, subject to the
@@ -45,7 +45,7 @@ PERFORMANCE OF THIS SOFTWARE.
  *
  */
 
-static char __version__[] = "1.3";
+static char __version__[] = "1.4";
 
 static char pymqe_doc[] = " \
 pymqe - A Python MQ Extension.  This presents a low-level Python \

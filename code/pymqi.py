@@ -2,7 +2,7 @@
 # Extension. These present an object interface to MQI.
 #
 # Author: L. Smithson (lsmithson@open-networks.co.uk)
-# Author: Dariusz Suchojad (dsuch at gefira.pl)
+# Author: Dariusz Suchojad (dsuch at zato.io)
 #
 # DISCLAIMER
 # You are free to use this code in any way you like, subject to the
@@ -108,7 +108,7 @@ except Exception:
 # PyMQI
 import pymqe, CMQC, CMQCFC, CMQXC
 
-__version__ = "1.3"
+__version__ = "1.4"
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 
@@ -952,9 +952,22 @@ class sco(MQOpts):
     'kw'. """
 
     def __init__(self, **kw):
+
+        if '7.1' in pymqe.__mqlevels__:
+            _mqcsco_version = CMQC.MQSCO_VERSION_4
+
+        if '7.0' in pymqe.__mqlevels__:
+            _mqcsco_version = CMQC.MQSCO_VERSION_3
+
+        if '6.0' in pymqe.__mqlevels__:
+            _mqcsco_version = CMQC.MQSCO_VERSION_2
+
+        else:
+            _mqcsco_version = CMQC.MQSCO_VERSION_1
+
         opts = [
             ['StrucId', CMQC.MQSCO_STRUC_ID, '4s'],
-            ['Version', CMQC.MQSCO_VERSION_1, MQLONG_TYPE],
+            ['Version', _mqcsco_version, MQLONG_TYPE],
             ['KeyRepository', '', '256s'],
             ['CryptoHardware', '', '256s'],
             ['AuthInfoRecCount', 0L, MQLONG_TYPE],
@@ -962,9 +975,19 @@ class sco(MQOpts):
             ['AuthInfoRecPtr', 0, 'P']]
 
         # Add new SSL fields defined in 6.0 and update version to 2
+
         if "6.0" in pymqe.__mqlevels__:
             opts += [['KeyResetCount', 0L, MQLONG_TYPE],
                      ['FipsRequired', 0L, MQLONG_TYPE]]
+
+        if "7.0" in pymqe.__mqlevels__:
+            opts += [['EncryptionPolicySuiteB', [0, 0, 0, 0], '4' + MQLONG_TYPE]]
+
+        if "7.1" in pymqe.__mqlevels__:
+            opts += [['CertificateValPolicy', 0L, MQLONG_TYPE]]
+
+            if MQLONG_TYPE == 'i':
+                opts += [['pad','', '4s']]
 
         apply(MQOpts.__init__, (self, tuple(opts)), kw)
 

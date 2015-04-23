@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-PyMQI 1.3 Documentation
+PyMQI 1.4 Documentation
 =================================
 
 Other sections:
@@ -442,11 +442,11 @@ More documentation
 =====================
 The author's blog:
 
-    * `WebSphere MQ Administration with Python. Part I – introducing PCFExecute <http://www.gefira.pl/blog/2011/03/10/websphere-mq-administration-with-python-part-i-introducing-pcfexecute/>`_ (March 10th, 2011)
-    * `Message browsing with WebSphere MQ and PyMQI <http://www.gefira.pl/blog/2011/02/21/message-browsing-with-websphere-mq-and-pymqi/>`_ (February 21st, 2011)
-    * `A quick intro to WebSphere MQ & Python programming <http://www.gefira.pl/blog/2011/01/31/a-quick-intro-to-websphere-mq-python-programming/>`_ (January 31st, 2011)
-    * `PyMQI 1.2 is coming soon <http://www.gefira.pl/blog/2010/12/03/pymqi-1-2-is-coming-soon/>`_ (December 3rd, 2010)
-    * `PyMQI 1.0 – Python i WebSphere MQ <http://www.gefira.pl/blog/2009/12/05/pymqi-1-0-python-i-websphere-mq/>`_ (Polish only,  December 5th, 2009)
+    * `WebSphere MQ Administration with Python. Part I – introducing PCFExecute <http://www.zato.io/blog/2011/03/10/websphere-mq-administration-with-python-part-i-introducing-pcfexecute/>`_ (March 10th, 2011)
+    * `Message browsing with WebSphere MQ and PyMQI <http://www.zato.io/blog/2011/02/21/message-browsing-with-websphere-mq-and-pymqi/>`_ (February 21st, 2011)
+    * `A quick intro to WebSphere MQ & Python programming <http://www.zato.io/blog/2011/01/31/a-quick-intro-to-websphere-mq-python-programming/>`_ (January 31st, 2011)
+    * `PyMQI 1.2 is coming soon <http://www.zato.io/blog/2010/12/03/pymqi-1-2-is-coming-soon/>`_ (December 3rd, 2010)
+    * `PyMQI 1.0 – Python i WebSphere MQ <http://www.zato.io/blog/2009/12/05/pymqi-1-0-python-i-websphere-mq/>`_ (Polish only,  December 5th, 2009)
 
 Other documentation:
 
