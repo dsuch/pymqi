@@ -1998,6 +1998,35 @@ class Topic:
 
         msg_desc.unpack(rv[0])
         put_opts.unpack(rv[1])
+   
+    def pub_rfh2(self, msg, *opts):
+        """pub_rfh2(msg[, mDesc ,putOpts, [rfh2_header, ]])
+
+        Put a RFH2 message. opts[2] is a list of RFH2 headers.
+        MQMD and RFH2's must be correct.
+
+        """
+
+        rfh2_buff = ""
+        if len(opts) >= 3:
+            if opts[2] is not None:
+                if not isinstance(opts[2], list):
+                    raise exceptions.TypeError("Third item of opts should " \
+                                               "be a list.")
+                encoding = CMQC.MQENC_NATIVE
+                if opts[0] is not None:
+                    mqmd = opts[0]
+                    encoding = mqmd["Encoding"]
+
+                for rfh2_header in opts[2]:
+                    if rfh2_header is not None:
+                        rfh2_buff = rfh2_buff + rfh2_header.pack(encoding)
+                        encoding = rfh2_header["Encoding"]
+
+                msg = rfh2_buff + msg
+            self.pub(msg, *opts[0:2])
+        else:
+            self.pub(msg, *opts)
 
     def sub(self, *opts):
         """sub(sub_desc, sub_queue)
