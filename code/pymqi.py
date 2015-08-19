@@ -806,7 +806,11 @@ class cd(MQOpts):
     # until runtime so set it once here when first importing pymqi
     # (originally written by Brent S. Elmer, Ph.D. (mailto:webe3vt@aim.com)).
 
-    if '7.5' in pymqe.__mqlevels__:
+    if '8.0' in pymqe.__mqlevels__:
+        _mqcd_version = CMQXC.MQCD_VERSION_11
+        _mqcd_current_length = CMQXC.MQCD_LENGTH_11
+
+    elif '7.5' in pymqe.__mqlevels__:
         _mqcd_version = CMQXC.MQCD_VERSION_10
         _mqcd_current_length = CMQXC.MQCD_LENGTH_10
 
@@ -930,6 +934,9 @@ class cd(MQOpts):
             opts += [['BatchDataLimit', 5000, MQLONG_TYPE],
                      ['UseDLQ', 2, MQLONG_TYPE],
                      ['DefReconnect', 0, MQLONG_TYPE]]
+
+        if '8.0' in pymqe.__mqlevels__:
+            opts += [['CertificateLabel', '', '64s']]
 
         # In theory, the pad should've been placed right before the 'MsgExitPtr'
         # attribute, however setting it there makes no effect and that's why
