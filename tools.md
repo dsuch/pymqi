@@ -86,8 +86,6 @@ BuildType:   IKAP - (Production)
 Installing and removing MQ on Ubuntu
 ====================================
 
-Everything is based on http://www.zato.io/blog/2010/07/03/websphere-mq-and-ubuntu-howto/
-
 Prerequisites
 -------------
 
