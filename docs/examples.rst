@@ -1,6 +1,10 @@
 Examples
 ========
 
+.. note::
+
+    Sponsored by `Zato <https://zato.io/docs?pymqi>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
+
 The purpose of this section is to gather code showing PyMQI in action or code
 that's related to common WebSphere MQ-related tasks in general. Some of the
 examples are Python ports of IBM's examples that WebSphere MQ ships with.
@@ -112,7 +116,6 @@ How to wait for a single message
 
 Code::
 
-    import CMQC
     import pymqi
     
     queue_manager = "QM01"
@@ -127,7 +130,7 @@ Code::
     
     # Get Message Options
     gmo = pymqi.GMO()
-    gmo.Options = CMQC.MQGMO_WAIT | CMQC.MQGMO_FAIL_IF_QUIESCING
+    gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
     gmo.WaitInterval = 5000 # 5 seconds
     
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
@@ -156,7 +159,6 @@ How to wait for multiple messages
 
 Code::
 
-    import CMQC
     import pymqi
     
     queue_manager = "QM01"
@@ -171,7 +173,7 @@ Code::
     
     # Get Message Options
     gmo = pymqi.GMO()
-    gmo.Options = CMQC.MQGMO_WAIT | CMQC.MQGMO_FAIL_IF_QUIESCING
+    gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
     gmo.WaitInterval = 5000 # 5 seconds
     
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
@@ -188,12 +190,12 @@ Code::
     
             # Reset the MsgId, CorrelId & GroupId so that we can reuse
             # the same 'md' object again.
-            md.MsgId = CMQC.MQMI_NONE
-            md.CorrelId = CMQC.MQCI_NONE
-            md.GroupId = CMQC.MQGI_NONE
+            md.MsgId = pymqi.CMQC.MQMI_NONE
+            md.CorrelId = pymqi.CMQC.MQCI_NONE
+            md.GroupId = pymqi.CMQC.MQGI_NONE
     
         except pymqi.MQMIError, e:
-            if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_NO_MSG_AVAILABLE:
+            if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
                 # No messages, that's OK, we can ignore it.
                 pass
             else:
@@ -209,7 +211,7 @@ Notes:
   close to raw C speed. On modern-day hardware, such a programming pattern can
   be used to easily achieve a throughput of thousands of messages a second,
 
-* Again, using CMQC.MQGMO_FAIL_IF_QUIESCING is a recommended programming practice.
+* Again, using pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING is a recommended programming practice.
 
 ==========================================
 How to specify dynamic reply-to queues
@@ -217,7 +219,6 @@ How to specify dynamic reply-to queues
 
 Code::
 
-    import CMQC
     import pymqi
     
     queue_manager = "QM01"
@@ -237,7 +238,7 @@ Code::
     dyn_od.DynamicQName = dynamic_queue_prefix
     
     # Open the dynamic queue.
-    dyn_input_open_options = CMQC.MQOO_INPUT_EXCLUSIVE
+    dyn_input_open_options = pymqi.CMQC.MQOO_INPUT_EXCLUSIVE
     dyn_queue = pymqi.Queue(qmgr, dyn_od, dyn_input_open_options)
     dyn_queue_name = dyn_od.ObjectName.strip()
     
@@ -309,7 +310,7 @@ How to publish messages on topics
 
 Code::
 
-    import pymqi, CMQC
+    import pymqi
 
     queue_manager = "QM01"
     channel = "SVRCONN.1"
@@ -323,7 +324,7 @@ Code::
     qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
 
     topic = pymqi.Topic(qmgr, topic_string=topic_string)
-    topic.open(open_opts=CMQC.MQOO_OUTPUT)
+    topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
     topic.pub(msg)
     topic.close()
 
@@ -344,7 +345,7 @@ Code::
 
     import logging
 
-    import pymqi, CMQC
+    import pymqi
 
     logging.basicConfig(level=logging.INFO)
 
@@ -360,20 +361,22 @@ Code::
     qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
 
     sub_desc = pymqi.SD()
-    sub_desc["Options"] = CMQC.MQSO_CREATE + CMQC.MQSO_RESUME + CMQC.MQSO_DURABLE + CMQC.MQSO_MANAGED
+    sub_desc["Options"] = pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_RESUME + \
+        pymqi.CMQC.MQSO_DURABLE + pymqi.CMQC.MQSO_MANAGED
     sub_desc.set_vs("SubName", "MySub")
     sub_desc.set_vs("ObjectString", topic_string)
 
     sub = pymqi.Subscription(qmgr)
     sub.sub(sub_desc=sub_desc)
 
-    get_opts = pymqi.GMO(Options=CMQC.MQGMO_NO_SYNCPOINT + CMQC.MQGMO_FAIL_IF_QUIESCING + CMQC.MQGMO_WAIT)
+    get_opts = pymqi.GMO(
+        Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING + pymqi.CMQC.MQGMO_WAIT)
     get_opts["WaitInterval"] = 15000
 
     data = sub.get(None, pymqi.md(), get_opts)
     logging.info("Here's the received data: [%s]" % data)
 
-    sub.close(sub_close_options=CMQC.MQCO_KEEP_SUB, close_sub_queue=True)
+    sub.close(sub_close_options=pymqi.CMQC.MQCO_KEEP_SUB, close_sub_queue=True)
     qmgr.disconnect()
 
 Notes:
@@ -386,7 +389,7 @@ Notes:
   the pymqi.SD's implementation depend on `ctypes <http://docs.python.org/library/ctypes.html>`_
   and cannot be set directly through the regular dictionary assignment like the "Options" have been set,
 
-* note well that among other options we're using CMQC.MQSO_CREATE + CMQC.MQSO_RESUME,
+* note well that among other options we're using pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_RESUME,
   in plain words in means *create a new subscription of the name set in the
   "SubName" key ("MySub" in the example) but if the subscribtion already exists
   then just resume it*, this basically means we won't stumble upon the
@@ -413,7 +416,6 @@ Code::
     import logging
     
     import pymqi
-    import CMQC
     
     logging.basicConfig(level=logging.INFO)
     
@@ -430,8 +432,8 @@ Code::
     cd = pymqi.CD()
     cd.ChannelName = channel
     cd.ConnectionName = conn_info
-    cd.ChannelType = CMQC.MQCHT_CLNTCONN
-    cd.TransportType = CMQC.MQXPT_TCP
+    cd.ChannelType = pymqi.CMQC.MQCHT_CLNTCONN
+    cd.TransportType = pymqi.CMQC.MQXPT_TCP
     cd.SSLCipherSpec = ssl_cipher_spec
     
     sco = pymqi.SCO()
@@ -585,7 +587,6 @@ Code::
 
     import logging
     
-    import CMQC
     import pymqi
     
     queue_manager = "QM01"
@@ -597,7 +598,7 @@ Code::
     try:
         qmgr = pymqi.connect(queue_manager, channel, conn_info)
     except pymqi.MQMIError, e:
-        if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_HOST_NOT_AVAILABLE:
+        if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_HOST_NOT_AVAILABLE:
             logging.error("Such a host [%s] does not exist." % host)
 
 Notes:
@@ -605,7 +606,7 @@ Notes:
 * When WebSphere MQ raises an exception, it is wrapped in a pymqi.MQMIError
   object which exposes 2 useful attributes: *.comp* is a completion code
   and *.reason* is the reason code assigned by MQ. All the completion- and
-  reason codes can be looked up in the *CMQC* module.
+  reason codes can be looked up in the *pymqi.CMQC* module.
 
 ===================================================================
 How to check the versions of WebSphere MQ packages installed, Linux
@@ -675,7 +676,6 @@ How to use an alternate user ID
 Code::
 
     import pymqi
-    import CMQC
     
     queue_manager = "QM01"
     channel = "SVRCONN.1"
@@ -693,7 +693,7 @@ Code::
     od.AlternateUserId = alternate_user_id
     
     queue = pymqi.Queue(qmgr)
-    queue.open(od, CMQC.MQOO_OUTPUT | CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
+    queue.open(od, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
     queue.put(message)
     
     queue.close()
@@ -718,7 +718,6 @@ Code::
 
     # PyMQI
     import pymqi
-    import CMQC
 
     logging.basicConfig(level=logging.INFO)
 
@@ -749,11 +748,11 @@ Code::
             cd = pymqi.CD()
             cd.ChannelName = channel
             cd.ConnectionName = listener
-            cd.ChannelType = CMQC.MQCHT_CLNTCONN
-            cd.TransportType = CMQC.MQXPT_TCP
+            cd.ChannelType = pymqi.CMQC.MQCHT_CLNTCONN
+            cd.TransportType = pymqi.CMQC.MQXPT_TCP
             self.qm = pymqi.QueueManager(None)
-            self.qm.connect_with_options(qm_name, opts=CMQC.MQCNO_HANDLE_SHARE_NO_BLOCK,
-                                       cd=cd)
+            self.qm.connect_with_options(
+                qm_name, opts=pymqi.CMQC.MQCNO_HANDLE_SHARE_NO_BLOCK, cd=cd)
 
             self.req_queue = pymqi.Queue(self.qm, request_queue_name)
             self.replyto_queue = pymqi.Queue(self.qm, replyto_queue_name)
@@ -771,7 +770,7 @@ Code::
                 put_mqmd = pymqi.MD()
 
                 # Set the MsgType to request.
-                put_mqmd["MsgType"] = CMQC.MQMT_REQUEST
+                put_mqmd["MsgType"] = pymqi.CMQC.MQMT_REQUEST
 
                 # Set up the ReplyTo QUeue/Queue Manager (Queue Manager is automatically
                 # set by MQ).
@@ -781,7 +780,7 @@ Code::
 
                 # Set up the put options - must do with NO_SYNCPOINT so that the request
                 # message is committed immediately.
-                put_opts = pymqi.PMO(Options=CMQC.MQPMO_NO_SYNCPOINT + CMQC.MQPMO_FAIL_IF_QUIESCING)
+                put_opts = pymqi.PMO(Options=pymqi.CMQC.MQPMO_NO_SYNCPOINT + pymqi.CMQC.MQPMO_FAIL_IF_QUIESCING)
 
                 # Create a random message.
                 message = message_prefix + uuid.uuid4().hex
@@ -796,21 +795,21 @@ Code::
                 get_mqmd["CorrelId"] = put_mqmd["MsgId"]
 
                 # Set up the get options.
-                get_opts = pymqi.GMO(Options=CMQC.MQGMO_NO_SYNCPOINT +
-                                             CMQC.MQGMO_FAIL_IF_QUIESCING +
-                                             CMQC.MQGMO_WAIT)
+                get_opts = pymqi.GMO(
+                    Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING +
+                            pymqi.CMQC.MQGMO_WAIT)
 
                 # Version must be set to 2 to correlate.
-                get_opts["Version"] = CMQC.MQGMO_VERSION_2
+                get_opts["Version"] = pymqi.CMQC.MQGMO_VERSION_2
 
                 # Tell MQ that we are matching on CorrelId.
-                get_opts["MatchOptions"] = CMQC.MQMO_MATCH_CORREL_ID
+                get_opts["MatchOptions"] = pymqi.CMQC.MQMO_MATCH_CORREL_ID
 
                 # Set the wait timeout of half a second.
                 get_opts["WaitInterval"] = 500
 
                 # Open the replyto queue and get response message,
-                replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, CMQC.MQOO_INPUT_SHARED)
+                replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED)
                 response_message = replyto_queue.get(None, get_mqmd, get_opts)
 
                 logging.info("Got response message [%s]" % response_message)
@@ -829,7 +828,7 @@ Code::
 
             # Get Message Options
             gmo = pymqi.GMO()
-            gmo.Options = CMQC.MQGMO_WAIT | CMQC.MQGMO_FAIL_IF_QUIESCING
+            gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
             gmo.WaitInterval = 500 # Half a second
 
             queue = pymqi.Queue(self.qm, request_queue_name)
@@ -851,12 +850,12 @@ Code::
 
                     # Reset the MsgId, CorrelId & GroupId so that we can reuse
                     # the same 'md' object again.
-                    request_md.MsgId = CMQC.MQMI_NONE
-                    request_md.CorrelId = CMQC.MQCI_NONE
-                    request_md.GroupId = CMQC.MQGI_NONE
+                    request_md.MsgId = pymqi.CMQC.MQMI_NONE
+                    request_md.CorrelId = pymqi.CMQC.MQCI_NONE
+                    request_md.GroupId = pymqi.CMQC.MQGI_NONE
 
                 except pymqi.MQMIError, e:
-                    if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_NO_MSG_AVAILABLE:
+                    if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
                         # No messages, that's OK, we can ignore it.
                         pass
                     else:
@@ -894,7 +893,7 @@ How to avoid MQRC_ALREADY_CONNECTED
 
 Code::
 
-    import CMQC, pymqi
+    import pymqi
 
     queue_manager = "QM01"
     channel = "SVRCONN.1"
@@ -908,10 +907,10 @@ Code::
 
     cd.ChannelName = channel
     cd.ConnectionName = conn_info
-    cd.ChannelType = CMQC.MQCHT_CLNTCONN
-    cd.TransportType = CMQC.MQXPT_TCP
+    cd.ChannelType = pymqi.CMQC.MQCHT_CLNTCONN
+    cd.TransportType = pymqi.CMQC.MQXPT_TCP
 
-    connect_options = CMQC.MQCNO_HANDLE_SHARE_BLOCK
+    connect_options = pymqi.CMQC.MQCNO_HANDLE_SHARE_BLOCK
 
     qmgr = pymqi.QueueManager(None)
 
@@ -927,7 +926,7 @@ Code::
     
 ::
 
-    import CMQC, pymqi
+    import pymqi
 
     queue_manager = "QM01"
     channel = "SVRCONN.1"
@@ -943,7 +942,7 @@ Code::
     try:
         qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
     except pymqi.MQMIError, e:
-        if e.comp == CMQC.MQCC_WARNING and e.reason == CMQC.MQRC_ALREADY_CONNECTED:
+        if e.comp == pymqi.CMQC.MQCC_WARNING and e.reason == pymqi.CMQC.MQRC_ALREADY_CONNECTED:
             # Move along, nothing to see here..
             pass
 
@@ -974,7 +973,6 @@ How to define a channel
 Code::
 
     import pymqi
-    import CMQC, CMQXC, CMQCFC
     
     queue_manager = "QM01"
     channel = "SVRCONN.1"
@@ -983,10 +981,10 @@ Code::
     conn_info = "%s(%s)" % (host, port)
     
     channel_name = "MYCHANNEL.1"
-    channel_type = CMQXC.MQCHT_SVRCONN
+    channel_type = pymqi.CMQXC.MQCHT_SVRCONN
     
-    args = {CMQCFC.MQCACH_CHANNEL_NAME: channel_name,
-            CMQCFC.MQIACH_CHANNEL_TYPE: channel_type}
+    args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: channel_name,
+            pymqi.CMQCFC.MQIACH_CHANNEL_TYPE: channel_type}
     
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     
@@ -1000,7 +998,7 @@ Notes:
 * Instances of *pymqi.PCFExecute* class have direct access to all PCF
   administrative MQ commands. The commands expect a dictionary of parameters
   describing the properties of MQ objects which need to be manipulated. All commands
-  and appropriate parameters may be loooked up in modules *CMQC*, *CMQXC* and *CMQCFC*,
+  and appropriate parameters may be loooked up in modules *pymqi.CMQC*, *pymqi.CMQXC* and *pymqi.CMQCFC*,
 
 * The code above is equivalent to following MQSC command:
   *DEFINE CHANNEL(MYCHANNEL.1) CHLTYPE(SVRCONN)*.
@@ -1012,7 +1010,6 @@ How to define a queue
 Code::
 
     import pymqi
-    import CMQC
     
     queue_manager = "QM01"
     channel = "SVRCONN.1"
@@ -1021,12 +1018,12 @@ Code::
     conn_info = "%s(%s)" % (host, port)
     
     queue_name = "MYQUEUE.1"
-    queue_type = CMQC.MQQT_LOCAL
+    queue_type = pymqi.CMQC.MQQT_LOCAL
     max_depth = 123456
     
-    args = {CMQC.MQCA_Q_NAME: queue_name,
-            CMQC.MQIA_Q_TYPE: queue_type,
-            CMQC.MQIA_MAX_Q_DEPTH: max_depth}
+    args = {pymqi.CMQC.MQCA_Q_NAME: queue_name,
+            pymqi.CMQC.MQIA_Q_TYPE: queue_type,
+            pymqi.CMQC.MQIA_MAX_Q_DEPTH: max_depth}
     
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     
@@ -1040,7 +1037,7 @@ Notes:
 * Instances of *pymqi.PCFExecute* class have direct access to all PCF
   administrative MQ commands. The commands expect a dictionary of parameters
   describing the properties of MQ objects which need to be manipulated. All commands
-  and appropriate parameters may be loooked up in modules *CMQC*, *CMQXC* and *CMQCFC*,
+  and appropriate parameters may be loooked up in modules *pymqi.CMQC*, *pymqi.CMQXC* and *pymqi.CMQCFC*,
 
 * The code above is equivalent to following MQSC command:
   *DEFINE QLOCAL(MYQUEUE.1) MAXDEPTH(123456)*.
@@ -1054,7 +1051,6 @@ Code::
     import logging
     
     import pymqi
-    import CMQC, CMQCFC
     
     logging.basicConfig(level=logging.INFO)
     
@@ -1066,7 +1062,7 @@ Code::
     
     prefix = "SYSTEM.*"
     
-    args = {CMQCFC.MQCACH_CHANNEL_NAME: prefix}
+    args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: prefix}
     
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     pcf = pymqi.PCFExecute(qmgr)
@@ -1074,7 +1070,7 @@ Code::
     try:
         response = pcf.MQCMD_INQUIRE_CHANNEL(args)
     except pymqi.MQMIError, e:
-        if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_UNKNOWN_OBJECT_NAME:
+        if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
             logging.info("No channels matched prefix [%s]" % prefix)
         else:
             raise
@@ -1104,7 +1100,6 @@ Code::
     import logging
     
     import pymqi
-    import CMQC, CMQCFC, CMQXC
     
     logging.basicConfig(level=logging.INFO)
     
@@ -1115,10 +1110,10 @@ Code::
     conn_info = "%s(%s)" % (host, port)
     
     prefix = "SYSTEM.*"
-    queue_type = CMQC.MQQT_MODEL
+    queue_type = pymqi.CMQC.MQQT_MODEL
     
-    args = {CMQC.MQCA_Q_NAME: prefix,
-            CMQC.MQIA_Q_TYPE: queue_type}
+    args = {pymqi.CMQC.MQCA_Q_NAME: prefix,
+            pymqi.CMQC.MQIA_Q_TYPE: queue_type}
     
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     pcf = pymqi.PCFExecute(qmgr)
@@ -1126,13 +1121,13 @@ Code::
     try:
         response = pcf.MQCMD_INQUIRE_Q(args)
     except pymqi.MQMIError, e:
-        if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_UNKNOWN_OBJECT_NAME:
+        if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
             logging.info("No queues matched given arguments.")
         else:
             raise
     else:
         for queue_info in response:
-            queue_name = queue_info[CMQC.MQCA_Q_NAME]
+            queue_name = queue_info[pymqi.CMQC.MQCA_Q_NAME]
             logging.info("Found queue [%s]" % queue_name)
     
     qmgr.disconnect()
@@ -1152,7 +1147,6 @@ How to ping the queue manager
 Code::
 
     import pymqi
-    import CMQC, CMQCFC, CMQXC
     
     queue_manager = "QM01"
     channel = "SVRCONN.1"

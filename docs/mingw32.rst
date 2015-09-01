@@ -1,6 +1,10 @@
 Mingw32
 =================================
 
+.. note::
+
+    Sponsored by `Zato <https://zato.io/docs?pymqi>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
+
 How To Build Python Extensions Without a Microsoft Compiler
 -----------------------------------------------------------
 

@@ -2,7 +2,7 @@
 Which MQ versions PyMQI has been tested with?
 =============================================
 
-PyMQI 1.4
+PyMQI 1.5
 ---------
 
 <table>

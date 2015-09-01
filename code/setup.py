@@ -7,14 +7,10 @@
 import sys, os
 from struct import calcsize
 
-try:
-    from distribute.core import setup
-except ImportError:
-    from setuptools import setup
-
+from setuptools import setup, find_packages
 from distutils.core import Extension
 
-version = "1.4"
+version = "1.5"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -125,16 +121,16 @@ else:
     print "Building PyMQI client %sbits" % bits
 
 
-setup(name = "pymqi",
+setup(name = 'pymqi',
     version = version,
-    description = "Python IBM MQI Extension for WebSphere MQ (formerly known as MQSeries).",
-    long_description= "PyMQI is a Python library for working with WebSphere MQ (formerly known as MQSeries) implementing MQI and PCF protocols.",
-    author="Dariusz Suchojad",
-    author_email="dsuch at zato.io",
-    url="https://pythonhosted.org/pymqi/",
-    download_url="https://pypi.python.org/pypi/pymqi",
-    platforms="OS Independent",
-    py_modules = ["pymqi", "CMQC", "CMQCFC", "CMQXC", "CMQZC"],
+    description = 'Python IBM MQI Extension for WebSphere MQ (formerly known as MQSeries).',
+    long_description= 'PyMQI is a Python library for working with WebSphere MQ (formerly known as MQSeries) implementing MQI and PCF protocols.',
+    author='Dariusz Suchojad',
+    author_email='dsuch at zato.io',
+    url='https://pythonhosted.org/pymqi/',
+    download_url='https://pypi.python.org/pypi/pymqi',
+    platforms='OS Independent',
+    packages = find_packages('pymqi'),
     license='Python Software Foundation License',
     keywords=('pymqi WebSphere MQ WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
     classifiers = [
@@ -148,7 +144,7 @@ setup(name = "pymqi",
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Software Development :: Object Brokering',
         ],
-    ext_modules = [Extension("pymqe",["pymqe.c"],
+    ext_modules = [Extension('pymqi.pymqe',['pymqi/pymqe.c'],
             define_macros=[('PYQMI_SERVERBUILD', build_server)],
         library_dirs = library_dirs,
         include_dirs = include_dirs,

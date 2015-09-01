@@ -4,6 +4,10 @@
 Support, consulting and contact
 =================================
 
+.. note::
+
+    Sponsored by `Zato <https://zato.io/docs?pymqi>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
+
 Public tracker
 --------------
 
@@ -36,18 +40,13 @@ directly to the project lead (Dariusz Suchojad, dsuch@zato.io). You are encourag
 `PGP key for contacting me securely <http://keyserver.ubuntu.com:11371/pks/lookup?op=get&search=0x80670F52C9D9FD34>`_,
 the key's fingerprint is *C9D9FD34*.
 
-IRC
-----------
-You're always invited to join the #pymqi channel on `Freenode network <http://freenode.net>`_,
-a friendly place for discussing Python and MQ matters, if you prefer a peer to peer support.
-
 Contact
 ----------
 
 If you're not sure where to send your question feel free to e-mail me directly
 at dsuch@zato.io.
 
-|rss| `Visit the author's blog <http://www.zato.io/blog>`_
+|rss| `Visit the author's blog <https://zato.io/blog>`_
 
 |twitter| `Follow @fourthrealm on Twitter, where project's status updates are sent <https://twitter.com/fourthrealm>`_
 

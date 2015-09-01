@@ -3,8 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-PyMQI 1.4 Documentation
-=================================
+PyMQI 1.5
+=========
+
+.. note::
+
+    Sponsored by `Zato <https://zato.io/docs?pymqi>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
 
 Other sections:
 
@@ -35,13 +39,13 @@ MQ (either client or server) installed before you can use PyMQI.
 PyMQI has been used in production environments for several years on
 Linux, Windows, Solaris and AIX with queue managers running on Linux,
 Windows, Solarix, AIX, HP-UX and z/OS mainframe. Supported WebSphere MQ versions are
-5.x, 6.x and 7.x.
+5.x, 6.x, 7.x and 8.x.
 
 PyMQI consists of several modules that are used together:
 
-    * CMQC, CMQXC, CMQCFC, CMQZC define all the constants for MQI.
-    * pymqe a low-level Python extension interface to MQI, written in C.
-    * pymqi a high-level Python OO interface to MQI that uses pymqe.
+    * pymqi a high-level Python objec-oriented interface to MQI that uses pymqi.pymqe.
+    * pymqi.pymqe a low-level Python extension interface to MQI, written in C.
+    * pymqi.CMQC, pymqi.CMQXC, pymqi.CMQCFC, pymqi.CMQZC define all the constants for MQI.
 
 It's easiest to use the pymqi package. Here is some minimal code to put a message on a queue::
 
@@ -186,7 +190,7 @@ in the tuple pymqi.__mqlevels__. To determine if a particular level is
 supported, do something like::
 
 
-        if '7.0' in pymqi.__mqlevels__:
+        if '8.0' in pymqi.__mqlevels__:
             print('New MQI things to try!')
 
 ===========
@@ -220,8 +224,8 @@ requested.
 
 An example PCFExecute usage is given below::
 
-        import pymqi, CMQC
-        from CMQCFC import *
+        import pymqi
+        from pymqi.CMQCFC import *
 
         qmgr = pymqi.connect('QM.1', 'SVRCONN.CHANNEL.1', '192.168.1.121(1434)')
         pcf = pymqi.PCFExecute(qmgr)
@@ -231,11 +235,11 @@ An example PCFExecute usage is given below::
 
         # Create a channel "SVRCONN.CHANNEL.2"
         chanArgs = {MQCACH_CHANNEL_NAME : "SVRCONN.CHANNEL.2",
-                    MQIACH_CHANNEL_TYPE : CMQC.MQCHT_RECEIVER}
+                    MQIACH_CHANNEL_TYPE : pymqi.CMQC.MQCHT_RECEIVER}
         pcf.MQCMD_CREATE_CHANNEL(chanArgs)
 
         # Query all queues beginning with "TESTQ"
-        queues = pcf.MQCMD_INQUIRE_Q({CMQC.MQCA_Q_NAME : "TESTQ*"})
+        queues = pcf.MQCMD_INQUIRE_Q({pymqi.CMQC.MQCA_Q_NAME : "TESTQ*"})
         for q in queues:
             print(pcf.stringify_keys(q))
 
@@ -310,14 +314,14 @@ QueueManager objects.
 An example inquire is shown below::
 
 
-    import pymqi, CMQC
+    import pymqi
 
     qmgr = pymqi.connect('QM.1', 'SVRCONN.CHANNEL.1', '192.168.1.121(1434)')
 
     q = pymqi.Queue(qmgr, 'TESTQ.1')
 
-    print('Queue depth:', q.inquire(CMQC.MQIA_CURRENT_Q_DEPTH))
-    print('Queue Manager platform:', qmgr.inquire(CMQC.MQIA_PLATFORM))
+    print('Queue depth:', q.inquire(pymqi.CMQC.MQIA_CURRENT_Q_DEPTH))
+    print('Queue Manager platform:', qmgr.inquire(pymqi.CMQC.MQIA_PLATFORM))
 
 ================
 SSL & TLS
@@ -357,32 +361,14 @@ pymqi.QueueManager.getHandle             pymqi.QueueManager.get_handle
 pymqi.PCFExecute.stringifyKeys           pymqi.PCFExecute.stringify_keys
 =======================================  ========================================
 
-How does it work precisely?
-
-=======================================  ========================================
-Planned date                             Planned action
-=======================================  ========================================
-March 2011                               The PEP-8 compliant API has been introduced and it's been aliased to the old one, there's no difference in using either one however you're *strongly* encouraged to use only the new one in new code. (*done in PyMQI 1.2*)
-October 2012                             Using the old API will issue a `PendingDeprecationWarning <http://docs.python.org/library/exceptions.html#exceptions.PendingDeprecationWarning>`_  in run-time
-March 2014                               Using the old API will issue a `DeprecationWarning <http://docs.python.org/library/exceptions.html#exceptions.DeprecationWarning>`_  in run-time
-October 2015                             Using the old API will raise a run-time exception making it effectively impossible to use the old API
-=======================================  ========================================
-
-In short, the old API will work until October 2015 but given the idea of issuing
-warnings, you'd be better off preparing for the new API as soon as possible.
-
 ============
 Uninstalling
 ============
 
 Uninstalling PyMQI is a matter of removing the files on disk, for instance,
-under Ubuntu, when using Python 2.6, the following commands may be used::
+under Ubuntu, when using Python 2.7, the following commands may be used::
 
-    $ sudo rm /usr/local/lib/python2.6/dist-packages/CMQ*.py*
-    $ sudo rm /usr/local/lib/python2.6/dist-packages/pymq*.*
-
-That is, all PyMQI-related files always match one of the patterns, either CMQ*.py*
-or pymq*.*
+    $ sudo rm /usr/local/lib/python2.7/dist-packages/pymq*.*
 
 ==========
 FAQ
@@ -485,6 +471,9 @@ ports, bug-fixes etc.
 Related projects
 ================
 
+    * `Zato <https://zato.io/docs?pymqi>`_ is open-source ESB, SOA, REST, APIs and Cloud Integrations in Python -
+      uses PyMQI for seamless integration with JMS WebSphere MQ clients.
+
     * `Spring Python <http://springpython.webfactional.com/>`_ uses PyMQI in `its implementation of JMS <http://static.springsource.org/spring-python/1.2.x/sphinx/html/jms.html>`_. If you need to seamingly exchange messages
       between Python and Java MQ applications then Spring Python is the project to use as it brings
       the world of JMS WebSphere MQ programming to Python.
@@ -497,11 +486,3 @@ You are free to use this code in any way you like, subject to the Python
 & IBM disclaimers & copyrights. I make no representations about the suitability
 of this software for any purpose. It is provided "AS-IS" without warranty
 of any kind, either express or implied. So there.
-
-===============
-Donate
-===============
-.. image:: http://images.sourceforge.net/images/project-support.jpg
-
-`Donate to PyMQI <http://sourceforge.net/donate/index.php?group_id=12210>`_
-
