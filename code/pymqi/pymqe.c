@@ -1570,6 +1570,12 @@ __declspec(dllexport)
 #ifdef MQCMDL_LEVEL_750
       PyList_Append(versions, PyString_FromString("7.5"));
 #endif
+#ifdef MQCMDL_LEVEL_800
+      PyList_Append(versions, PyString_FromString("8.0.0"));
+#endif
+#ifdef MQCMDL_LEVEL_801
+      PyList_Append(versions, PyString_FromString("8.0.1"));
+#endif
       PyDict_SetItemString(d,"__mqlevels__", PyList_AsTuple(versions));
       Py_XDECREF(versions);
   }

@@ -931,6 +931,9 @@ class cd(MQOpts):
                      ['UseDLQ', 2, MQLONG_TYPE],
                      ['DefReconnect', 0, MQLONG_TYPE]]
 
+        if '8.0.0' in pymqe.__mqlevels__:
+            opts += [['CertificateLabel', '', '64s']]
+
         # In theory, the pad should've been placed right before the 'MsgExitPtr'
         # attribute, however setting it there makes no effect and that's why
         # it's being set here, as a last element in the list.
