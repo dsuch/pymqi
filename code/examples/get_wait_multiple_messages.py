@@ -1,7 +1,6 @@
 # See discussion and more examples at http://packages.python.org/pymqi/examples.html
 # or in doc/sphinx/examples.rst in the source distribution.
 
-import CMQC
 import pymqi
 
 queue_manager = "QM01"
@@ -16,7 +15,7 @@ md = pymqi.MD()
 
 # Get Message Options
 gmo = pymqi.GMO()
-gmo.Options = CMQC.MQGMO_WAIT | CMQC.MQGMO_FAIL_IF_QUIESCING
+gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
 gmo.WaitInterval = 5000 # 5 seconds
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
@@ -33,12 +32,12 @@ while keep_running:
 
         # Reset the MsgId, CorrelId & GroupId so that we can reuse
         # the same 'md' object again.
-        md.MsgId = CMQC.MQMI_NONE
-        md.CorrelId = CMQC.MQCI_NONE
-        md.GroupId = CMQC.MQGI_NONE
+        md.MsgId = pymqi.CMQC.MQMI_NONE
+        md.CorrelId = pymqi.CMQC.MQCI_NONE
+        md.GroupId = pymqi.CMQC.MQGI_NONE
 
     except pymqi.MQMIError, e:
-        if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_NO_MSG_AVAILABLE:
+        if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
             # No messages, that's OK, we can ignore it.
             pass
         else:

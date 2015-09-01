@@ -6,7 +6,6 @@ import logging, threading, time, traceback, uuid
 
 # PyMQI
 import pymqi
-import CMQC
 
 logging.basicConfig(level=logging.INFO)
 
@@ -37,10 +36,10 @@ class Producer(threading.Thread):
         cd = pymqi.CD()
         cd.ChannelName = channel
         cd.ConnectionName = listener
-        cd.ChannelType = CMQC.MQCHT_CLNTCONN
-        cd.TransportType = CMQC.MQXPT_TCP
+        cd.ChannelType = pymqi.CMQC.MQCHT_CLNTCONN
+        cd.TransportType = pymqi.CMQC.MQXPT_TCP
         self.qm = pymqi.QueueManager(None)
-        self.qm.connect_with_options(qm_name, opts=CMQC.MQCNO_HANDLE_SHARE_NO_BLOCK,
+        self.qm.connect_with_options(qm_name, opts=pymqi.CMQC.MQCNO_HANDLE_SHARE_NO_BLOCK,
                                    cd=cd)
 
         self.req_queue = pymqi.Queue(self.qm, request_queue_name)
@@ -59,7 +58,7 @@ class RequestProducer(Producer):
             put_mqmd = pymqi.MD()
 
             # Set the MsgType to request.
-            put_mqmd["MsgType"] = CMQC.MQMT_REQUEST
+            put_mqmd["MsgType"] = pymqi.CMQC.MQMT_REQUEST
 
             # Set up the ReplyTo QUeue/Queue Manager (Queue Manager is automatically
             # set by MQ).
@@ -69,7 +68,7 @@ class RequestProducer(Producer):
 
             # Set up the put options - must do with NO_SYNCPOINT so that the request
             # message is committed immediately.
-            put_opts = pymqi.PMO(Options=CMQC.MQPMO_NO_SYNCPOINT + CMQC.MQPMO_FAIL_IF_QUIESCING)
+            put_opts = pymqi.PMO(Options=pymqi.CMQC.MQPMO_NO_SYNCPOINT + pymqi.CMQC.MQPMO_FAIL_IF_QUIESCING)
 
             # Create a random message.
             message = message_prefix + uuid.uuid4().hex
@@ -84,21 +83,21 @@ class RequestProducer(Producer):
             get_mqmd["CorrelId"] = put_mqmd["MsgId"]
 
             # Set up the get options.
-            get_opts = pymqi.GMO(Options=CMQC.MQGMO_NO_SYNCPOINT +
-                                         CMQC.MQGMO_FAIL_IF_QUIESCING +
-                                         CMQC.MQGMO_WAIT)
+            get_opts = pymqi.GMO(Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT +
+                                         pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING +
+                                         pymqi.CMQC.MQGMO_WAIT)
 
             # Version must be set to 2 to correlate.
-            get_opts["Version"] = CMQC.MQGMO_VERSION_2
+            get_opts["Version"] = pymqi.CMQC.MQGMO_VERSION_2
 
             # Tell MQ that we are matching on CorrelId.
-            get_opts["MatchOptions"] = CMQC.MQMO_MATCH_CORREL_ID
+            get_opts["MatchOptions"] = pymqi.CMQC.MQMO_MATCH_CORREL_ID
 
             # Set the wait timeout of half a second.
             get_opts["WaitInterval"] = 500
 
             # Open the replyto queue and get response message,
-            replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, CMQC.MQOO_INPUT_SHARED)
+            replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED)
             response_message = replyto_queue.get(None, get_mqmd, get_opts)
 
             logging.info("Got response message [%s]" % response_message)
@@ -117,7 +116,7 @@ class ResponseProducer(Producer):
 
         # Get Message Options
         gmo = pymqi.GMO()
-        gmo.Options = CMQC.MQGMO_WAIT | CMQC.MQGMO_FAIL_IF_QUIESCING
+        gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
         gmo.WaitInterval = 500 # Half a second
 
         queue = pymqi.Queue(self.qm, request_queue_name)
@@ -139,12 +138,12 @@ class ResponseProducer(Producer):
 
                 # Reset the MsgId, CorrelId & GroupId so that we can reuse
                 # the same 'md' object again.
-                request_md.MsgId = CMQC.MQMI_NONE
-                request_md.CorrelId = CMQC.MQCI_NONE
-                request_md.GroupId = CMQC.MQGI_NONE
+                request_md.MsgId = pymqi.CMQC.MQMI_NONE
+                request_md.CorrelId = pymqi.CMQC.MQCI_NONE
+                request_md.GroupId = pymqi.CMQC.MQGI_NONE
 
             except pymqi.MQMIError, e:
-                if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_NO_MSG_AVAILABLE:
+                if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
                     # No messages, that's OK, we can ignore it.
                     pass
                 else:

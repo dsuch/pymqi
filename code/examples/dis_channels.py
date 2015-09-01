@@ -4,7 +4,6 @@
 import logging
 
 import pymqi
-import CMQC, CMQCFC
 
 logging.basicConfig(level=logging.INFO)
 
@@ -16,7 +15,7 @@ conn_info = "%s(%s)" % (host, port)
 
 prefix = "SYSTEM.*"
 
-args = {CMQCFC.MQCACH_CHANNEL_NAME: prefix}
+args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: prefix}
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 pcf = pymqi.PCFExecute(qmgr)
@@ -24,13 +23,13 @@ pcf = pymqi.PCFExecute(qmgr)
 try:
     response = pcf.MQCMD_INQUIRE_CHANNEL(args)
 except pymqi.MQMIError, e:
-    if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_UNKNOWN_OBJECT_NAME:
+    if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
         logging.info("No channels matched prefix [%s]" % prefix)
     else:
         raise
 else:
     for channel_info in response:
-        channel_name = channel_info[CMQCFC.MQCACH_CHANNEL_NAME]
+        channel_name = channel_info[pymqi.CMQCFC.MQCACH_CHANNEL_NAME]
         logging.info("Found channel [%s]" % channel_name)
 
 qmgr.disconnect()

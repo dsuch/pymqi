@@ -4,7 +4,6 @@
 import logging
 
 import pymqi
-import CMQC
 
 logging.basicConfig(level=logging.INFO)
 

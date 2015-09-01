@@ -2,7 +2,6 @@
 # or in doc/sphinx/examples.rst in the source distribution.
 
 import pymqi
-import CMQC
 
 queue_manager = "QM01"
 channel = "SVRCONN.1"
@@ -20,7 +19,7 @@ od.ObjectName = queue_name
 od.AlternateUserId = alternate_user_id
 
 queue = pymqi.Queue(qmgr)
-queue.open(od, CMQC.MQOO_OUTPUT | CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
+queue.open(od, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
 queue.put(message)
 
 queue.close()

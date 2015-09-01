@@ -4,7 +4,6 @@
 import logging
 
 import pymqi
-import CMQC, CMQCFC, CMQXC
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,12 +17,12 @@ qmgr = pymqi.connect(queue_manager, channel, conn_info)
 pcf = pymqi.PCFExecute(qmgr)
 
 groupEntity ={128L: ['swww02']}
-authEntity = {128L: [CMQCFC.MQAUTH_BROWSE]}
+authEntity = {128L: [pymqi.CMQCFC.MQAUTH_BROWSE]}
 
-args = {CMQCFC.MQCACF_AUTH_PROFILE_NAME: 'Q1',
-        CMQCFC.MQIACF_OBJECT_TYPE: CMQC.MQOT_Q,
-        CMQCFC.MQIACF_AUTH_ADD_AUTHS: authEntity,
-        CMQCFC.MQCACF_GROUP_ENTITY_NAMES: groupEntity}
+args = {pymqi.CMQCFC.MQCACF_AUTH_PROFILE_NAME: 'Q1',
+        pymqi.CMQCFC.MQIACF_OBJECT_TYPE: pymqi.CMQC.MQOT_Q,
+        pymqi.CMQCFC.MQIACF_AUTH_ADD_AUTHS: authEntity,
+        pymqi.CMQCFC.MQCACF_GROUP_ENTITY_NAMES: groupEntity}
 
 
 result = pcf.MQCMD_SET_AUTH_REC(args)

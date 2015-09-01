@@ -1,7 +1,7 @@
 # See discussion and more examples at http://packages.python.org/pymqi/examples.html
 # or in doc/sphinx/examples.rst in the source distribution.
 
-import CMQC, pymqi
+import pymqi
 
 queue_manager = "QM01"
 channel = "SVRCONN.1"
@@ -15,10 +15,10 @@ cd = pymqi.CD()
 
 cd.ChannelName = channel
 cd.ConnectionName = conn_info
-cd.ChannelType = CMQC.MQCHT_CLNTCONN
-cd.TransportType = CMQC.MQXPT_TCP
+cd.ChannelType = pymqi.CMQC.MQCHT_CLNTCONN
+cd.TransportType = pymqi.CMQC.MQXPT_TCP
 
-connect_options = CMQC.MQCNO_HANDLE_SHARE_BLOCK
+connect_options = pymqi.CMQC.MQCNO_HANDLE_SHARE_BLOCK
 
 qmgr = pymqi.QueueManager(None)
 

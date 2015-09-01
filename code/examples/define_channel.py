@@ -2,7 +2,6 @@
 # or in doc/sphinx/examples.rst in the source distribution.
 
 import pymqi
-import CMQC, CMQXC, CMQCFC
 
 queue_manager = "QM01"
 channel = "SVRCONN.1"
@@ -11,10 +10,10 @@ port = "1434"
 conn_info = "%s(%s)" % (host, port)
 
 channel_name = "MYCHANNEL.1"
-channel_type = CMQXC.MQCHT_SVRCONN
+channel_type = pymqi.CMQXC.MQCHT_SVRCONN
 
-args = {CMQCFC.MQCACH_CHANNEL_NAME: channel_name,
-        CMQCFC.MQIACH_CHANNEL_TYPE: channel_type}
+args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: channel_name,
+        pymqi.CMQCFC.MQIACH_CHANNEL_TYPE: channel_type}
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 

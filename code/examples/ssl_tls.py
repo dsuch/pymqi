@@ -4,7 +4,6 @@
 import logging
 
 import pymqi
-import CMQC
 
 logging.basicConfig(level=logging.INFO)
 
@@ -21,8 +20,8 @@ message = "Hello from Python!"
 cd = pymqi.CD()
 cd.ChannelName = channel
 cd.ConnectionName = conn_info
-cd.ChannelType = CMQC.MQCHT_CLNTCONN
-cd.TransportType = CMQC.MQXPT_TCP
+cd.ChannelType = pymqi.CMQC.MQCHT_CLNTCONN
+cd.TransportType = pymqi.CMQC.MQXPT_TCP
 cd.SSLCipherSpec = ssl_cipher_spec
 
 sco = pymqi.SCO()

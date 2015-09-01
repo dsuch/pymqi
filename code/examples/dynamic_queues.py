@@ -1,7 +1,6 @@
 # See discussion and more examples at http://packages.python.org/pymqi/examples.html
 # or in doc/sphinx/examples.rst in the source distribution.
 
-import CMQC
 import pymqi
 
 queue_manager = "QM01"
@@ -21,7 +20,7 @@ dyn_od.ObjectName = "SYSTEM.DEFAULT.MODEL.QUEUE"
 dyn_od.DynamicQName = dynamic_queue_prefix
 
 # Open the dynamic queue.
-dyn_input_open_options = CMQC.MQOO_INPUT_EXCLUSIVE
+dyn_input_open_options = pymqi.CMQC.MQOO_INPUT_EXCLUSIVE
 dyn_queue = pymqi.Queue(qmgr, dyn_od, dyn_input_open_options)
 dyn_queue_name = dyn_od.ObjectName.strip()
 

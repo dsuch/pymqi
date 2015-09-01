@@ -1,7 +1,7 @@
 # See discussion and more examples at http://packages.python.org/pymqi/examples.html
 # or in doc/sphinx/examples.rst in the source distribution.
 
-import CMQC, pymqi
+import pymqi
 
 queue_manager = "QM01"
 channel = "SVRCONN.1"
@@ -17,7 +17,7 @@ qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
 try:
     qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
 except pymqi.MQMIError, e:
-    if e.comp == CMQC.MQCC_WARNING and e.reason == CMQC.MQRC_ALREADY_CONNECTED:
+    if e.comp == pymqi.CMQC.MQCC_WARNING and e.reason == pymqi.CMQC.MQRC_ALREADY_CONNECTED:
         # Move along, nothing to see here..
         pass
 

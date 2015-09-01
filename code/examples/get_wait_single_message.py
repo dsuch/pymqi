@@ -1,7 +1,6 @@
 # See discussion and more examples at http://packages.python.org/pymqi/examples.html
 # or in doc/sphinx/examples.rst in the source distribution.
 
-import CMQC
 import pymqi
 
 queue_manager = "QM01"
@@ -16,7 +15,7 @@ md = pymqi.MD()
 
 # Get Message Options
 gmo = pymqi.GMO()
-gmo.Options = CMQC.MQGMO_WAIT | CMQC.MQGMO_FAIL_IF_QUIESCING
+gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
 gmo.WaitInterval = 5000 # 5 seconds
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)

@@ -4,7 +4,6 @@
 import logging
 
 import pymqi
-import CMQC, CMQCFC, CMQXC
 
 logging.basicConfig(level=logging.INFO)
 
@@ -15,10 +14,10 @@ port = "1434"
 conn_info = "%s(%s)" % (host, port)
 
 prefix = "SYSTEM.*"
-queue_type = CMQC.MQQT_MODEL
+queue_type = pymqi.CMQC.MQQT_MODEL
 
-args = {CMQC.MQCA_Q_NAME: prefix,
-        CMQC.MQIA_Q_TYPE: queue_type}
+args = {pymqi.CMQC.MQCA_Q_NAME: prefix,
+        pymqi.CMQC.MQIA_Q_TYPE: queue_type}
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 pcf = pymqi.PCFExecute(qmgr)
@@ -26,13 +25,13 @@ pcf = pymqi.PCFExecute(qmgr)
 try:
     response = pcf.MQCMD_INQUIRE_Q(args)
 except pymqi.MQMIError, e:
-    if e.comp == CMQC.MQCC_FAILED and e.reason == CMQC.MQRC_UNKNOWN_OBJECT_NAME:
+    if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
         logging.info("No queues matched given arguments.")
     else:
         raise
 else:
     for queue_info in response:
-        queue_name = queue_info[CMQC.MQCA_Q_NAME]
+        queue_name = queue_info[pymqi.CMQC.MQCA_Q_NAME]
         logging.info("Found queue [%s]" % queue_name)
 
 qmgr.disconnect()

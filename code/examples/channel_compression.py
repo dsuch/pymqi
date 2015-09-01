@@ -2,7 +2,6 @@
 # or in doc/sphinx/examples.rst in the source distribution.
 
 import pymqi
-import CMQXC
 
 queue_manager = "QM01"
 channel = "SVRCONN.1"
@@ -13,7 +12,7 @@ message = "Hello from Python!" * 10000
 conn_info = "%s(%s)" % (host, port)
 
 cd = pymqi.CD()
-cd.MsgCompList[1] = CMQXC.MQCOMPRESS_ZLIBHIGH
+cd.MsgCompList[1] = pymqi.CMQXC.MQCOMPRESS_ZLIBHIGH
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 

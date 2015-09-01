@@ -2,7 +2,6 @@
 # or in doc/sphinx/examples.rst in the source distribution.
 
 import pymqi
-import CMQC, CMQCFC, CMQXC
 
 queue_manager = "QM01"
 channel = "SVRCONN.1"
