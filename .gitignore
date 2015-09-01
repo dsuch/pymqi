@@ -1,7 +1,7 @@
 code/build/*
 code/dist
 code/develop-eggs/*
-code/pymqe.so
+*pymqe.so
 docs/_build/
 *.pyc
 *.pyo
