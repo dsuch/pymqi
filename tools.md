@@ -6,43 +6,35 @@ PyMQI 1.5
 ---------
 
 <table>
+
+
     <tr>
         <th>System, architecture and MQ version</th>
-        <th>IBM code name</th>
         <th>dspmqver</th>
     </tr>
+
     <tr>
-        <td>Linux x86, 64-bit, MQ 7.0</td>
-        <td>CZJ3ZML</td>
+        <td>Linux x86, 64-bit, MQ 8.0</td>
         <td>
 Name:        WebSphere MQ <br/>
-Version:     7.0.1.3 <br/>
-CMVC level:  p701-103-100813 <br/>
-BuildType:   IKAP - (Production)
-        </td>
-    </tr>
-    <tr>
-        <td>Linux x86, 64-bit, MQ 7.1</td>
-        <td>WSMQ_LNX_ON_X86_64_7.1.0.2_EIM</td>
-        <td>
-Name:        WebSphere MQ <br/>
-Version:     7.1.0.2 <br/>
-Level:       p710-002-121029 <br/>
+Version:     8.0.0.2 <br/>
+Level:       p800-002-150519.TRIAL <br/>
 BuildType:   IKAP - (Production) <br/>
 Platform:    WebSphere MQ for Linux (x86-64 platform) <br/>
 Mode:        64-bit <br/>
-O/S:         Linux 3.2.0-40-generic <br/>
+O/S:         Linux 3.10.0-229.el7.x86_64 <br/>
 InstName:    Installation1 <br/>
 InstDesc:     <br/>
+Primary:     No <br/>
 InstPath:    /opt/mqm <br/>
 DataPath:    /var/mqm <br/>
-Primary:     No <br/>
-MaxCmdLevel: 711
+MaxCmdLevel: 801 <br/>
+LicenseType: Trial
         </td>
     </tr>
+
     <tr>
         <td>Linux x86, 64-bit, MQ 7.5</td>
-        <td>WS_MQ_LIN_ON_X86-64_V7.5.0.1_EIM</td>
         <td>
 Name:        WebSphere MQ <br/>
 Version:     7.5.0.0 <br/>
@@ -59,6 +51,36 @@ Primary:     No <br/>
 MaxCmdLevel: 750
         </td>
     </tr>
+
+    <tr>
+        <td>Linux x86, 64-bit, MQ 7.1</td>
+        <td>
+Name:        WebSphere MQ <br/>
+Version:     7.1.0.2 <br/>
+Level:       p710-002-121029 <br/>
+BuildType:   IKAP - (Production) <br/>
+Platform:    WebSphere MQ for Linux (x86-64 platform) <br/>
+Mode:        64-bit <br/>
+O/S:         Linux 3.2.0-40-generic <br/>
+InstName:    Installation1 <br/>
+InstDesc:     <br/>
+InstPath:    /opt/mqm <br/>
+DataPath:    /var/mqm <br/>
+Primary:     No <br/>
+MaxCmdLevel: 711
+        </td>
+    </tr>
+
+    <tr>
+        <td>Linux x86, 64-bit, MQ 7.0</td>
+        <td>
+Name:        WebSphere MQ <br/>
+Version:     7.0.1.3 <br/>
+CMVC level:  p701-103-100813 <br/>
+BuildType:   IKAP - (Production)
+        </td>
+    </tr>
+
 </table>
 
 Installing and removing MQ on Ubuntu
