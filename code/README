@@ -2,6 +2,8 @@
 PyMQI - Python interface to WebSphere MQ (MQSeries)
 -------------------------------------------------------
 
+**Sponsored by [Zato](https://zato.io/docs?pymqi-docs) - ESB, SOA, REST, APIs and Cloud Integrations in Python**
+
 PyMQI allows one to connect to queue managers to issue MQAI and PCF requests.
 
 Consider the code below which establishes a connection, puts a message
