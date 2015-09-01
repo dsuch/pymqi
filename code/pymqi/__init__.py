@@ -710,7 +710,7 @@ class RFH2(MQOpts):
             if big_endian:
                 folder_length = struct.unpack(">l", len_bytes)[0]
             else:
-                folder_length = struct.unpack("l", len_bytes)[0]
+                folder_length = struct.unpack("<l", len_bytes)[0]
 
             #move on past four byte length
             s = s[4:]
