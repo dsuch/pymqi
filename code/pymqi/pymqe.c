@@ -193,35 +193,36 @@ NOTE: The argument mqcd refers to the MQI MQCD structure, not MQCNO. \
 ";
 
 static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
-  char*    name = 0;
+  char* name = NULL;
   MQHCONN handle;
-  MQLONG compCode, compReason;
-  char*    mqcdBuf = 0;
-  int mqcdBufLen = 0;
-  MQCNO connectOpts = {MQCNO_DEFAULT};
+  MQLONG comp_code, comp_reason;
+  char* mqcd = NULL;
+  int mqcd_buf_len = 0;
+  MQCNO cno = {MQCNO_DEFAULT};
+  PyObject* user_password = NULL;
 
   /*  Note: MQLONG is an int on 64 bit platforms and MQHCONN is an MQLONG
    */
 
-  long lOptions = MQCNO_NONE;
+  long options = MQCNO_NONE;
 
 #ifdef PYMQI_FEATURE_SSL
-  char *mqscoBuf = 0;
-  int mqscoBufLen = 0;
+  char *sco = NULL;
+  int sco_len = 0;
 
-  if (!PyArg_ParseTuple(args, "sls#|s#", &name, &lOptions, &mqcdBuf, &mqcdBufLen, &mqscoBuf, &mqscoBufLen)) {
+  if (!PyArg_ParseTuple(args, "sls#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
     return 0;
   }
-  if (mqscoBuf && checkArgSize(mqscoBufLen, PYMQI_MQSCO_SIZEOF, "MQSCO")) {
+  if (sco && checkArgSize(sco_len, PYMQI_MQSCO_SIZEOF, "MQSCO")) {
     return NULL;
   }
 #else
-  if (!PyArg_ParseTuple(args, "sls#", &name, &lOptions, &mqcdBuf, &mqcdBufLen)) {
+  if (!PyArg_ParseTuple(args, "sls#", &name, &options, &mqcd, &mqcd_buf_len)) {
     return 0;
   }
 #endif
 
-  if (checkArgSize(mqcdBufLen, PYMQI_MQCD_SIZEOF, "MQCD")) {
+  if (checkArgSize(mqcd_buf_len, PYMQI_MQCD_SIZEOF, "MQCD")) {
     return NULL;
   }
 
@@ -230,19 +231,34 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
    * we've been built with.
    */
 #ifdef PYMQI_FEATURE_SSL
-  connectOpts.Version = MQCNO_VERSION_4;
-  connectOpts.SSLConfigPtr =  (MQSCO*)mqscoBuf;
+  cno.Version = MQCNO_VERSION_5;
+  cno.SSLConfigPtr =  (MQSCO *)sco;
 #else
-  connectOpts.Version = MQCNO_VERSION_2;
+  cno.Version = MQCNO_VERSION_2;
 #endif
 
-  connectOpts.ClientConnPtr = (MQCD*)mqcdBuf;
-  connectOpts.Options = (MQLONG) lOptions;
+  MQCSP csp = {MQCSP_DEFAULT};
+
+  if(PyDict_Size(user_password)) {
+
+    PyObject *user = PyDict_GetItemString(user_password, "user");
+    PyObject *password = PyDict_GetItemString(user_password, "password");
+
+    csp.AuthenticationType = MQCSP_AUTH_USER_ID_AND_PWD;
+    csp.CSPUserIdPtr = PyString_AsString(user);
+    csp.CSPUserIdLength = PyString_Size(user);
+    csp.CSPPasswordPtr = PyString_AsString(password);
+    csp.CSPPasswordLength = PyString_Size(password);
+  }
+
+  cno.ClientConnPtr = (MQCD *)mqcd;
+  cno.Options = (MQLONG)options;
+  cno.SecurityParmsPtr = &csp;
 
   Py_BEGIN_ALLOW_THREADS
-  MQCONNX(name, &connectOpts, &handle, &compCode, &compReason);
+  MQCONNX(name, &cno, &handle, &comp_code, &comp_reason);
   Py_END_ALLOW_THREADS
-  return Py_BuildValue("(lll)", (long) handle, (long) compCode, (long) compReason);
+  return Py_BuildValue("(lll)", (long)handle, (long)comp_code, (long)comp_reason);
 }
 
 

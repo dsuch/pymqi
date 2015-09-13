@@ -806,6 +806,10 @@ class cd(MQOpts):
     # until runtime so set it once here when first importing pymqi
     # (originally written by Brent S. Elmer, Ph.D. (mailto:webe3vt@aim.com)).
 
+    if '8.0.0' in pymqe.__mqlevels__:
+        _mqcd_version = CMQXC.MQCD_VERSION_11
+        _mqcd_current_length = CMQXC.MQCD_LENGTH_11
+
     if '7.5' in pymqe.__mqlevels__:
         _mqcd_version = CMQXC.MQCD_VERSION_10
         _mqcd_current_length = CMQXC.MQCD_LENGTH_10
@@ -1287,7 +1291,6 @@ class QueueManager:
 
         Connect immediately to the Queue Manager 'name'."""
 
-        print(33333333, name)
         rv = pymqe.MQCONN(name)
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
@@ -1328,6 +1331,22 @@ class QueueManager:
                 if k not in ('opts', 'cd', 'sco'):
                     raise exceptions.TypeError('Invalid option: %s' % k)
 
+        user_password = {}
+        user = kw.get('user')
+        password = kw.get('password')
+
+        if user:
+
+            # We check for None because password can be an empty string
+            if password is None:
+                raise ValueError('Password must not be None if user is provided')
+
+            if not (isinstance(user, basestring) and isinstance(password, basestring)):
+                raise ValueError('Both user and password must be instances of basestring')
+
+            user_password['user'] = user
+            user_password['password'] = password
+
         options = CMQC.MQCNO_NONE
         ocd = cd()
         if kw.has_key('opts'):
@@ -1335,9 +1354,9 @@ class QueueManager:
         if kw.has_key('cd'):
             ocd = kw['cd']
         if kw.has_key('sco'):
-            rv = pymqe.MQCONNX(name, options, ocd.pack(), kw['sco'].pack())
+            rv = pymqe.MQCONNX(name, options, ocd.pack(), user_password, kw['sco'].pack())
         else:
-            rv = pymqe.MQCONNX(name, options, ocd.pack())
+            rv = pymqe.MQCONNX(name, options, ocd.pack(), user_password)
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
         self.__handle = rv[0]
@@ -1346,19 +1365,18 @@ class QueueManager:
     # Backward compatibility
     connect_with_options = connectWithOptions
 
-    def connectTCPClient(self, name, cd, channelName, connectString):
-        """connectTCPClient(name, cd, channelName, connectString)
+    def connectTCPClient(self, name, cd, channel, conn_name, user, password):
+        """ Connect immediately to the remote Queue Manager 'name', using
+        a TCP Client connection, with channnel 'channel' and the
+        TCP connection string 'conn_name'. All other connection
+        optons come from 'cd'.
+        """
 
-        Connect immediately to the remote Queue Manager 'name', using
-        a TCP Client connection, with channnel 'channelName' and the
-        TCP connection string 'connectString'. All other connection
-        optons come from 'cd'."""
-
-        cd.ChannelName = channelName
-        cd.ConnectionName = connectString
+        cd.ChannelName = channel
+        cd.ConnectionName = conn_name
         cd.ChannelType = CMQC.MQCHT_CLNTCONN
         cd.TransportType = CMQC.MQXPT_TCP
-        self.connectWithOptions(name, cd)
+        self.connectWithOptions(name, cd, user=user, password=password)
 
     # Backward compatibility
     connect_tcp_client = connectTCPClient
@@ -2451,7 +2469,7 @@ class ByteString(object):
     def __len__(self):
         return len(self.value)
     
-def connect(queue_manager, channel=None, conn_info=None):
+def connect(queue_manager, channel=None, conn_info=None, user=None, password=None):
     """ A convenience wrapper for connecting to MQ queue managers. If given the
     'queue_manager' parameter only, will try connecting to it in bindings mode.
     If given both 'channel' and 'conn_info' will connect in client mode.
@@ -2459,7 +2477,7 @@ def connect(queue_manager, channel=None, conn_info=None):
     """
     if queue_manager and channel and conn_info:
         qmgr = QueueManager(None)
-        qmgr.connect_tcp_client(queue_manager, CD(), channel, conn_info)
+        qmgr.connect_tcp_client(queue_manager, CD(), channel, conn_info, user, password)
         return qmgr
     
     elif queue_manager:
