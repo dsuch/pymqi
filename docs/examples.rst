@@ -15,7 +15,7 @@ for more informations. Don't hesitate to :doc:`send a question <support-consulti
 if you'd like to see any specific example be added. Thanks!
 
 ===============================
-Connecting in a client mode
+Connecting in client mode
 ===============================
 
 Code::
@@ -35,6 +35,32 @@ Notes:
 
 * PyMQI :ref:`needs to be installed in client mode <download_build_install>` if you
   want to connect in the client mode later on.
+
+============================================================
+Connecting in client mode with username/password credentials
+============================================================
+
+Code::
+
+    import pymqi
+    
+    queue_manager = "QM01"
+    channel = "SVRCONN.1"
+    host = "192.168.1.135"
+    port = "1434"
+    conn_info = "%s(%s)" % (host, port)
+
+    user = 'myuser'
+    password = 'mypassword'
+
+    qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
+    qmgr.disconnect()
+
+Notes:
+
+* Connecting with username/password credentials was added in PyMQI 1.5
+
+* The functionality requires WebSphere MQ 8.0+ queue managers
 
 ===============================
 Connecting in bindings mode
