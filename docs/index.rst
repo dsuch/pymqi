@@ -139,7 +139,7 @@ you can use MinGW instead. Jaco Smuts has written notes `here <mingw32.html>`_ e
 how itis done.
 
 `See this StackOverflow post if you're compiling on AIX 
-<http://stackoverflow.com/questions/5376514/how-do-i-force-python-pymqi-1-2-to-use-my-gcc-compiler-when-i-build-it>`_ 
+<https://stackoverflow.com/questions/5376514/how-do-i-force-python-pymqi-1-2-to-use-my-gcc-compiler-when-i-build-it>`_ 
 and would like to force PyMQI to use GCC instead of cc_r.
 
 If you port PyMQI to other platforms, `please let me know <support-consulting-contact.html>`_.
@@ -335,7 +335,7 @@ PEP-8 API transition plan
 ==========================
 
 Starting with PyMQI 1.2, the API will be transitioned towards the
-`PEP-8 <http://www.python.org/dev/peps/pep-0008/>`_ compliance.
+`PEP-8 <https://www.python.org/dev/peps/pep-0008/>`_ compliance.
 If you're new to PyMQI and have never used versions older than 1.2 then you have
 absolutely nothing to do on your end. If however there's already some code of yours
 that has been written using the pre-1.2 API then read on.
@@ -426,18 +426,9 @@ See :doc:`here <examples>` for sample code and examples.
 =====================
 More documentation
 =====================
-The author's blog:
 
-    * `WebSphere MQ Administration with Python. Part I – introducing PCFExecute <http://www.zato.io/blog/2011/03/10/websphere-mq-administration-with-python-part-i-introducing-pcfexecute/>`_ (March 10th, 2011)
-    * `Message browsing with WebSphere MQ and PyMQI <http://www.zato.io/blog/2011/02/21/message-browsing-with-websphere-mq-and-pymqi/>`_ (February 21st, 2011)
-    * `A quick intro to WebSphere MQ & Python programming <http://www.zato.io/blog/2011/01/31/a-quick-intro-to-websphere-mq-python-programming/>`_ (January 31st, 2011)
-    * `PyMQI 1.2 is coming soon <http://www.zato.io/blog/2010/12/03/pymqi-1-2-is-coming-soon/>`_ (December 3rd, 2010)
-    * `PyMQI 1.0 – Python i WebSphere MQ <http://www.zato.io/blog/2009/12/05/pymqi-1-0-python-i-websphere-mq/>`_ (Polish only,  December 5th, 2009)
-
-Other documentation:
-
-    * `Installing PyMQI 1.2 on CentOS 5.5 <http://nsupathy.wordpress.com/2011/03/22/installing-pymqi1-2-on-centos-5-5/>`_ at Umapathy's Blog (March 22, 2011)
-    * Sami Salkosuo of IBM has written `a developerWorks article about PyMQI here <http://www.ibm.com/developerworks/websphere/library/techarticles/0708_salkosuo/0708_salkosuo.html>`_. It gives a good overview and includes several good example applications (August 29th, 2007)
+    * `Installing PyMQI 1.2 on CentOS 5.5 <https://nsupathy.wordpress.com/2011/03/22/installing-pymqi1-2-on-centos-5-5/>`_ at Umapathy's Blog (March 22, 2011)
+    * Sami Salkosuo of IBM has written `a developerWorks article about PyMQI here <https://www.ibm.com/developerworks/websphere/library/techarticles/0708_salkosuo/0708_salkosuo.html>`_. It gives a good overview and includes several good example applications (August 29th, 2007)
     * PyMQI has plenty of doc strings. They're `reproduced here <api.html>`_ for convenience.
 
 
@@ -473,10 +464,6 @@ Related projects
 
     * `Zato <https://zato.io/docs?pymqi>`_ is open-source ESB, SOA, REST, APIs and Cloud Integrations in Python -
       uses PyMQI for seamless integration with JMS WebSphere MQ clients.
-
-    * `Spring Python <http://springpython.webfactional.com/>`_ uses PyMQI in `its implementation of JMS <http://static.springsource.org/spring-python/1.2.x/sphinx/html/jms.html>`_. If you need to seamingly exchange messages
-      between Python and Java MQ applications then Spring Python is the project to use as it brings
-      the world of JMS WebSphere MQ programming to Python.
 
 ================
 Disclaimer
