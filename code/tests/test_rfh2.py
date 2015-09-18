@@ -6,7 +6,7 @@ Created on 15 Nov 2010
 
 import unittest
 import pymqi
-import CMQC
+from pymqi import CMQC
 
 class TestRFH2(unittest.TestCase):
     """This test case tests the RFH2 class and it's methods.

@@ -6,7 +6,7 @@ Created on 15 Nov 2010
 
 import unittest
 import pymqi
-import CMQC
+from pymqi import CMQC
 
 
 class TestRFH2PutGet(unittest.TestCase):

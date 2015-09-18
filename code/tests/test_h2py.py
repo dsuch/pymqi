@@ -10,7 +10,7 @@ import unittest
 sys.path.insert(0, "..")
 
 # PyMQI
-import CMQC, CMQXC, CMQCFC
+from pymqi import CMQC, CMQXC, CMQCFC
 
 ignore_dups = ["MQOD_CURRENT_LENGTH", "MQPMO_CURRENT_LENGTH", "MQRC_NONE",
                "MQACH_CURRENT_LENGTH", "MQCD_CURRENT_LENGTH", "MQCD_LENGTH_4",
