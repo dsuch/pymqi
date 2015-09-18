@@ -120,6 +120,11 @@ if build_server:
 else:
     print "Building PyMQI client %sbits" % bits
 
+def parse_requirements(requirements):
+    ignored = ['#', 'setuptools', '-e']
+
+    with open(requirements) as f:
+        return [line.split('==')[0] for line in f if line.strip() and not any(line.startswith(prefix) for prefix in ignored)]
 
 setup(name = 'pymqi',
     version = version,
@@ -133,6 +138,10 @@ setup(name = 'pymqi',
     packages = find_packages('pymqi'),
     license='Python Software Foundation License',
     keywords=('pymqi WebSphere MQ WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
+
+    install_requires = parse_requirements(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')),
+
     classifiers = [
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: Python Software Foundation License',
