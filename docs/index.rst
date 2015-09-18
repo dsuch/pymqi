@@ -439,7 +439,7 @@ Changelog
 
   * Added MQ 8.0.x compatibility
   * Added the ability to connect to MQ 8.0+ queue managers with username/password credentials
-  * Moved code to a top-level 'pymqi' module
+  * Moved code to a top-level 'pymqi' package
 
 (No changelog for prior versions)
 
