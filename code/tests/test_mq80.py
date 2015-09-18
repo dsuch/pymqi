@@ -14,7 +14,6 @@ export PYMQI_TEST_QM_PASSWORD=mypassword
 # stdlib
 import inspect
 import os
-import sys
 import unittest
 
 # testfixtures
