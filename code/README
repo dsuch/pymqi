@@ -46,6 +46,16 @@ Download
 
 Downloads are hosted on PyPI https://pypi.python.org/pypi/pymqi
 
+Changelog
+=========
+
+* **1.5** (2015-09-18)
+
+  * Added MQ 8.0.x compatibility
+  * Added the ability to connect to MQ 8.0+ queue managers with username/password credentials
+
+(No changelog for prior versions)
+
 More information
 ================
 

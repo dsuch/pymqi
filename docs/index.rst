@@ -431,6 +431,17 @@ More documentation
     * Sami Salkosuo of IBM has written `a developerWorks article about PyMQI here <https://www.ibm.com/developerworks/websphere/library/techarticles/0708_salkosuo/0708_salkosuo.html>`_. It gives a good overview and includes several good example applications (August 29th, 2007)
     * PyMQI has plenty of doc strings. They're `reproduced here <api.html>`_ for convenience.
 
+==================
+Changelog
+==================
+
+* **1.5** (2015-09-18)
+
+  * Added MQ 8.0.x compatibility
+  * Added the ability to connect to MQ 8.0+ queue managers with username/password credentials
+
+(No changelog for prior versions)
+
 
 ======================
 Acknowledgments
