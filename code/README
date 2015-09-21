@@ -49,6 +49,18 @@ Downloads are hosted on PyPI https://pypi.python.org/pypi/pymqi
 Changelog
 =========
 
+* **1.5.3** (2015-09-21)
+
+  * Added missing modules to setup.py
+
+* **1.5.2** (2015-09-21)
+
+  * Previous release failed to upload to PyPI
+
+* **1.5.1** (2015-09-21)
+
+  * Added a missing 'requirements.txt' file
+
 * **1.5** (2015-09-18)
 
   * Added MQ 8.0.x compatibility

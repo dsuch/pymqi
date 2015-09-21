@@ -10,7 +10,7 @@ from struct import calcsize
 from setuptools import setup, find_packages
 from distutils.core import Extension
 
-version = "1.5"
+version = "1.5.3"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -157,4 +157,5 @@ setup(name = 'pymqi',
             define_macros=[('PYQMI_SERVERBUILD', build_server)],
         library_dirs = library_dirs,
         include_dirs = include_dirs,
+        py_modules = ['pymqi.CMQC', 'pymqi.CMQCFC', 'pymqi.CMQXC', 'pymqi.CMQZC'],
         libraries = libraries)])

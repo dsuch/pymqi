@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-PyMQI 1.5
-=========
+PyMQI 1.5.2
+===========
 
 .. note::
 
@@ -434,6 +434,18 @@ More documentation
 ==================
 Changelog
 ==================
+
+* **1.5.3** (2015-09-21)
+
+  * Added missing modules to setup.py
+
+* **1.5.2** (2015-09-21)
+
+  * Previous release failed to upload to PyPI
+
+* **1.5.1** (2015-09-21)
+
+  * Added a missing 'requirements.txt' file
 
 * **1.5** (2015-09-18)
 
