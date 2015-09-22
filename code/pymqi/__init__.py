@@ -108,7 +108,7 @@ except Exception:
 # PyMQI
 import pymqe, CMQC, CMQCFC, CMQXC
 
-__version__ = "1.5.3"
+__version__ = "1.5.4"
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 

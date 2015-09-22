@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-PyMQI 1.5.2
+PyMQI 1.5.4
 ===========
 
 .. note::
@@ -434,6 +434,10 @@ More documentation
 ==================
 Changelog
 ==================
+
+* **1.5.4** (2015-09-22)
+
+  * Moved setup.py's py_modules to correct place
 
 * **1.5.3** (2015-09-21)
 

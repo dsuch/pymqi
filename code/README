@@ -49,6 +49,10 @@ Downloads are hosted on PyPI https://pypi.python.org/pypi/pymqi
 Changelog
 =========
 
+* **1.5.4** (2015-09-22)
+
+  * Moved setup.py's py_modules to correct place
+
 * **1.5.3** (2015-09-21)
 
   * Added missing modules to setup.py
