@@ -12,12 +12,14 @@ export PYMQI_TEST_QM_PASSWORD=mypassword
 """
 
 # stdlib
-import inspect
 import os
 import unittest
 
 # testfixtures
 from testfixtures import Replacer
+
+# test env
+import env
 
 # PyMQI
 import pymqi
