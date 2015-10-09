@@ -4,6 +4,7 @@ Created on 15 Nov 2010
 @author: hannes
 '''
 
+import os
 import unittest
 import env
 import pymqi
@@ -14,14 +15,17 @@ class TestRFH2(unittest.TestCase):
     """This test case tests the RFH2 class and it's methods.
     """
 
+    messages_dir = os.path.join(os.path.dirname(__file__), "messages")
+
     def setUp(self):
         """ Create a new queue manager (TESTPMQI).
         Must be run as a user that has 'mqm' access.
 
         """
-
-        self.single_rfh2_message = open("messages/single_rfh2.dat", "rb").read()
-        self.single_rfh2_message_not_well_formed = self.single_rfh2_message[0:117] + self.single_rfh2_message[121:]
+        self.single_rfh2_message = open(
+            os.path.join(self.messages_dir, "single_rfh2.dat"), "rb").read()
+        self.single_rfh2_message_not_well_formed = \
+            self.single_rfh2_message[0:117] + self.single_rfh2_message[121:]
 
     def test_parse_rfh2(self):
         """Test that a known correct 3rd party message parses correctly.
