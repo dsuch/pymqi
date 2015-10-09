@@ -7,7 +7,8 @@ import sys
 import inspect
 import unittest
 
-sys.path.insert(0, "..")
+# test env settings
+import env
 
 # PyMQI
 from pymqi import CMQC, CMQXC, CMQCFC
@@ -15,7 +16,8 @@ from pymqi import CMQC, CMQXC, CMQCFC
 ignore_dups = ["MQOD_CURRENT_LENGTH", "MQPMO_CURRENT_LENGTH", "MQRC_NONE",
                "MQACH_CURRENT_LENGTH", "MQCD_CURRENT_LENGTH", "MQCD_LENGTH_4",
                "MQCD_LENGTH_5", "MQCD_LENGTH_6", "MQCD_LENGTH_7", "MQCD_LENGTH_8",
-               "MQCD_LENGTH_9", "MQCFIF_STRUC_LENGTH", "MQCFGR_STRUC_LENGTH",
+               "MQCD_LENGTH_9", "MQCD_LENGTH_10", "MQCD_LENGTH_11",
+               "MQCFIF_STRUC_LENGTH", "MQCFGR_STRUC_LENGTH",
                "MQCFIN64_STRUC_LENGTH", "MQCFIN_STRUC_LENGTH", "MQACH_LENGTH_1"]
 
 class Testh2py(unittest.TestCase):

@@ -9,23 +9,19 @@ This script creates the MQ objects required for the test suite.
 import subprocess
 import sys
 import time
+import config
 
+print "Deleting all MQ Objects required to run the test.\n"
 
-mqsc_script = """
-DEFINE LISTENER(TEST.LISTENER) TRPTYPE(TCP) PORT(31414) CONTROL(QMGR) REPLACE
-START LISTENER(TEST.LISTENER)
-DEFINE QL(RFH2.TEST) REPLACE
-"""
-
-print "Creating all MQ Objects required to run the test.\n"
-
-print "Checking if Queue Manager QM01 exists.\n"
-dspmq_proc = subprocess.Popen(["dspmq", "-mQM01"], stdout=subprocess.PIPE,
-                              stderr=subprocess.PIPE)
+print "Checking if Queue Manager %s exists.\n" % config.MQ.QM.NAME
+dspmq_proc = subprocess.Popen(
+    ["dspmq", "-m%s" % config.MQ.QM.NAME], stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE)
 dspmq_output, dspmq_error = dspmq_proc.communicate()
 
 if dspmq_proc.returncode == 72:
-    print "Queue manager QM01 does not exist.  Nothing to do. Exiting.\n"
+    print ("Queue manager %s does not exist.  Nothing to do. Exiting.\n" %
+           config.MQ.QM.NAME)
     sys.exit(0)
 else:
     if dspmq_proc.returncode != 0:
@@ -37,8 +33,9 @@ else:
         sys.exit(1)
 
 print "Stopping Queue Manager.\n"
-endmqm_proc = subprocess.Popen(["endmqm", "QM01"], stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE)
+endmqm_proc = subprocess.Popen(
+    ["endmqm", config.MQ.QM.NAME], stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE)
 endmqm_output, endmqm_error = endmqm_proc.communicate()
 print endmqm_error
 start = time.time()
@@ -54,7 +51,7 @@ while not done:
     if disp_time <= 0:
         print dspmq_output
         current_disp = time.time()
-    dspmq_proc = subprocess.Popen(["dspmq", "-mQM01"],
+    dspmq_proc = subprocess.Popen(["dspmq", "-m%s" % config.MQ.QM.NAME],
                                   stdout=subprocess.PIPE,
                                   stderr=subprocess.PIPE)
     dspmq_output, dspmq_error = dspmq_proc.communicate()
@@ -73,12 +70,13 @@ print "Queue Manager Stopped.\n"
 
 
 time.sleep(5)
-dltmqm_proc = subprocess.Popen(["dltmqm", "QM01"], stdout=subprocess.PIPE,
+dltmqm_proc = subprocess.Popen(["dltmqm", config.MQ.QM.NAME],
+                               stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
 dltmqm_output, dltmqm_error = dltmqm_proc.communicate()
 
 if dltmqm_proc.returncode != 0:
-    print "Error while deleting Queue Manager QM01."
+    print "Error while deleting Queue Manager %s." % config.MQ.QM.NAME
     print "-" * 80 + "\n"
     print dltmqm_error
     print "-" * 80 + "\n"
