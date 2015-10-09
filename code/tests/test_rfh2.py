@@ -5,8 +5,10 @@ Created on 15 Nov 2010
 '''
 
 import unittest
+import env
 import pymqi
 from pymqi import CMQC
+
 
 class TestRFH2(unittest.TestCase):
     """This test case tests the RFH2 class and it's methods.
@@ -248,7 +250,14 @@ class TestRFH2(unittest.TestCase):
         try:
             rfh2.add_folder("<a><b>c</a>")
         except pymqi.PYIFError, e:
-            self.assertEqual(str(e), "PYMQI Error: RFH2 - XML Folder not well formed. Exception: Opening and ending tag mismatch: b line 1 and a, line 1, column 12", "Not XML Folder not well formed on exception (add_folder)?." )
+            # Don't depend on the actual XML library getting used (lxml or
+            # minidom produce different error messages)
+            self.assertTrue(
+                str(e).startswith(
+                    "PYMQI Error: RFH2 - XML Folder not well formed. "
+                    "Exception:"),
+                    "Not 'XML Folder not well formed' exception (add_folder): "
+                    "%s" % (e, ))
 
     def test_encoding_on_pack_big_endian(self):
         """Test that pack() creates numeric fields with correct encoding. Big endian Test.
