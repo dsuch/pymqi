@@ -1,6 +1,8 @@
 """ Tests for making sure MQ 8.0 features work properly.
 
-Require exporting the following environments variables pointing to an MQ 8.0 queue managers and credentials.
+Requires proper configuration in config.py or by setting the following
+environment variables (which the config module respects) pointing to an MQ 8.0
+queue managers and credentials.
 Substitute values as required.
 
 export PYMQI_TEST_QM_NAME=QM01
@@ -15,10 +17,8 @@ export PYMQI_TEST_QM_PASSWORD=mypassword
 import os
 import unittest
 
-# testfixtures
-from testfixtures import Replacer
-
-# test env
+# test config & env
+import config
 import env
 
 # PyMQI
@@ -28,6 +28,8 @@ from pymqi import CMQC, CMQXC, CMQCFC
 env_prefix = 'PYMQI_TEST_QM_'
 env_vars = ['NAME', 'HOST', 'PORT', 'CHANNEL', 'USER', 'PASSWORD']
 
+#TODO: Remove this? It's not used anymore, and invalid configuration should
+# lead to proper operation errors, anyway.
 def ensure_env_vars():
     missing = []
     for key in env_vars:
@@ -41,9 +43,8 @@ def ensure_env_vars():
 class TestMQ80(unittest.TestCase):
 
     def setUp(self):
-        ensure_env_vars()
         for key in env_vars:
-            setattr(self, key.lower(), os.environ[env_prefix + key])
+            setattr(self, key.lower(), getattr(config.MQ.QM, key))
 
     def get_conn(self):
         return pymqi.connect(self.name, self.channel, '{}({})'.format(self.host, self.port), self.user, self.password)
