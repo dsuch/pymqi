@@ -11,9 +11,11 @@ How to run PyMQI's test suite
 
 * Set a proper configuration by modifying the defaults in config.py or override
   these properties with environment variables, see config.py, if necessary.
+
 * Prepare the test environment using create_mq_objects.py (needs a local MQ
   server installation to access the MQ command executables) or create the 
   objects by hand, consistent with the configuration. 
+
 * Use nose to execute the tests:
  * Directly:
    $ nosetests
@@ -23,5 +25,7 @@ How to run PyMQI's test suite
  * Through setup.py:
    $ python setup.py nosetests 
    (this issues an inplace-build automatically)
- * [Delete the test environment with delete_mq_objects.py]
+
+* [Delete the test environment with delete_mq_objects.py]
+
 * (That's all)
