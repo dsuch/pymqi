@@ -5,6 +5,9 @@ Created on 15 Nov 2010
 '''
 
 import unittest
+import os.path
+import config
+import env
 import pymqi
 from pymqi import CMQC
 
@@ -13,39 +16,40 @@ class TestRFH2PutGet(unittest.TestCase):
     """This test case tests the RFH2 class and it's methods.
     """
 
+    messages_dir = os.path.join(os.path.dirname(__file__), "messages")
+
     def setUp(self):
         """ Create a new queue manager (TESTPMQI).
         Must be run as a user that has 'mqm' access.
 
         """
 
-        self.single_rfh2_message = \
-        open("messages/single_rfh2.dat", "rb").read()
+        self.single_rfh2_message = open(
+            os.path.join(self.messages_dir, "single_rfh2.dat"), "rb").read()
         self.single_rfh2_message_not_well_formed = \
-        self.single_rfh2_message[0:117] + self.single_rfh2_message[121:]
+            self.single_rfh2_message[0:117] + self.single_rfh2_message[121:]
 
-        self.multiple_rfh2_message = \
-        open("messages/multiple_rfh2.dat", "rb").read()
+        self.multiple_rfh2_message = open(
+            os.path.join(self.messages_dir, "multiple_rfh2.dat"), "rb").read()
         self.multiple_rfh2_message_not_well_formed = \
-        self.multiple_rfh2_message[0:117] + self.multiple_rfh2_message[121:]
+            self.multiple_rfh2_message[0:117] + self.multiple_rfh2_message[121:]
 
-        queue_manager = "QM01"
-        channel = "SVRCONN.1"
-        socket = "localhost(31414)"
-        queue_name = "RFH2.TEST"
+        queue_manager = config.MQ.QM.NAME
+        channel = config.MQ.QM.CHANNEL
+        conn_info = "%s(%s)" % (config.MQ.QM.HOST, config.MQ.QM.PORT)
+        queue_name = config.MQ.QUEUE.QUEUE_NAMES['TestRFH2PutGet']
 
         self.qmgr = None
-        try:
-            if pymqi.__mqbuild__ == 'server':
-                self.qmgr = pymqi.QueueManager('QM01')
-            else:
-                self.qmgr = pymqi.QueueManager(None)
-                self.qmgr.connectTCPClient(queue_manager, pymqi.cd(), channel, socket)
-            self.put_queue = pymqi.Queue(self.qmgr, queue_name)
-            self.get_queue = pymqi.Queue(self.qmgr, queue_name)
-            self.clear_queue(self.get_queue)
-        except Exception, e:
-            raise e
+        if pymqi.__mqbuild__ == 'server':
+            self.qmgr = pymqi.QueueManager(queue_manager)
+        else:
+            self.qmgr = pymqi.QueueManager(None)
+            self.qmgr.connect_tcp_client(
+                queue_manager, pymqi.cd(), channel, conn_info, user=None,
+                password=None)
+        self.put_queue = pymqi.Queue(self.qmgr, queue_name)
+        self.get_queue = pymqi.Queue(self.qmgr, queue_name)
+        self.clear_queue(self.get_queue)
 
     def tearDown(self):
         """ Delete queue manager (TESTPMQI).

@@ -4,22 +4,28 @@ Created on 15 Nov 2010
 @author: hannes
 '''
 
+import os
 import unittest
+import env
 import pymqi
 from pymqi import CMQC
+
 
 class TestRFH2(unittest.TestCase):
     """This test case tests the RFH2 class and it's methods.
     """
+
+    messages_dir = os.path.join(os.path.dirname(__file__), "messages")
 
     def setUp(self):
         """ Create a new queue manager (TESTPMQI).
         Must be run as a user that has 'mqm' access.
 
         """
-
-        self.single_rfh2_message = open("messages/single_rfh2.dat", "rb").read()
-        self.single_rfh2_message_not_well_formed = self.single_rfh2_message[0:117] + self.single_rfh2_message[121:]
+        self.single_rfh2_message = open(
+            os.path.join(self.messages_dir, "single_rfh2.dat"), "rb").read()
+        self.single_rfh2_message_not_well_formed = \
+            self.single_rfh2_message[0:117] + self.single_rfh2_message[121:]
 
     def test_parse_rfh2(self):
         """Test that a known correct 3rd party message parses correctly.
@@ -248,7 +254,14 @@ class TestRFH2(unittest.TestCase):
         try:
             rfh2.add_folder("<a><b>c</a>")
         except pymqi.PYIFError, e:
-            self.assertEqual(str(e), "PYMQI Error: RFH2 - XML Folder not well formed. Exception: Opening and ending tag mismatch: b line 1 and a, line 1, column 12", "Not XML Folder not well formed on exception (add_folder)?." )
+            # Don't depend on the actual XML library getting used (lxml or
+            # minidom produce different error messages)
+            self.assertTrue(
+                str(e).startswith(
+                    "PYMQI Error: RFH2 - XML Folder not well formed. "
+                    "Exception:"),
+                    "Not 'XML Folder not well formed' exception (add_folder): "
+                    "%s" % (e, ))
 
     def test_encoding_on_pack_big_endian(self):
         """Test that pack() creates numeric fields with correct encoding. Big endian Test.

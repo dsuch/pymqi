@@ -1,6 +1,6 @@
 
-How to run the PyMQI's test suite
-================================
+How to run PyMQI's test suite
+=============================
 
 * The test suite itself requires at least Python 2.5 because of its reliance
   on the 'uuid' module which has been introduced in 2.5
@@ -9,7 +9,23 @@ How to run the PyMQI's test suite
   $ sudo pip install nose
   $ sudo pip install testfixtures
 
-* Use nose to execute the tests
-  $ nosetests
+* Set a proper configuration by modifying the defaults in config.py or override
+  these properties with environment variables, see config.py, if necessary.
+
+* Prepare the test environment using create_mq_objects.py (needs a local MQ
+  server installation to access the MQ command executables) or create the 
+  objects by hand, consistent with the configuration. 
+
+* Use nose to execute the tests:
+ * Directly:
+   $ nosetests
+   Note that you need an inplace build of pymqe.so if you want to run the tests
+   on the checkout rather than e.g. a test installation
+   (python setup.py build_ext --inplace). 
+ * Through setup.py:
+   $ python setup.py nosetests 
+   (this issues an inplace-build automatically)
+
+* [Delete the test environment with delete_mq_objects.py]
 
 * (That's all)
