@@ -2475,11 +2475,15 @@ def connect(queue_manager, channel=None, conn_info=None, user=None, password=Non
     If given both 'channel' and 'conn_info' will connect in client mode.
     A pymqi.QueueManager is returned on successfully establishing a connection.
     """
-    if queue_manager and channel and conn_info:
+    if channel and conn_info:
         qmgr = QueueManager(None)
-        qmgr.connect_tcp_client(queue_manager, CD(), channel, conn_info, user, password)
+        qmgr.connect_tcp_client(queue_manager or '', CD(), channel, conn_info, user, password)
         return qmgr
     
     elif queue_manager:
         qmgr = QueueManager(queue_manager)
         return qmgr
+        
+    else:
+        raise exceptions.TypeError('Invalid arguments: %r' % [queue_manager, channel, conn_info, user, password])
+
