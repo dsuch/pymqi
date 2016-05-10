@@ -81,7 +81,7 @@ exception. Errors detected by pymqi itself raise the PYIFError
 exception. Both these exceptions are subclasses of the Error class.
 
 MQI constants are defined in the CMQC module. PCF constants are
-defined in CMQCFC.
+defined in CMQC.
 
 PCF commands and inquiries are executed by calling a MQCMD_* method on
 an instance of a PCFExecute object.
@@ -106,7 +106,10 @@ except Exception:
     use_minidom = True
 
 # PyMQI
-import pymqe, CMQC, CMQCFC, CMQXC
+import pymqe
+from pymqi import CMQCFC
+from pymqi import CMQC, CMQC, CMQXC, CMQZC
+
 
 __version__ = "1.5.4"
 __mqlevels__ = pymqe.__mqlevels__
@@ -1195,7 +1198,7 @@ class Error(exceptions.Exception):
 
 class MQMIError(Error):
     """Exception class for MQI low level errors."""
-    errStringDicts = (_MQConst2String(CMQC, "MQRC_"), _MQConst2String(CMQCFC, "MQRCCF_"),)
+    errStringDicts = (_MQConst2String(CMQC, "MQRC_"), _MQConst2String(CMQC, "MQRCCF_"),)
 
     def __init__(self, comp, reason):
         """MQMIError(comp, reason)
@@ -2372,16 +2375,16 @@ class _Method:
         return _Method(self.__pcf, "%s.%s" % (self.__name, name))
 
     def __call__(self, *args):
-        if self.__name[0:7] == 'CMQCFC.':
+        if self.__name[0:7] == 'CMQC.':
             self.__name = self.__name[7:]
         if self.__pcf.qm:
             qmHandle = self.__pcf.qm.getHandle()
         else:
             qmHandle = self.__pcf.getHandle()
         if len(args):
-            rv = pymqe.mqaiExecute(qmHandle, CMQCFC.__dict__[self.__name], *args)
+            rv = pymqe.mqaiExecute(qmHandle, CMQC.__dict__[self.__name], *args)
         else:
-            rv = pymqe.mqaiExecute(qmHandle, CMQCFC.__dict__[self.__name])
+            rv = pymqe.mqaiExecute(qmHandle, CMQC.__dict__[self.__name])
         if rv[1]:
             raise MQMIError(rv[-2], rv[-1])
         return rv[0]
@@ -2395,7 +2398,7 @@ class PCFExecute(QueueManager):
     """Send PCF commands or inquiries using the MQAI
     interface. PCFExecute must be connected to the Queue Manager
     (using one of the techniques inherited from QueueManager) before
-    its used. PCF commands are executed by calling a CMQCFC defined
+    its used. PCF commands are executed by calling a CMQC defined
     MQCMD_* method on the object.  """
 
     iaStringDict = _MQConst2String(CMQC, "MQIA_")
@@ -2420,9 +2423,9 @@ class PCFExecute(QueueManager):
 
         Execute the PCF command or inquiry, passing an an optional
         dictionary of MQ attributes.  The command must begin with
-        MQCMD_, and must be one of those defined in the CMQCFC
+        MQCMD_, and must be one of those defined in the CMQC
         module. If attrDict is passed, its keys must be an attribute
-        as defined in the CMQC or CMQCFC modules (MQCA_*, MQIA_*,
+        as defined in the CMQC or CMQC modules (MQCA_*, MQIA_*,
         MQCACH_* or MQIACH_*). The key value must be an int or string,
         as appropriate.
 
