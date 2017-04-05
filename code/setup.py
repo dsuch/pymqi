@@ -10,7 +10,7 @@ from struct import calcsize
 from setuptools import setup, find_packages
 from distutils.core import Extension
 
-version = "1.5.4"
+version = "1.5.5.1"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -116,15 +116,9 @@ else:
 
 
 if build_server:
-    print "Building PyMQI server %sbits" % bits
+    print("Building PyMQI server %sbits" % bits)
 else:
-    print "Building PyMQI client %sbits" % bits
-
-def parse_requirements(requirements):
-    ignored = ['#', 'setuptools', '-e']
-
-    with open(requirements) as f:
-        return [line.split('==')[0] for line in f if line.strip() and not any(line.startswith(prefix) for prefix in ignored)]
+    print("Building PyMQI client %sbits" % bits)
 
 setup(name = 'pymqi',
     version = version,
@@ -138,9 +132,7 @@ setup(name = 'pymqi',
     packages = find_packages('pymqi'),
     license='Python Software Foundation License',
     keywords=('pymqi WebSphere MQ WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
-
-    install_requires = parse_requirements(
-        os.path.join(os.path.dirname(os.path.realpath(__file__)), 'requirements.txt')),
+    install_requires = [],
 
     classifiers = [
         'Development Status :: 5 - Production/Stable',
