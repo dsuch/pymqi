@@ -45,7 +45,7 @@ PERFORMANCE OF THIS SOFTWARE.
  *
  */
 
-static char __version__[] = "1.5.4";
+static char __version__[] = "1.6.0";
 
 static char pymqe_doc[] = " \
 pymqe - A Python MQ Extension.  This presents a low-level Python \
@@ -911,7 +911,7 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
 
   MQLONG comp_code = MQCC_UNKNOWN, comp_reason = MQRC_NONE;
   PyObject *rv;
-  
+
   MQBYTE *value;
   MQIMPO impo = {MQIMPO_DEFAULT};
   MQPD pd = {MQPD_DEFAULT};
@@ -923,7 +923,7 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
   }
 
   value = malloc(max_value_length * sizeof(MQBYTE));
-  
+
   impo.Options = impo_options;
   pd.Options = pd_options;
 
@@ -935,7 +935,7 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
 
   rv = Py_BuildValue("(lls)", (long)comp_code, (long)comp_reason, (char *)value);
   free(value);
-  
+
   return rv;
 
 }
@@ -984,10 +984,10 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
     PyObject *returnValue;
     PyObject *resultDictValue;
     PyObject *newList;
-    
+
     long lQmgrHandle, lCmdCode;
     int isByteString = 0;
-    
+
     /* Filters */
     PyObject *filters = NULL;
     PyObject *filter = NULL;
@@ -1006,7 +1006,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
         PyErr_SetString(ErrorObj, "'argDict' is not a dictionary");
         return NULL;
     }
-    
+
     if(filters && !PyList_Check(filters)) {
         PyErr_SetString(ErrorObj, "'filters' is not a list");
         return NULL;
@@ -1032,15 +1032,15 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
         if (compCode != MQCC_OK) {
             break;
         }
-        
-        /* 
+
+        /*
          * MQAI filters.
          */
         if(filters) {
-          
+
           int i;
           filter_keys_size = (int)PyList_Size(filters);
-          
+
           for(i = 0; i < filter_keys_size; i++) {
             filter = PyList_GetItem(filters, i); /* Borrowed ref */
             if(NULL == filter) {
@@ -1048,76 +1048,76 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
               PYMQI_MQAI_FILTERS_CLEANUP
               return NULL;
             }
-            
+
             filter_selector = PyObject_GetAttrString(filter, "selector"); /* Owned ref */
             if(NULL == filter_selector) {
               PyErr_Format(ErrorObj, "'filter_selector' object is NULL.");
               PYMQI_MQAI_FILTERS_CLEANUP
               return NULL;
             }
-              
+
             filter_operator = PyObject_GetAttrString(filter, "operator"); /* Owned ref */
             if(NULL == filter_operator) {
               PyErr_Format(ErrorObj, "'filter_operator' object is NULL.");
               PYMQI_MQAI_FILTERS_CLEANUP
               return NULL;
             }
-              
+
             filter_value = PyObject_GetAttrString(filter, "value"); /* Owned ref */
             if(NULL == filter_value) {
               PyErr_Format(ErrorObj, "'filter_value' object is NULL.");
               PYMQI_MQAI_FILTERS_CLEANUP
               return NULL;
             }
-              
+
             _pymqi_filter_type = PyObject_GetAttrString(filter, "_pymqi_filter_type"); /* Owned ref */
             if(NULL == _pymqi_filter_type) {
               PyErr_Format(ErrorObj, "'_pymqi_filter_type' object is NULL.");
               PYMQI_MQAI_FILTERS_CLEANUP
               return NULL;
             }
-              
-            filter_type = PyString_AsString(_pymqi_filter_type); 
+
+            filter_type = PyString_AsString(_pymqi_filter_type);
 
             /* String filter */
             if(0 == strcmp(filter_type, "string")) {
 
-              mqAddStringFilter(adminBag, 
-                                  (MQLONG)PyLong_AsLong(filter_selector), 
+              mqAddStringFilter(adminBag,
+                                  (MQLONG)PyLong_AsLong(filter_selector),
                                   (MQLONG)PyObject_Length(filter_value),
-                                  (PMQCHAR)PyString_AsString(filter_value), 
+                                  (PMQCHAR)PyString_AsString(filter_value),
                                   (MQLONG)PyLong_AsLong(filter_operator),
-                                  &compCode, 
-                                  &compReason); 
-                                  
+                                  &compCode,
+                                  &compReason);
+
               if(!compCode == MQCC_OK) {
                 PyErr_Format(ErrorObj, "Could not invoke 'mqAddStringFilter' compCode=[%d], " \
                             "compReason=[%d], filter_selector=[%d], filter_value=[%s], " \
-                            "filter_operator=[%d]", (int)compCode, (int)compReason, (int)PyLong_AsLong(filter_selector), 
-                                  PyString_AsString(filter_value), 
+                            "filter_operator=[%d]", (int)compCode, (int)compReason, (int)PyLong_AsLong(filter_selector),
+                                  PyString_AsString(filter_value),
                                   (int)PyLong_AsLong(filter_operator));
-                                  
+
                 PYMQI_MQAI_FILTERS_CLEANUP
                 return NULL;
               }
-                                  
-              
+
+
             }
-            
+
             /* Integer filter */
             else if(0 == strcmp(filter_type, "integer")) {
-              
-              mqAddIntegerFilter(adminBag, (MQLONG)PyLong_AsLong(filter_selector), 
-                                  (MQLONG)PyLong_AsLong(filter_value), 
-                                  (MQLONG)PyLong_AsLong(filter_operator), &compCode, &compReason); 
-                                  
+
+              mqAddIntegerFilter(adminBag, (MQLONG)PyLong_AsLong(filter_selector),
+                                  (MQLONG)PyLong_AsLong(filter_value),
+                                  (MQLONG)PyLong_AsLong(filter_operator), &compCode, &compReason);
+
               if(!compCode == MQCC_OK) {
                 PyErr_Format(ErrorObj, "Could not invoke 'mqAddIntegerFilter' compCode=[%d], " \
                             "compReason=[%d], filter_selector=[%d], filter_value=[%d], " \
-                            "filter_operator=[%d]", (int)compCode, (int)compReason, (int)PyLong_AsLong(filter_selector), 
-                                  (int)PyLong_AsLong(filter_value), 
+                            "filter_operator=[%d]", (int)compCode, (int)compReason, (int)PyLong_AsLong(filter_selector),
+                                  (int)PyLong_AsLong(filter_value),
                                   (int)PyLong_AsLong(filter_operator));
-                                  
+
                 PYMQI_MQAI_FILTERS_CLEANUP
                 return NULL;
               }
@@ -1131,7 +1131,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
           /* All's good, let's clean up after ourselves. */
           PYMQI_MQAI_FILTERS_CLEANUP
         }
-        
+
         /*
          * For each arg key/value pair, create the appopriate type and add
          * it to the bag.

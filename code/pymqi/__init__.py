@@ -108,7 +108,7 @@ except Exception:
 # PyMQI
 import pymqe, CMQC, CMQCFC, CMQXC
 
-__version__ = "1.5.4"
+__version__ = "1.6.0"
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 
@@ -929,7 +929,7 @@ class cd(MQOpts):
                      ['MaxInstancesPerClient', 999999999, MQLONG_TYPE],
                      ['ClientChannelWeight', 0, MQLONG_TYPE],
                      ['ConnectionAffinity', 1, MQLONG_TYPE]]  # 1 = MQCAFTY_PREFERRED
-            
+
         if '7.1' in pymqe.__mqlevels__:
             opts += [['BatchDataLimit', 5000, MQLONG_TYPE],
                      ['UseDLQ', 2, MQLONG_TYPE],
@@ -959,6 +959,9 @@ class sco(MQOpts):
     'kw'. """
 
     def __init__(self, **kw):
+
+        if '8.0.0' in pymqe.__mqlevels__:
+            _mqcsco_version = CMQC.MQSCO_VERSION_5
 
         if '7.1' in pymqe.__mqlevels__:
             _mqcsco_version = CMQC.MQSCO_VERSION_4
@@ -995,6 +998,9 @@ class sco(MQOpts):
 
             if MQLONG_TYPE == 'i':
                 opts += [['pad','', '4s']]
+
+        if "8.0.0" in pymqe.__mqlevels__:
+            opts += [['CertificateLabel', '', '64s']]
 
         apply(MQOpts.__init__, (self, tuple(opts)), kw)
 
@@ -2182,7 +2188,7 @@ class Subscription:
                 self.close()
         except:
             pass
-            
+
 class MessageHandle(object):
     """ A higher-level wrapper around the MQI's native MQCMHO structure.
     """
@@ -2271,34 +2277,34 @@ class MessageHandle(object):
             raise MQMIError(comp_code, comp_reason)
 
         self.properties = self._Properties(self.conn_handle, self.msg_handle)
-        
+
 class _Filter(object):
     """ The base class for MQAI filters. The initializer expectes user to provide
     the selector, value and the operator to use. For instance, the can be respectively
     MQCA_Q_DESC, 'MY.QUEUE.*', MQCFOP_LIKE. Compare with the pymqi.Filter class.
     """
     _pymqi_filter_type = None
-    
+
     def __init__(self, selector, value, operator):
         self.selector = selector
         self.value = value
         self.operator = operator
-        
+
     def __repr__(self):
         msg = '<%s at %s %s:%s:%s>'
-        return msg % (self.__class__.__name__, hex(id(self)), self.selector, 
+        return msg % (self.__class__.__name__, hex(id(self)), self.selector,
                       self.value, self.operator)
 
 class StringFilter(_Filter):
     """ A subclass of pymqi._Filter suitable for passing MQAI string filters around.
     """
     _pymqi_filter_type = 'string'
-    
+
 class IntegerFilter(_Filter):
     """ A subclass of pymqi._Filter suitable for passing MQAI integer filters around.
     """
     _pymqi_filter_type = 'integer'
-    
+
 class FilterOperator(object):
     """ Creates low-level filters basing on what's been provided in the high-level
     pymqi.Filter object.
@@ -2317,12 +2323,12 @@ class FilterOperator(object):
         'contains_gen': CMQCFC.MQCFOP_CONTAINS_GEN,
         'excludes_gen': CMQCFC.MQCFOP_EXCLUDES_GEN,
         }
-    
+
     def __init__(self, pub_filter):
         self.pub_filter = pub_filter
-        
+
     def __call__(self, value):
-        
+
         # Do we support the given attribute filter?
         if self.pub_filter.selector >= CMQC.MQIA_FIRST and self.pub_filter.selector <= CMQC.MQIA_LAST:
             priv_filter_class = IntegerFilter
@@ -2341,7 +2347,7 @@ class FilterOperator(object):
             raise Error(msg % self.pub_filter.operator)
 
         return priv_filter_class(self.pub_filter.selector, value, operator)
-    
+
 class Filter(object):
     """ The user-facing MQAI filtering class which provides syntactic sugar
     on top of pymqi._Filter and its base classes.
@@ -2349,7 +2355,7 @@ class Filter(object):
     def __init__(self, selector):
         self.selector = selector
         self.operator = None
-        
+
     def __getattribute__(self, name):
         """ A generic method for either fetching the pymqi.Filter object's
         attributes or calling magic methods like 'like', 'contains' etc.
@@ -2357,7 +2363,7 @@ class Filter(object):
         if name in('selector', 'operator'):
             return object.__getattribute__(self, name)
         self.operator = name
-                
+
         return FilterOperator(self)
 #
 # This piece of magic shamelessly plagiarised from xmlrpclib.py. It
@@ -2468,7 +2474,7 @@ class ByteString(object):
 
     def __len__(self):
         return len(self.value)
-    
+
 def connect(queue_manager, channel=None, conn_info=None, user=None, password=None):
     """ A convenience wrapper for connecting to MQ queue managers. If given the
     'queue_manager' parameter only, will try connecting to it in bindings mode.
@@ -2479,11 +2485,11 @@ def connect(queue_manager, channel=None, conn_info=None, user=None, password=Non
         qmgr = QueueManager(None)
         qmgr.connect_tcp_client(queue_manager or '', CD(), channel, conn_info, user, password)
         return qmgr
-    
+
     elif queue_manager:
         qmgr = QueueManager(queue_manager)
         return qmgr
-        
+
     else:
         raise exceptions.TypeError('Invalid arguments: %r' % [queue_manager, channel, conn_info, user, password])
 
