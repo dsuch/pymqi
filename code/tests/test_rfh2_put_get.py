@@ -45,8 +45,8 @@ class TestRFH2PutGet(unittest.TestCase):
         else:
             self.qmgr = pymqi.QueueManager(None)
             self.qmgr.connect_tcp_client(
-                queue_manager, pymqi.cd(), channel, conn_info, user=None,
-                password=None)
+                queue_manager, pymqi.cd(), channel, conn_info,
+                user=config.MQ.QM.USER, password=config.MQ.QM.PASSWORD)
         self.put_queue = pymqi.Queue(self.qmgr, queue_name)
         self.get_queue = pymqi.Queue(self.qmgr, queue_name)
         self.clear_queue(self.get_queue)

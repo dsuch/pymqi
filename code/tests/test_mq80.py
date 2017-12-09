@@ -25,30 +25,21 @@ import env
 import pymqi
 from pymqi import CMQC, CMQXC, CMQCFC
 
-env_prefix = 'PYMQI_TEST_QM_'
-env_vars = ['NAME', 'HOST', 'PORT', 'CHANNEL', 'USER', 'PASSWORD']
-
-#TODO: Remove this? It's not used anymore, and invalid configuration should
-# lead to proper operation errors, anyway.
-def ensure_env_vars():
-    missing = []
-    for key in env_vars:
-        full_name = env_prefix + key
-        if not os.environ.get(full_name):
-            missing.append(full_name)
-
-    if missing:
-        raise Exception('Cannot proceed. Environment variables missing: {}'.format(sorted(missing)))
 
 class TestMQ80(unittest.TestCase):
 
     def setUp(self):
-        for key in env_vars:
+        for key in ['NAME', 'HOST', 'PORT', 'CHANNEL', 'USER', 'PASSWORD']:
             setattr(self, key.lower(), getattr(config.MQ.QM, key))
 
     def get_conn(self):
-        return pymqi.connect(self.name, self.channel, '{}({})'.format(self.host, self.port), self.user, self.password)
+        return pymqi.connect(self.name, self.channel, '{}({})'.format(
+            self.host, self.port), self.user, self.password)
 
+    # obviously this test can not work for a queue manager < 8.0
+    @unittest.skipIf(
+        int(config.MQ.QM.MIN_COMMAND_LEVEL) < 800,
+        'Test only viable for a queue manager command level > 800.')
     def test_mq_level(self):
         """ We should be connecting to an MQ 8.0+ queue manager.
         """
@@ -62,20 +53,57 @@ class TestMQ80(unittest.TestCase):
         """ Connecting with user credentials provided should succeed.
         """
         conn = self.get_conn()
+        self.assertTrue(conn.is_connected)
         conn.disconnect()
 
-    def test_connect_without_credentials(self):
-        """ Connecting without user credentials provided should not succeed.
+    @unittest.skipUnless(
+        config.MQ.QM.CONN_AUTH.SUPPORTED == '1',
+        'Test only viable for a queue manager with user/password conn auth '
+        'support')
+    def test_connect_with_wrong_credentials(self):
+        # Modify original valid password to some bogus value
+        bogus_password = self.password + '_Wr0nG_Pa$$w0rd'
+        with self.assertRaises(pymqi.MQMIError) as errorcontext:
+            qmgr = pymqi.connect(self.name, self.channel, '{}({})'.format(
+                self.host, self.port), self.user, bogus_password)
+            exception = errorcontext.exception
+            self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
+            self.assertFalse(qmgr.is_connected)
+
+    # The following 2 tests test_connect_without_required_credentials and
+    # test_connect_without_optional_credentials are mutually exclusive and
+    # intend to provide workable tests for both a (>=MQ 8.0) queue manager
+    # with or without equired user/password authentication and also a (<MQ 8.0)
+    # queue manager that doesn't know about user/password conn auth, anyway 
+    @unittest.skipUnless(
+        config.MQ.QM.CONN_AUTH.SUPPORTED and
+        config.MQ.QM.CONN_AUTH.USE_PW == 'REQUIRED',
+        'Test needs a user/password-requiring queue manager')
+    def test_failing_connect_without_required_credentials(self):
+        """Connecting without user credentials provided should not succeed for
+        a queue manager that requires user/password connection authentication.
         """
-        try:
-            pymqi.connect(self.name, self.channel, '{}({})'.format(self.host, self.port))
-        except pymqi.MQMIError, e:
-            if e.reason == CMQC.MQRC_NOT_AUTHORIZED:
-                pass # That's OK, we actually expect it
-            else:
-                raise
-        else:
-            raise Exception('Excepted for the test to fail without user credentials')
+
+        with self.assertRaises(pymqi.MQMIError) as errorcontext:
+            qmgr = pymqi.connect(self.name, self.channel, '{}({})'.format(
+                self.host, self.port))
+            exception = errorcontext.exception
+            self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
+            self.assertFalse(qmgr.is_connected)
+            
+    @unittest.skipUnless(
+        config.MQ.QM.CONN_AUTH.SUPPORTED != '1' or
+        config.MQ.QM.CONN_AUTH.USE_PW != 'REQUIRED',
+        'Test not viable for a user/password-requiring queue manager')
+    def test_successful_connect_without_optional_credentials(self):
+        """Connecting without user credentials should succeed for a queue
+        manager that has optional user/password connection authentication. 
+        """
+        qmgr = pymqi.connect(self.name, self.channel, '{}({})'.format(
+                self.host, self.port))
+        self.assertTrue(qmgr.is_connected)
+        qmgr.disconnect()
+            
 
 if __name__ == "__main__":
     unittest.main()
