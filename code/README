@@ -11,7 +11,7 @@ on a queue and disconnects.
 
 ```python
     import pymqi
-    
+
     queue_manager = 'QM01'
     channel = 'SVRCONN.1'
     host = '192.168.1.135'
@@ -19,13 +19,13 @@ on a queue and disconnects.
     queue_name = 'TEST.1'
     message = 'Hello from Python!'
     conn_info = '%s(%s)' % (host, port)
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     queue = pymqi.Queue(qmgr, queue_name)
     queue.put(message)
     queue.close()
-    
+
     qmgr.disconnect()
 ```
 
@@ -35,8 +35,8 @@ More usage examples can be found here https://pythonhosted.org/pymqi/examples.ht
 Supported MQ versions
 =====================
 
-Any MQ version between 5.0 and 8.0 will work however the author is able to provide
-free support only for Linux x86 64-bit, MQ versions 8.x and Python 2.7.x.
+Any MQ version between 5.0 and 9.0 will work however the author is able to provide
+free support only for Linux x86 64-bit, MQ versions 9.x and Python 2.7.x.
 
 Support for other versions and systems needs either someone from the commnuity to step up
 or contacting the author dsuch@zato.io in order to discuss paid support options.
@@ -48,6 +48,11 @@ Downloads are hosted on PyPI https://pypi.python.org/pypi/pymqi
 
 Changelog
 =========
+
+* **1.7.0** (2017-12-28)
+
+  * Added MQ 9.0.x compatibility
+  * Made remote TCP connections without a queue manager name work
 
 * **1.6.0** (2017-08-09)
 
