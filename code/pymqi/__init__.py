@@ -1334,12 +1334,6 @@ class QueueManager:
             if bwoptsLen == 2:
                 kw['sco'] = bwopts[1]
 
-        else:
-            # New style args
-            for k in kw.keys():
-                if k not in ('opts', 'cd', 'sco'):
-                    raise exceptions.TypeError('Invalid option: %s' % k)
-
         user_password = {}
         user = kw.get('user')
         password = kw.get('password')

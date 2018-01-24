@@ -49,6 +49,10 @@ Downloads are hosted on PyPI https://pypi.python.org/pypi/pymqi
 Changelog
 =========
 
+* **1.7.1** (2018-01-24)
+
+  * Internal changes to connect_with_options
+
 * **1.7.0** (2017-12-28)
 
   * Added MQ 9.0.x compatibility
