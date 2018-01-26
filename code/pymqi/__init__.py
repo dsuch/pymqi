@@ -2375,16 +2375,16 @@ class _Method:
         return _Method(self.__pcf, "%s.%s" % (self.__name, name))
 
     def __call__(self, *args):
-        if self.__name[0:7] == 'CMQC.':
+        if self.__name[0:7] == 'CMQCFC.':
             self.__name = self.__name[7:]
         if self.__pcf.qm:
             qmHandle = self.__pcf.qm.getHandle()
         else:
             qmHandle = self.__pcf.getHandle()
         if len(args):
-            rv = pymqe.mqaiExecute(qmHandle, CMQC.__dict__[self.__name], *args)
+            rv = pymqe.mqaiExecute(qmHandle, CMQCFC.__dict__[self.__name], *args)
         else:
-            rv = pymqe.mqaiExecute(qmHandle, CMQC.__dict__[self.__name])
+            rv = pymqe.mqaiExecute(qmHandle, CMQCFC.__dict__[self.__name])
         if rv[1]:
             raise MQMIError(rv[-2], rv[-1])
         return rv[0]
