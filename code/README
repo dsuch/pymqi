@@ -49,6 +49,10 @@ Downloads are hosted on PyPI https://pypi.python.org/pypi/pymqi
 Changelog
 =========
 
+* **1.7.2** (2018-01-26)
+
+  * Made PCF commands use constants from CMQCFC instead of CMQC
+
 * **1.7.1** (2018-01-24)
 
   * Internal changes to connect_with_options
