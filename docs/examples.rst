@@ -6,12 +6,11 @@ Examples
     Sponsored by `Zato <https://zato.io/docs?pymqi>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
 
 The purpose of this section is to gather code showing PyMQI in action or code
-that's related to common WebSphere MQ-related tasks in general. Some of the
-examples are Python ports of IBM's examples that WebSphere MQ ships with.
+that's related to common IBM MQ-related tasks in general. Some of the
+examples are Python ports of IBM's examples that IBM MQ ships with.
 
 The samples are self-contained and ready to use in your own PyMQI applications.
-All contributions are very much welcome, see :doc:`here <support-consulting-contact>`
-for more informations. Don't hesitate to :doc:`send a question <support-consulting-contact>`
+Don't hesitate to :doc:`send a question <./support>`
 if you'd like to see any specific example be added. Thanks!
 
 ===============================
@@ -21,20 +20,15 @@ Connecting in client mode
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     conn_info = "%s(%s)" % (host, port)
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     qmgr.disconnect()
-
-Notes:
-
-* PyMQI :ref:`needs to be installed in client mode <download_build_install>` if you
-  want to connect in the client mode later on.
 
 ============================================================
 Connecting in client mode with username/password credentials
@@ -43,7 +37,7 @@ Connecting in client mode with username/password credentials
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
@@ -59,8 +53,7 @@ Code::
 Notes:
 
 * Connecting with username/password credentials was added in PyMQI 1.5
-
-* The functionality requires WebSphere MQ 8.0+ queue managers
+* The functionality requires IBM MQ 8.0+ queue managers
 
 ===============================
 Connecting in bindings mode
@@ -69,16 +62,11 @@ Connecting in bindings mode
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     qmgr = pymqi.connect(queue_manager)
-    
+
     qmgr.disconnect()
-
-Notes:
-
-* PyMQI :ref:`needs to be installed in server mode <download_build_install>` if you
-  want to connect in the MQ bindings mode later on.
 
 ====================================
 How to put the message on a queue
@@ -87,7 +75,7 @@ How to put the message on a queue
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
@@ -95,13 +83,13 @@ Code::
     queue_name = "TEST.1"
     message = "Hello from Python!"
     conn_info = "%s(%s)" % (host, port)
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     queue = pymqi.Queue(qmgr, queue_name)
     queue.put(message)
     queue.close()
-    
+
     qmgr.disconnect()
 
 ====================================
@@ -111,20 +99,20 @@ How to get the message off a queue
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     queue_name = "TEST.1"
     conn_info = "%s(%s)" % (host, port)
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     queue = pymqi.Queue(qmgr, queue_name)
     message = queue.get()
     queue.close()
-    
+
     qmgr.disconnect()
 
 Notes:
@@ -143,28 +131,28 @@ How to wait for a single message
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     queue_name = "TEST.1"
     conn_info = "%s(%s)" % (host, port)
-    
+
     # Message Descriptor
     md = pymqi.MD()
-    
+
     # Get Message Options
     gmo = pymqi.GMO()
     gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
     gmo.WaitInterval = 5000 # 5 seconds
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     queue = pymqi.Queue(qmgr, queue_name)
     message = queue.get(None, md, gmo)
     queue.close()
-    
+
     qmgr.disconnect()
 
 Notes:
@@ -186,40 +174,40 @@ How to wait for multiple messages
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     queue_name = "TEST.1"
     conn_info = "%s(%s)" % (host, port)
-    
+
     # Message Descriptor
     md = pymqi.MD()
-    
+
     # Get Message Options
     gmo = pymqi.GMO()
     gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
     gmo.WaitInterval = 5000 # 5 seconds
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     queue = pymqi.Queue(qmgr, queue_name)
-    
+
     keep_running = True
-    
+
     while keep_running:
         try:
             # Wait up to to gmo.WaitInterval for a new message.
             message = queue.get(None, md, gmo)
-    
+
             # Process the message here..
-    
+
             # Reset the MsgId, CorrelId & GroupId so that we can reuse
             # the same 'md' object again.
             md.MsgId = pymqi.CMQC.MQMI_NONE
             md.CorrelId = pymqi.CMQC.MQCI_NONE
             md.GroupId = pymqi.CMQC.MQGI_NONE
-    
+
         except pymqi.MQMIError, e:
             if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
                 # No messages, that's OK, we can ignore it.
@@ -227,7 +215,7 @@ Code::
             else:
                 # Some other error condition.
                 raise
-    
+
     queue.close()
     qmgr.disconnect()
 
@@ -246,7 +234,7 @@ How to specify dynamic reply-to queues
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
@@ -255,29 +243,29 @@ Code::
     message = "Please reply to a dynamic queue, thanks."
     dynamic_queue_prefix = "MY.REPLIES.*"
     request_queue = "TEST.1"
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     # Dynamic queue's object descriptor.
     dyn_od = pymqi.OD()
     dyn_od.ObjectName = "SYSTEM.DEFAULT.MODEL.QUEUE"
     dyn_od.DynamicQName = dynamic_queue_prefix
-    
+
     # Open the dynamic queue.
     dyn_input_open_options = pymqi.CMQC.MQOO_INPUT_EXCLUSIVE
     dyn_queue = pymqi.Queue(qmgr, dyn_od, dyn_input_open_options)
     dyn_queue_name = dyn_od.ObjectName.strip()
-    
+
     # Prepare a Message Descriptor for the request message.
     md = pymqi.MD()
     md.ReplyToQ = dyn_queue_name
-    
+
     # Send the message.
     queue = pymqi.Queue(qmgr, request_queue)
     queue.put(message, md)
-    
+
     # Get and process the response here..
-    
+
     dyn_queue.close()
     queue.close()
     qmgr.disconnect()
@@ -300,7 +288,7 @@ How to send responses to reply-to queues
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
@@ -308,18 +296,18 @@ Code::
     queue_name = "TEST.1"
     message = "Here's a reply"
     conn_info = "%s(%s)" % (host, port)
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     md = pymqi.MD()
-    
+
     queue = pymqi.Queue(qmgr, queue_name)
     message = queue.get(None, md)
-    
+
     reply_to_queue_name = md.ReplyToQ.strip()
     reply_to_queue = pymqi.Queue(qmgr, reply_to_queue_name)
     reply_to_queue.put(message)
-    
+
     queue.close()
     qmgr.disconnect()
 
@@ -327,7 +315,7 @@ Notes:
 
 * Queue.get accepts an input message descriptor parameter, its *ReplyToQ* attribute is
   responsible for storing information about where the responding side should
-  send the messages to. The attribute's value is filled in by WebSphere MQ.
+  send the messages to. The attribute's value is filled in by IBM MQ.
 
 
 ==========================================
@@ -430,7 +418,7 @@ Notes:
 
 * before disconnecting from the queue manager, a subscription should be closed;
   note passing of the information regarding what MQ should do with the related objects.
-  
+
 .. _ssl_tls:
 
 ==========================================
@@ -440,11 +428,11 @@ How to use SSL & TLS
 Code::
 
     import logging
-    
+
     import pymqi
-    
+
     logging.basicConfig(level=logging.INFO)
-    
+
     queue_manager = "QM01"
     channel = "SSL.SVRCONN.1"
     host = "192.168.1.135"
@@ -454,26 +442,26 @@ Code::
     ssl_cipher_spec = "TLS_RSA_WITH_AES_256_CBC_SHA"
     key_repo_location = "/var/mqm/ssl-db/client/KeyringClient"
     message = "Hello from Python!"
-    
+
     cd = pymqi.CD()
     cd.ChannelName = channel
     cd.ConnectionName = conn_info
     cd.ChannelType = pymqi.CMQC.MQCHT_CLNTCONN
     cd.TransportType = pymqi.CMQC.MQXPT_TCP
     cd.SSLCipherSpec = ssl_cipher_spec
-    
+
     sco = pymqi.SCO()
     sco.KeyRepository = key_repo_location
-    
+
     qmgr = pymqi.QueueManager(None)
     qmgr.connect_with_options(queue_manager, cd, sco)
-    
+
     put_queue = pymqi.Queue(qmgr, queue_name)
     put_queue.put(message)
-    
+
     get_queue = pymqi.Queue(qmgr, queue_name)
     logging.info("Here's the message again: [%s]" % get_queue.get())
-    
+
     put_queue.close()
     get_queue.close()
     qmgr.disconnect()
@@ -532,11 +520,11 @@ How to set and get the message priority
 Code::
 
     import logging
-    
+
     import pymqi
-    
+
     logging.basicConfig(level=logging.INFO)
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
@@ -545,21 +533,21 @@ Code::
     message = "Hello from Python!"
     conn_info = "%s(%s)" % (host, port)
     priority = 2
-    
+
     put_md = pymqi.MD()
     put_md.Priority = priority
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     put_queue = pymqi.Queue(qmgr, queue_name)
     put_queue.put(message, put_md)
-    
+
     get_md = pymqi.MD()
     get_queue = pymqi.Queue(qmgr, queue_name)
     message_body = get_queue.get(None, get_md)
-    
+
     logging.info("Received a message, priority [%s]." % get_md.Priority)
-    
+
     put_queue.close()
     get_queue.close()
     qmgr.disconnect()
@@ -577,7 +565,7 @@ Code::
 
     import pymqi
     import CMQXC
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
@@ -585,16 +573,16 @@ Code::
     queue_name = "TEST.1"
     message = "Hello from Python!" * 10000
     conn_info = "%s(%s)" % (host, port)
-    
+
     cd = pymqi.CD()
     cd.MsgCompList[1] = CMQXC.MQCOMPRESS_ZLIBHIGH
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     queue = pymqi.Queue(qmgr, queue_name)
     queue.put(message)
     queue.close()
-    
+
     qmgr.disconnect()
 
 Notes:
@@ -612,15 +600,15 @@ How to check completion- and reason codes
 Code::
 
     import logging
-    
+
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "foo.bar" # Note the made up host name
     port = "1434"
     conn_info = "%s(%s)" % (host, port)
-    
+
     try:
         qmgr = pymqi.connect(queue_manager, channel, conn_info)
     except pymqi.MQMIError, e:
@@ -629,28 +617,28 @@ Code::
 
 Notes:
 
-* When WebSphere MQ raises an exception, it is wrapped in a pymqi.MQMIError
+* When IBM MQ raises an exception, it is wrapped in a pymqi.MQMIError
   object which exposes 2 useful attributes: *.comp* is a completion code
   and *.reason* is the reason code assigned by MQ. All the completion- and
   reason codes can be looked up in the *pymqi.CMQC* module.
 
 ===================================================================
-How to check the versions of WebSphere MQ packages installed, Linux
+How to check the versions of IBM MQ packages installed, Linux
 ===================================================================
 
 Code::
 
     import logging
-    
+
     import rpm
-    
+
     logging.basicConfig(level=logging.INFO)
-    
+
     package_name = "MQSeriesClient"
-    
+
     ts = rpm.TransactionSet()
     mi = ts.dbMatch("name", package_name)
-    
+
     if not mi.count():
         logging.info("Did not find package [%s] in RPM database." % package_name)
     else:
@@ -661,35 +649,35 @@ Code::
 
 Notes:
 
-* WebSphere MQ packages for Linux are distributed as RPMs and we can query the
+* IBM MQ packages for Linux are distributed as RPMs and we can query the
   RPM database for information about what's been installed,
 
 * PyMQI hasn't been used in the example, however the task is related to MQ
   administration and that's why it's been shown here.
 
 =======================================================================
-How to check the versions of WebSphere MQ packages installed, Windows
+How to check the versions of IBM MQ packages installed, Windows
 =======================================================================
 
 Code::
 
     import logging
     import _winreg
-    
+
     logging.basicConfig(level=logging.INFO)
-    
+
     key_name = "Software\\IBM\\MQSeries\\CurrentVersion"
-    
+
     try:
         key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, key_name)
     except WindowsError:
-        logging.info("Could not find WebSphere MQ-related information in Windows registry.")
+        logging.info("Could not find IBM MQ-related information in Windows registry.")
     else:
         version = _winreg.QueryValueEx(key, "VRMF")[0]
-        logging.info("WebSphere MQ version is [%s]." % version)
+        logging.info("IBM MQ version is [%s]." % version)
 
 
-* Versions of WebSphere MQ packages installed under Windows can be extracted
+* Versions of IBM MQ packages installed under Windows can be extracted
   by querying the Windows registry,
 
 * Again, PyMQI hasn't been used in the example, however the task is related to MQ
@@ -702,7 +690,7 @@ How to use an alternate user ID
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
@@ -711,17 +699,17 @@ Code::
     message = "Hello from Python!"
     alternate_user_id = "myuser"
     conn_info = "%s(%s)" % (host, port)
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     od = pymqi.OD()
     od.ObjectName = queue_name
     od.AlternateUserId = alternate_user_id
-    
+
     queue = pymqi.Queue(qmgr)
     queue.open(od, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
     queue.put(message)
-    
+
     queue.close()
     qmgr.disconnect()
 
@@ -949,7 +937,7 @@ Code::
     queue.close()
 
     qmgr.disconnect()
-    
+
 ::
 
     import pymqi
@@ -999,24 +987,24 @@ How to define a channel
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     conn_info = "%s(%s)" % (host, port)
-    
+
     channel_name = "MYCHANNEL.1"
     channel_type = pymqi.CMQXC.MQCHT_SVRCONN
-    
+
     args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: channel_name,
             pymqi.CMQCFC.MQIACH_CHANNEL_TYPE: channel_type}
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     pcf = pymqi.PCFExecute(qmgr)
     pcf.MQCMD_CREATE_CHANNEL(args)
-    
+
     qmgr.disconnect()
 
 Notes:
@@ -1036,26 +1024,26 @@ How to define a queue
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     conn_info = "%s(%s)" % (host, port)
-    
+
     queue_name = "MYQUEUE.1"
     queue_type = pymqi.CMQC.MQQT_LOCAL
     max_depth = 123456
-    
+
     args = {pymqi.CMQC.MQCA_Q_NAME: queue_name,
             pymqi.CMQC.MQIA_Q_TYPE: queue_type,
             pymqi.CMQC.MQIA_MAX_Q_DEPTH: max_depth}
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     pcf = pymqi.PCFExecute(qmgr)
     pcf.MQCMD_CREATE_Q(args)
-    
+
     qmgr.disconnect()
 
 Notes:
@@ -1075,24 +1063,24 @@ How to display channels
 Code::
 
     import logging
-    
+
     import pymqi
-    
+
     logging.basicConfig(level=logging.INFO)
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     conn_info = "%s(%s)" % (host, port)
-    
+
     prefix = "SYSTEM.*"
-    
+
     args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: prefix}
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     pcf = pymqi.PCFExecute(qmgr)
-    
+
     try:
         response = pcf.MQCMD_INQUIRE_CHANNEL(args)
     except pymqi.MQMIError, e:
@@ -1104,7 +1092,7 @@ Code::
         for channel_info in response:
             channel_name = channel_info[CMQCFC.MQCACH_CHANNEL_NAME]
             logging.info("Found channel [%s]" % channel_name)
-    
+
     qmgr.disconnect()
 
 
@@ -1124,26 +1112,26 @@ How to display queues
 Code::
 
     import logging
-    
+
     import pymqi
-    
+
     logging.basicConfig(level=logging.INFO)
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     conn_info = "%s(%s)" % (host, port)
-    
+
     prefix = "SYSTEM.*"
     queue_type = pymqi.CMQC.MQQT_MODEL
-    
+
     args = {pymqi.CMQC.MQCA_Q_NAME: prefix,
             pymqi.CMQC.MQIA_Q_TYPE: queue_type}
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     pcf = pymqi.PCFExecute(qmgr)
-    
+
     try:
         response = pcf.MQCMD_INQUIRE_Q(args)
     except pymqi.MQMIError, e:
@@ -1155,7 +1143,7 @@ Code::
         for queue_info in response:
             queue_name = queue_info[pymqi.CMQC.MQCA_Q_NAME]
             logging.info("Found queue [%s]" % queue_name)
-    
+
     qmgr.disconnect()
 
 Notes:
@@ -1173,18 +1161,18 @@ How to ping the queue manager
 Code::
 
     import pymqi
-    
+
     queue_manager = "QM01"
     channel = "SVRCONN.1"
     host = "192.168.1.135"
     port = "1434"
     conn_info = "%s(%s)" % (host, port)
-    
+
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    
+
     pcf = pymqi.PCFExecute(qmgr)
     pcf.MQCMD_PING_Q_MGR()
-    
+
     qmgr.disconnect()
 
 Notes:
