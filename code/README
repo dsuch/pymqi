@@ -29,8 +29,7 @@ on a queue and disconnects.
     qmgr.disconnect()
 ```
 
-
-More usage examples can be found here https://pythonhosted.org/pymqi/examples.html
+More usage examples can be found here https://dsuch.github.io/pymqi/examples.html
 
 Supported MQ versions
 =====================
@@ -39,7 +38,7 @@ Any MQ version between 5.0 and 9.0 will work however the author is able to provi
 free support only for Linux x86 64-bit, MQ versions 9.x and Python 2.7.x.
 
 Support for other versions and systems needs either someone from the commnuity to step up
-or contacting the author dsuch@zato.io in order to discuss paid support options.
+or contacting the author pymqi@m.zato.io in order to discuss paid support options.
 
 Download
 ========
