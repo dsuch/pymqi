@@ -23,4 +23,4 @@ creators of the
 platform, offer commercial support for PyMQI, including IBM MQ consulting,
 priority assistance during development or production, maintenance as well as custom extensions.
 
-Contact pymqi@zato.io for more information about the support options available.
+Contact pymqi@m.zato.io for more information about the support options available.

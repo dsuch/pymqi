@@ -10,7 +10,7 @@ from struct import calcsize
 from setuptools import setup, find_packages
 from distutils.core import Extension
 
-version = "1.7.2"
+version = "1.7.2.post1"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -122,16 +122,16 @@ else:
 
 setup(name = 'pymqi',
     version = version,
-    description = 'Python IBM MQI Extension for WebSphere MQ (formerly known as MQSeries).',
-    long_description= 'PyMQI is a Python library for working with WebSphere MQ (formerly known as MQSeries) implementing MQI and PCF protocols.',
+    description = 'Python IBM MQI Extension for IBM MQ (formerly WebSphere MQ and MQSeries).',
+    long_description= 'PyMQI is a Python library for working with IBM MQ (formerly WebSphere MQ and MQSeries) implementing MQI and PCF protocols.',
     author='Dariusz Suchojad',
-    author_email='dsuch-pypi@m.zato.io',
-    url='https://pythonhosted.org/pymqi/',
+    author_email='pymqi@m.zato.io',
+    url='https://dsuch.github.io/pymqi/',
     download_url='https://pypi.python.org/pypi/pymqi',
     platforms='OS Independent',
     packages = find_packages('pymqi'),
     license='Python Software Foundation License',
-    keywords=('pymqi WebSphere MQ WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
+    keywords=('pymqi OBM WebSphere MQ WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
     install_requires = [],
 
     classifiers = [
