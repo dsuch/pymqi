@@ -71,7 +71,7 @@ It serves, however, as the basis for IBM MQ support in
 which is an enterprise API platform and backend application server
 in Python that lets one connect to many technologies with little or no programming
 
-This includes IBM MQ queue managers and ability to seamlessly integrate with Java JMS systems.
+This includes IBM MQ queue managers along with ability to seamlessly integrate with Java JMS systems.
 
 
 
