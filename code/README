@@ -54,7 +54,7 @@ Installation
 
 * Now you can use pip to install PyMQI itself:
 
-``` bash
+```bash
     $ sudo pip install pymqi
 ```
 
@@ -65,7 +65,7 @@ PyMQI is a relatively low-level library that requires one to know IBM APIs fairl
 
 It serves, however, as the basis for IBM MQ support in
 [Zato](https://zato.io/docs?pymqi-gh02),
-which is an enterprise API platform and backend application server
+which is an enterprise integration platform and backend application server
 in Python that lets one connect to many technologies with little or no programming
 
 This includes IBM MQ queue managers along with ability to seamlessly integrate with Java JMS systems.
