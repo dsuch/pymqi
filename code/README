@@ -2,7 +2,7 @@
 PyMQI - Python interface to WebSphere MQ (MQSeries)
 -------------------------------------------------------
 
-**Sponsored by [Zato](https://zato.io/docs?pymqi-docs) - ESB, SOA, REST, APIs and Cloud Integrations in Python**
+**Sponsored by [Zato](https://zato.io/docs?pymqi-gh01) - ESB, SOA, REST, APIs and Cloud Integrations in Python**
 
 PyMQI allows one to connect to queue managers to issue MQAI and PCF requests.
 
@@ -40,56 +40,39 @@ free support only for Linux x86 64-bit, MQ versions 9.x and Python 2.7.x.
 Support for other versions and systems needs either someone from the commnuity to step up
 or contacting the author pymqi@m.zato.io in order to discuss paid support options.
 
-Download
-========
+Installation
+============
 
-Downloads are hosted on PyPI https://pypi.python.org/pypi/pymqi
+* PyMQI can be installed using pip - downloads are on [PyPI](https://pypi.python.org/pypi/pymqi)
 
-Changelog
-=========
+* As a prerequisite, you first need to install an IBM MQ client in the system that PyMQI is about to be installed
+  - it is a free library offered by IBM on top of which higher-level ones, such as PyMQI, can connect to queue managers.
+  IBM MQ clients can be downloaded from IBM's website.
 
-* **1.7.2** (2018-01-26)
+* Now you can use pip to install PyMQI itself:
 
-  * Made PCF commands use constants from CMQCFC instead of CMQC
+  ::
 
-* **1.7.1** (2018-01-24)
+    $ sudo pip install pymqi
 
-  * Internal changes to connect_with_options
+The backbone of IBM MQ Python messaging
+========================================
 
-* **1.7.0** (2017-12-28)
+PyMQI is a relatively low-level library that requires one to know IBM APIs fairly well.
 
-  * Added MQ 9.0.x compatibility
-  * Made remote TCP connections without a queue manager name work
+It serves, however, as the basis for IBM MQ support in
+[Zato](https://zato.io/docs?pymqi-gh02),
+which is an enterprise API platform and backend application server
+in Python that lets one connect to many technologies with little or no programming
 
-* **1.6.0** (2017-08-09)
+This includes IBM MQ queue managers along with ability to seamlessly integrate with Java JMS systems.
 
-  * Made MQSCO compatible with MQ 8.0
+<center>
+![Zato IBM MQ definitions](https://zato.io/support/pymqi/mqdef.png)
+</center>
 
-* **1.5.4** (2015-09-22)
+Check out this
+[blog post](https://zato.io/blog/posts/websphere-mq-python-zato.html?pymqi-gh)
+for an introduction
+and visit [Zato documentation](https://zato.io/docs?pymqi-gh03) for more information.
 
-  * Moved setup.py's py_modules to correct place
-
-* **1.5.3** (2015-09-21)
-
-  * Added missing modules to setup.py
-
-* **1.5.2** (2015-09-21)
-
-  * Previous release failed to upload to PyPI
-
-* **1.5.1** (2015-09-21)
-
-  * Added a missing 'requirements.txt' file
-
-* **1.5** (2015-09-18)
-
-  * Added MQ 8.0.x compatibility
-  * Added the ability to connect to MQ 8.0+ queue managers with username/password credentials
-  * Moved code to a top-level 'pymqi' package
-
-(No changelog for prior versions)
-
-More information
-================
-
-Please visit the main documentation at https://dsuch.github.io/pymqi/ for more information.
