@@ -29,6 +29,9 @@ on a queue and disconnects.
     qmgr.disconnect()
 ```
 
+Usage examples
+==============
+
 More usage examples can be found here https://dsuch.github.io/pymqi/examples.html
 
 Supported MQ versions
@@ -51,7 +54,9 @@ Installation
 
 * Now you can use pip to install PyMQI itself:
 
-  > $ sudo pip install pymqi
+``` bash
+    $ sudo pip install pymqi
+```
 
 The backbone of IBM MQ Python messaging
 ========================================
