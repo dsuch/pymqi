@@ -51,7 +51,7 @@ Installation
 
 * Now you can use pip to install PyMQI itself:
 
-> $ sudo pip install pymqi
+  > $ sudo pip install pymqi
 
 The backbone of IBM MQ Python messaging
 ========================================
@@ -66,7 +66,7 @@ in Python that lets one connect to many technologies with little or no programmi
 This includes IBM MQ queue managers along with ability to seamlessly integrate with Java JMS systems.
 
 <center>
-![Zato IBM MQ definitions](https://zato.io/support/pymqi/mqdef.png)
+[Zato IBM MQ definitions](https://zato.io/support/pymqi/mqdef.png)
 </center>
 
 Check out this
