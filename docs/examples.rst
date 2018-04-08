@@ -3,7 +3,7 @@ Examples
 
 .. note::
 
-    Sponsored by `Zato <https://zato.io/docs?pymqi>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
+    Sponsored by `Zato <https://zato.io/docs?pymqi-e01>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
 
 The purpose of this section is to gather code showing PyMQI in action or code
 that's related to common IBM MQ-related tasks in general. Some of the

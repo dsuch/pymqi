@@ -3,7 +3,7 @@ Support, consulting and contact
 
 .. note::
 
-    Sponsored by `Zato <https://zato.io/docs?pymqi>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
+    Sponsored by `Zato <https://zato.io/docs?pymqi-s01>`_ - Open-Source ESB, SOA, REST, APIs and Cloud Integrations in Python
 
 Free support
 ------------
@@ -19,7 +19,7 @@ Commercial support
 
 `Zato Source <https://zato.io/?pymqi>`_,
 creators of the
-`Zato <https://zato.io/docs?pymqi>`_
+`Zato <https://zato.io/docs?pymqi-s02>`_
 platform, offer commercial support for PyMQI, including IBM MQ consulting,
 priority assistance during development or production, maintenance as well as custom extensions.
 
