@@ -65,9 +65,7 @@ in Python that lets one connect to many technologies with little or no programmi
 
 This includes IBM MQ queue managers along with ability to seamlessly integrate with Java JMS systems.
 
-<center>
-[Zato IBM MQ definitions](https://zato.io/support/pymqi/mqdef.png)
-</center>
+https://zato.io/support/pymqi/mqdef.png
 
 Check out this
 [blog post](https://zato.io/blog/posts/websphere-mq-python-zato.html?pymqi-gh)
