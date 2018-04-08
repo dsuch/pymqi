@@ -1,5 +1,5 @@
 
-PyMQI - Python interface to IBM MQ (WebSphereMQ, MQSeries)
+PyMQI - Python interface to IBM MQ (WebSphere MQ, MQSeries)
 ----------------------------------------------------------
 
 **Sponsored by [Zato](https://zato.io/docs?pymqi-gh01) - ESB, SOA, REST, APIs and Cloud Integrations in Python**
