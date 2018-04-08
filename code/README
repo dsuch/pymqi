@@ -45,15 +45,13 @@ Installation
 
 * PyMQI can be installed using pip - downloads are on [PyPI](https://pypi.python.org/pypi/pymqi)
 
-* As a prerequisite, you first need to install an IBM MQ client in the system that PyMQI is about to be installed
-  - it is a free library offered by IBM on top of which higher-level ones, such as PyMQI, can connect to queue managers.
+* As a prerequisite, you first need to install an IBM MQ client in the system that PyMQI is about to be installed;
+  it is a free library offered by IBM on top of which higher-level ones, such as PyMQI, can connect to queue managers.
   IBM MQ clients can be downloaded from IBM's website.
 
 * Now you can use pip to install PyMQI itself:
 
-  ::
-
-    $ sudo pip install pymqi
+> $ sudo pip install pymqi
 
 The backbone of IBM MQ Python messaging
 ========================================
