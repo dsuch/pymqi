@@ -1389,10 +1389,10 @@ class QueueManager:
 
         Disconnect from queue manager, if connected."""
 
-        if self.__handle:
-            rv = pymqe.MQDISC(self.__handle)
-        else:
+        if not self.__handle:
             raise PYIFError('not connected')
+        rv = pymqe.MQDISC(self.__handle)
+        self.__handle = self.__qmobj = None
 
     def getHandle(self):
         """getHandle()
@@ -1832,7 +1832,7 @@ class Queue:
     def set_handle(self, queue_handle):
         """set_handle(queue_handle)
 
-        Sets the queue handle in the case when a handl;e was returned from a
+        Sets the queue handle in the case when a handle was returned from a
         previous MQ call.
 
         """
