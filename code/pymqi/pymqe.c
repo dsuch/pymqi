@@ -141,6 +141,23 @@ static PyObject *ErrorObj;
   Py_XDECREF(filter);
 
 
+/* Python 3 compatibility
+*/
+#if PY_MAJOR_VERSION==2
+#define Py23String_FromString PyString_FromString
+#define Py23String_FromStringAndSize PyString_FromStringAndSize
+#define Py23String_AsString PyString_AsString
+#define Py23String_Size PyString_Size
+#define Py23String_Check PyString_Check
+#else
+#define Py23String_FromString PyUnicode_FromString
+#define Py23String_FromStringAndSize PyUnicode_FromStringAndSize
+#define Py23String_AsString PyBytes_AsString
+#define Py23String_Size PyBytes_Size
+#define Py23String_Check PyBytes_Check
+#endif
+
+
 /* ----------------------------------------------------- */
 
 
@@ -211,15 +228,22 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
 #ifdef PYMQI_FEATURE_SSL
   char *sco = NULL;
   int sco_len = 0;
-
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "sls#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
+#else
+  if (!PyArg_ParseTuple(args, "sly#O|y#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
+#endif
     return 0;
   }
   if (sco && checkArgSize(sco_len, PYMQI_MQSCO_SIZEOF, "MQSCO")) {
     return NULL;
   }
 #else
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "sls#", &name, &options, &mqcd, &mqcd_buf_len)) {
+#else
+  if (!PyArg_ParseTuple(args, "sly#", &name, &options, &mqcd, &mqcd_buf_len)) {
+#endif
     return 0;
   }
 #endif
@@ -246,10 +270,10 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
     PyObject *password = PyDict_GetItemString(user_password, "password");
 
     csp.AuthenticationType = MQCSP_AUTH_USER_ID_AND_PWD;
-    csp.CSPUserIdPtr = PyString_AsString(user);
-    csp.CSPUserIdLength = (int)PyString_Size(user);
-    csp.CSPPasswordPtr = PyString_AsString(password);
-    csp.CSPPasswordLength =(int) PyString_Size(password);
+    csp.CSPUserIdPtr = Py23String_AsString(user);
+    csp.CSPUserIdLength = (int)Py23String_Size(user);
+    csp.CSPPasswordPtr = Py23String_AsString(password);
+    csp.CSPPasswordLength =(int) Py23String_Size(password);
   }
 
   cno.ClientConnPtr = (MQCD *)mqcd;
@@ -318,7 +342,11 @@ static PyObject *pymqe_MQOPEN(PyObject *self, PyObject *args) {
 
   long lOptions, lQmgrHandle;
 
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "ls#l", &lQmgrHandle, &qDescBuffer,
+#else
+  if (!PyArg_ParseTuple(args, "ly#l", &lQmgrHandle, &qDescBuffer,
+#endif
             &qDescBufferLength, &lOptions)) {
     return NULL;
   }
@@ -331,7 +359,11 @@ static PyObject *pymqe_MQOPEN(PyObject *self, PyObject *args) {
   Py_BEGIN_ALLOW_THREADS
     MQOPEN((MQHCONN)lQmgrHandle, qDescP, (MQLONG) lOptions, &qHandle, &compCode, &compReason);
   Py_END_ALLOW_THREADS
+#if PY_MAJOR_VERSION==2
   return Py_BuildValue("(ls#ll)", (long) qHandle, qDescP,
+#else
+  return Py_BuildValue("(ly#ll)", (long) qHandle, qDescP,
+#endif
                        PYMQI_MQOD_SIZEOF, (long) compCode, (long) compReason);
 }
 
@@ -388,7 +420,11 @@ static PyObject *mqputN(int put1Flag, PyObject *self, PyObject *args) {
 
   if (!put1Flag) {
     /* PUT call, expects qHandle for an open q */
+#if PY_MAJOR_VERSION==2
     if (!PyArg_ParseTuple(args, "lls#s#s#", &lQmgrHandle, &lqHandle,
+#else
+    if (!PyArg_ParseTuple(args, "lly#y#y#", &lQmgrHandle, &lqHandle,
+#endif
               &mDescBuffer, &mDescBufferLength,
               &putOptsBuffer, &putOptsBufferLength,
               &msgBuffer, &msgBufferLength)) {
@@ -396,7 +432,11 @@ static PyObject *mqputN(int put1Flag, PyObject *self, PyObject *args) {
     }
   } else {
     /* PUT1 call, expects od for a queue to be opened */
+#if PY_MAJOR_VERSION==2
     if (!PyArg_ParseTuple(args, "ls#s#s#s#", &lQmgrHandle,
+#else
+    if (!PyArg_ParseTuple(args, "ly#y#y#y#", &lQmgrHandle,
+#endif
               &qDescBuffer, &qDescBufferLength,
               &mDescBuffer, &mDescBufferLength,
               &putOptsBuffer, &putOptsBufferLength,
@@ -430,7 +470,11 @@ static PyObject *mqputN(int put1Flag, PyObject *self, PyObject *args) {
        &compCode, &compReason);
     Py_END_ALLOW_THREADS
   }
+#if PY_MAJOR_VERSION==2
   return Py_BuildValue("(s#s#ll)", mDescP, PYMQI_MQMD_SIZEOF,
+#else
+  return Py_BuildValue("(y#y#ll)", mDescP, PYMQI_MQMD_SIZEOF,
+#endif
                pmoP, PYMQI_MQPMO_SIZEOF, (long) compCode, (long) compReason);
 }
 
@@ -517,8 +561,11 @@ static PyObject *pymqe_MQGET(PyObject *self, PyObject *args) {
   PyObject *rv;
 
   long lQmgrHandle, lqHandle;
-
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "lls#s#l", &lQmgrHandle, &lqHandle,
+#else
+  if (!PyArg_ParseTuple(args, "lly#y#l", &lQmgrHandle, &lqHandle,
+#endif
             &mDescBuffer, &mDescBufferLength,
             &getOptsBuffer, &getOptsBufferLength, &maxLength)) {
     return NULL;
@@ -556,9 +603,14 @@ static PyObject *pymqe_MQGET(PyObject *self, PyObject *args) {
     returnLength = actualLength;
   }
 
+#if PY_MAJOR_VERSION==2
   rv = Py_BuildValue("(s#s#s#lll)", msgBuffer, (int) returnLength,
+#else
+  rv = Py_BuildValue("(y#y#y#lll)", msgBuffer, (int) returnLength,
+#endif
              mDescP, PYMQI_MQMD_SIZEOF, gmoP, PYMQI_MQGMO_SIZEOF,
              (long) actualLength, (long) compCode, (long) compReason);
+
   free(msgBuffer);
   return rv;
 }
@@ -684,7 +736,11 @@ static PyObject *pymqe_MQINQ(PyObject *self, PyObject *args) {
   if (intAttrCount) {
     retVal = Py_BuildValue("(lll)", (long) intAttrs[0], (long) compCode, (long) compReason);
   } else {
+#if PY_MAJOR_VERSION==2
     retVal = Py_BuildValue("(sll)", charAttrs, (long) compCode, (long) compReason);
+#else
+    retVal = Py_BuildValue("(yll)", charAttrs, (long) compCode, (long) compReason);
+#endif
   }
   return retVal;
 }
@@ -723,11 +779,11 @@ static PyObject *pymqe_MQSET(PyObject *self, PyObject *args) {
     intAttrs[0] = PyLong_AsLong(attrArg);
     intAttrCount = 1;
   } else {
-    if (!PyString_Check(attrArg)) {
+    if (!Py23String_Check(attrArg)) {
       PyErr_SetString(ErrorObj, "Arg is not a string");
       return NULL;
     }
-    strncpy(charAttrs, PyString_AsString(attrArg), MAX_CHARATTR_LENGTH);
+    strncpy(charAttrs, Py23String_AsString(attrArg), MAX_CHARATTR_LENGTH);
     charAttrCount = (MQLONG)strlen(charAttrs);
   }
 
@@ -760,7 +816,11 @@ static PyObject * pymqe_MQSUB(PyObject *self, PyObject *args) {
 
   long lQmgrHandle;
 
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "ls#l", &lQmgrHandle,
+#else
+  if (!PyArg_ParseTuple(args, "ly#l", &lQmgrHandle,
+#endif
             &subDescBuffer, &subDescBufferLength,
             &objectHandle)) {
     return NULL;
@@ -776,7 +836,11 @@ static PyObject * pymqe_MQSUB(PyObject *self, PyObject *args) {
     &compCode, &compReason);
   Py_END_ALLOW_THREADS
 
+#if PY_MAJOR_VERSION==2
   rv = Py_BuildValue("(s#llll)", subDescP, PYMQI_MQSD_SIZEOF, objectHandle, subHandle,
+#else
+  rv = Py_BuildValue("(y#llll)", subDescP, PYMQI_MQSD_SIZEOF, objectHandle, subHandle,
+#endif
              (long) compCode, (long) compReason);
   return rv;
 
@@ -809,7 +873,11 @@ static PyObject* pymqe_MQCRTMH(PyObject *self, PyObject *args) {
 
   PyObject *rv;
 
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "ls#", &conn_handle, &cmho_buffer, &cmho_buffer_length)) {
+#else
+  if (!PyArg_ParseTuple(args, "ly#", &conn_handle, &cmho_buffer, &cmho_buffer_length)) {
+#endif
     return NULL;
   }
 
@@ -859,7 +927,11 @@ static PyObject* pymqe_MQSETMP(PyObject *self, PyObject *args) {
   MQLONG comp_code = MQCC_UNKNOWN, comp_reason = MQRC_NONE;
   PyObject *rv;
 
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "lls#s#s#lsl", &conn_handle, &msg_handle, &smpo_buffer,
+#else
+  if (!PyArg_ParseTuple(args, "lly#y#y#lyl", &conn_handle, &msg_handle, &smpo_buffer,
+#endif
                         &smpo_buffer_length,
                         &property_name, &property_name_length,
                         &pd_buffer, &pd_buffer_length, &property_type,
@@ -917,7 +989,11 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
   MQIMPO impo = {MQIMPO_DEFAULT};
   MQPD pd = {MQPD_DEFAULT};
 
+#if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "llls#lll", &conn_handle, &msg_handle, &impo_options,
+#else
+  if (!PyArg_ParseTuple(args, "llly#lll", &conn_handle, &msg_handle, &impo_options,
+#endif
                         &property_name, &property_name_length, &pd_options,
                         &property_type, &max_value_length)) {
     return NULL;
@@ -933,8 +1009,11 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
 
   MQINQMP(conn_handle, msg_handle, &impo, &name, &pd, &property_type, sizeof(value),
     value, &actual_value_length, &comp_code, &comp_reason);
-
+#if PY_MAJOR_VERSION==2
   rv = Py_BuildValue("(lls)", (long)comp_code, (long)comp_reason, (char *)value);
+#else
+  rv = Py_BuildValue("(lly)", (long)comp_code, (long)comp_reason, (char *)value);
+#endif
   free(value);
 
   return rv;
@@ -1078,7 +1157,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
               return NULL;
             }
 
-            filter_type = PyString_AsString(_pymqi_filter_type);
+            filter_type = Py23String_AsString(_pymqi_filter_type);
 
             /* String filter */
             if(0 == strcmp(filter_type, "string")) {
@@ -1086,7 +1165,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
               mqAddStringFilter(adminBag,
                                   (MQLONG)PyLong_AsLong(filter_selector),
                                   (MQLONG)PyObject_Length(filter_value),
-                                  (PMQCHAR)PyString_AsString(filter_value),
+                                  (PMQCHAR)Py23String_AsString(filter_value),
                                   (MQLONG)PyLong_AsLong(filter_operator),
                                   &compCode,
                                   &compReason);
@@ -1095,7 +1174,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                 PyErr_Format(ErrorObj, "Could not invoke 'mqAddStringFilter' compCode=[%d], " \
                             "compReason=[%d], filter_selector=[%d], filter_value=[%s], " \
                             "filter_operator=[%d]", (int)compCode, (int)compReason, (int)PyLong_AsLong(filter_selector),
-                                  PyString_AsString(filter_value),
+                                  Py23String_AsString(filter_value),
                                   (int)PyLong_AsLong(filter_operator));
 
                 PYMQI_MQAI_FILTERS_CLEANUP
@@ -1156,16 +1235,24 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                   /*
                    * The key ought to be an int or a long. Blow up if it isn't
                    */
+#if PY_MAJOR_VERSION==2
                   if(!PyLong_Check(key) && !PyInt_Check(key)) {
+#else
+                  if(!PyLong_Check(key)) {
+#endif
                       PyObject *keyStr = PyObject_Str(key);  /* Owned ref */
-                      PyErr_Format(ErrorObj, "Argument: %s is not integer", PyString_AsString(keyStr));
+                      PyErr_Format(ErrorObj, "Argument: %s is not integer", Py23String_AsString(keyStr));
                       Py_XDECREF(keyStr);
                       Py_DECREF(resultsList);
                       cleanupBags(adminBag, responseBag);
                       return NULL;
                   }
                   else {
+#if PY_MAJOR_VERSION==2
                       paramType = PyLong_Check(key) ? PyLong_AsLong(key) : PyInt_AsLong(key);
+#else
+                      paramType = PyLong_AsLong(key);
+#endif
                   }
 
                   /*
@@ -1174,12 +1261,14 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                    if (PyLong_Check(value)) {
                        intArg = PyLong_AsLong(value);
                        mqAddInteger(adminBag, paramType, intArg, &compCode, &compReason);
+#if PY_MAJOR_VERSION==2
                    } else if (PyInt_Check(value)) {
                        intArg = PyInt_AsLong(value);
                        mqAddInteger(adminBag, paramType, intArg, &compCode, &compReason);
+#endif
                    }
-                   else if (PyString_Check(value)) {
-                       strArg = PyString_AsString(value);
+                   else if (Py23String_Check(value)) {
+                       strArg = Py23String_AsString(value);
                        mqAddString(adminBag, paramType, MQBL_NULL_TERMINATED, strArg, &compCode, &compReason);
                   } else {
                       isByteString = PyObject_HasAttrString(value, "pymqi_byte_string");
@@ -1187,7 +1276,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                         /* value is a ByteString.  have to use its "value" attribute */
                         PyObject *byteStringValue;
                         byteStringValue = PyObject_GetAttrString(value, "value"); /* Owned ref */
-                        strByteArg = (MQBYTE *)PyString_AsString(byteStringValue);
+                        strByteArg = (MQBYTE *)Py23String_AsString(byteStringValue);
 
 #ifdef MQCMDL_LEVEL_700
                         mqAddByteString(adminBag, paramType, (MQLONG)PyObject_Length(value), strByteArg, &compCode, &compReason);
@@ -1199,7 +1288,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                         PyObject *keyStr = PyObject_Str(key);    /* Owned ref */
                         PyObject *valStr = PyObject_Str(value);  /* Owned ref */
                         PyErr_Format(ErrorObj, "Value %s for key %s is not a long, string nor a pymqi.ByteString instance",
-                                     PyString_AsString(valStr), PyString_AsString(keyStr));
+                                     Py23String_AsString(valStr), Py23String_AsString(keyStr));
                         Py_XDECREF(keyStr);
                         Py_XDECREF(valStr);
                         Py_DECREF(resultsList);
@@ -1388,7 +1477,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
 
                                         itemStrVal[strLength] = 0;
 
-                                        pyItemStrVal = PyString_FromString(itemStrVal);
+                                        pyItemStrVal = Py23String_FromString(itemStrVal);
 
                                         if (PyDict_Contains(resultsDict, key) > 0) {
                                               resultDictValue = PyDict_GetItem(resultsDict, key);
@@ -1451,7 +1540,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                                         }
 
                                         /*byte strings may contain nulls */
-                                        pyItemStrVal = PyString_FromStringAndSize((char *)itemByteStrVal, byteStrLength);
+                                        pyItemStrVal = Py23String_FromStringAndSize((char *)itemByteStrVal, byteStrLength);
                                         PyDict_SetItem(resultsDict, key, pyItemStrVal);
 
                                         free(itemByteStrVal);
@@ -1535,6 +1624,7 @@ static char pymqe_module_documentation[] =
 #ifdef WIN32
 __declspec(dllexport)
 #endif
+#if PY_MAJOR_VERSION==2
      void initpymqe(void) {
   PyObject *m, *d;
 
@@ -1542,14 +1632,30 @@ __declspec(dllexport)
   m = Py_InitModule4("pymqe", pymqe_methods,
              pymqe_module_documentation,
              (PyObject*)NULL,PYTHON_API_VERSION);
+#else
+static struct PyModuleDef pymqe_module = {
+    PyModuleDef_HEAD_INIT,
+    "pymqe",
+    pymqe_module_documentation,
+    -1,
+    pymqe_methods
+};
+
+PyMODINIT_FUNC PyInit_pymqe(void) {
+  PyObject *m, *d;
+
+  /* Create the module and add the functions */
+  m = PyModule_Create(&pymqe_module);
+#endif
+
 
   /* Add some symbolic constants to the module */
   d = PyModule_GetDict(m);
   ErrorObj = PyErr_NewException("pymqe.error", NULL, NULL);
   PyDict_SetItemString(d, "pymqe.error", ErrorObj);
 
-  PyDict_SetItemString(d, "__doc__", PyString_FromString(pymqe_doc));
-  PyDict_SetItemString(d,"__version__", PyString_FromString(__version__));
+  PyDict_SetItemString(d, "__doc__", Py23String_FromString(pymqe_doc));
+  PyDict_SetItemString(d,"__version__", Py23String_FromString(__version__));
 
   /*
    * Build the tuple of supported command levels, but only for versions
@@ -1558,40 +1664,40 @@ __declspec(dllexport)
   {
     PyObject *versions = PyList_New(0);
 #ifdef MQCMDL_LEVEL_500
-      PyList_Append(versions, PyString_FromString("5.0"));
+      PyList_Append(versions, Py23String_FromString("5.0"));
 #endif
 #ifdef MQCMDL_LEVEL_510
-      PyList_Append(versions, PyString_FromString("5.1"));
+      PyList_Append(versions, Py23String_FromString("5.1"));
 #endif
 #ifdef MQCMDL_LEVEL_520
-      PyList_Append(versions, PyString_FromString("5.2"));
+      PyList_Append(versions, Py23String_FromString("5.2"));
 #endif
 #ifdef MQCMDL_LEVEL_530
-      PyList_Append(versions, PyString_FromString("5.3"));
+      PyList_Append(versions, Py23String_FromString("5.3"));
 #endif
 #ifdef MQCMDL_LEVEL_600
-      PyList_Append(versions, PyString_FromString("6.0"));
+      PyList_Append(versions, Py23String_FromString("6.0"));
 #endif
 #ifdef MQCMDL_LEVEL_700
-      PyList_Append(versions, PyString_FromString("7.0"));
+      PyList_Append(versions, Py23String_FromString("7.0"));
 #endif
 #ifdef MQCMDL_LEVEL_710
-      PyList_Append(versions, PyString_FromString("7.1"));
+      PyList_Append(versions, Py23String_FromString("7.1"));
 #endif
 #ifdef MQCMDL_LEVEL_750
-      PyList_Append(versions, PyString_FromString("7.5"));
+      PyList_Append(versions, Py23String_FromString("7.5"));
 #endif
 #ifdef MQCMDL_LEVEL_710
-      PyList_Append(versions, PyString_FromString("7.1"));
+      PyList_Append(versions, Py23String_FromString("7.1"));
 #endif
 #ifdef MQCMDL_LEVEL_750
-      PyList_Append(versions, PyString_FromString("7.5"));
+      PyList_Append(versions, Py23String_FromString("7.5"));
 #endif
 #ifdef MQCMDL_LEVEL_800
-      PyList_Append(versions, PyString_FromString("8.0.0"));
+      PyList_Append(versions, Py23String_FromString("8.0.0"));
 #endif
 #ifdef MQCMDL_LEVEL_801
-      PyList_Append(versions, PyString_FromString("8.0.1"));
+      PyList_Append(versions, Py23String_FromString("8.0.1"));
 #endif
       PyDict_SetItemString(d,"__mqlevels__", PyList_AsTuple(versions));
       Py_XDECREF(versions);
@@ -1601,12 +1707,16 @@ __declspec(dllexport)
    * Set the client/server build flag
    */
 #if PYQMI_SERVERBUILD == 1
-  PyDict_SetItemString(d,"__mqbuild__", PyString_FromString("server"));
+  PyDict_SetItemString(d,"__mqbuild__", Py23String_FromString("server"));
 #else
-  PyDict_SetItemString(d,"__mqbuild__", PyString_FromString("client"));
+  PyDict_SetItemString(d,"__mqbuild__", Py23String_FromString("client"));
 #endif
 
   /* Check for errors */
   if (PyErr_Occurred())
     Py_FatalError("can't initialize module pymqe");
+
+#if PY_MAJOR_VERSION==3
+  return m;
+#endif
 }

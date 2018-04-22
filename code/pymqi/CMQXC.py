@@ -250,10 +250,11 @@ MQDCC_SOURCE_ENC_FACTOR = 16
 MQDCC_TARGET_ENC_FACTOR = 256
 
 # Manually added
-MQCXP_STRUC_ID_ARRAY = ['C','X','P',' ']
-MQDXP_STRUC_ID_ARRAY = ['D','X','P',' ']
-MQPXP_STRUC_ID_ARRAY = ['P','X','P',' ']
-MQWDR_STRUC_ID_ARRAY = ['W','D','R',' ']
-MQWQR_STRUC_ID_ARRAY = ['W','Q','R',' ']
-MQWXP_STRUC_ID_ARRAY = ['W','X','P',' ']
-MQXUA_NONE_ARRAY = ['\0','\0','\0','\0','\0','\0','\0','\0', '\0','\0','\0','\0','\0','\0','\0','\0']
+MQCXP_STRUC_ID_ARRAY = [b'C', b'X', b'P', b' ']
+MQDXP_STRUC_ID_ARRAY = [b'D', b'X', b'P', b' ']
+MQPXP_STRUC_ID_ARRAY = [b'P', b'X', b'P', b' ']
+MQWDR_STRUC_ID_ARRAY = [b'W', b'D', b'R', b' ']
+MQWQR_STRUC_ID_ARRAY = [b'W', b'Q', b'R', b' ']
+MQWXP_STRUC_ID_ARRAY = [b'W', b'X', b'P', b' ']
+MQXUA_NONE_ARRAY = [b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0',
+                    b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0']
