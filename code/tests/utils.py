@@ -20,7 +20,7 @@ def with_env_complement(env_var_name, envvar_value):
     def decorate(test_func):
         @functools.wraps(test_func)
         def _env_complemented(*args, **kwargs):
-            if not os.environ.has_key(env_var_name):
+            if not env_var_name in os.environ.keys():
                 # enhance environment if env variable is not set
                 os.environ[env_var_name] = envvar_value
                 try:
@@ -60,10 +60,10 @@ def print_config(*cfg_classes):
     """Print configuration set in configuration classes cfg_classes.
     """
     print
-    print "Active configuration:"
+    print("Active configuration:")
     for cls in cfg_classes:
         for q_attr_name, attr_val in sorted(_visit(cls, prefix=('config',))):
-            print ("  %s: %s" % ('.'.join(q_attr_name), attr_val)).encode(
-                sys.stdout.encoding, 'replace')
+            print(("  %s: %s" % ('.'.join(q_attr_name), attr_val)).encode(
+                sys.stdout.encoding, 'replace'))
 
 

@@ -63,7 +63,7 @@ class TestRFH2PutGet(unittest.TestCase):
         try:
             while(1):
                 queue.get()
-        except Exception, e:
+        except Exception as e:
             if e.reason == 2033:
                 return
             else:
@@ -106,7 +106,7 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(rfh2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
 
             self.assertEqual(msg, self.single_rfh2_message[rfh2["StrucLength"]:], "Message Payloads do not match?")
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
 
@@ -164,7 +164,7 @@ class TestRFH2PutGet(unittest.TestCase):
 
             self.assertEqual(msg, self.multiple_rfh2_message[rfh2_1["StrucLength"] + rfh2_2["StrucLength"]:], "Message Payloads do not match?")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_rfh2_single(self):
@@ -199,7 +199,7 @@ class TestRFH2PutGet(unittest.TestCase):
             get_msg = self.get_queue.get(None, get_mqmd, get_opts)
 
             self.assertEqual(get_msg, self.single_rfh2_message, "Message got from Queue does not match known correct RFH2 message.")
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_rfh2_multiple(self):
@@ -249,7 +249,7 @@ class TestRFH2PutGet(unittest.TestCase):
 
             self.assertEqual(get_msg, self.multiple_rfh2_message, "Message got from Queue does not match known correct RFH2 message.")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_get_rfh2_single(self):
@@ -276,7 +276,7 @@ class TestRFH2PutGet(unittest.TestCase):
             put_rfh2.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
             put_rfh2.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
             put_rfh2.add_folder("<mcd><Msd>xmlnsc</Msd></mcd>")
-            put_msg = "<testData><testVar>testValue</testVar></testData>"
+            put_msg = b"<testData><testVar>testValue</testVar></testData>"
 
             put_rfh2_list = [put_rfh2]
             self.put_queue.put_rfh2(put_msg, put_mqmd, put_opts, put_rfh2_list)
@@ -290,7 +290,7 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(get_rfh2_list[0].get(), put_rfh2_list[0].get()), "Put and Get RFH2 Lists do not match."
             self.assertEqual(get_msg, put_msg, "Put and Get messages do not match.")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_get_rfh2_multiple(self):
@@ -330,7 +330,7 @@ class TestRFH2PutGet(unittest.TestCase):
             put_rfh2_2.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
             put_rfh2_2.add_folder("<mcd><Msd>xmlnsc</Msd></mcd>")
             put_rfh2_list = [put_rfh2_1, put_rfh2_2]
-            put_msg = "<testData><testVar>testValue</testVar></testData>"
+            put_msg = b"<testData><testVar>testValue</testVar></testData>"
 
             self.put_queue.put_rfh2(put_msg, put_mqmd, put_opts, put_rfh2_list)
 
@@ -344,7 +344,7 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(get_rfh2_list[1].get(), put_rfh2_list[1].get()), "Put and Get RFH2 Lists do not match."
             self.assertEqual(get_msg, put_msg, "Put and Get messages do not match.")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
 

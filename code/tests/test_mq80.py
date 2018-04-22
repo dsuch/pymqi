@@ -33,7 +33,7 @@ class TestMQ80(unittest.TestCase):
             setattr(self, key.lower(), getattr(config.MQ.QM, key))
 
     def get_conn(self):
-        return pymqi.connect(self.name, self.channel, '{}({})'.format(
+        return pymqi.connect(self.name, self.channel, '{0}({1})'.format(
             self.host, self.port), self.user, self.password)
 
     # obviously this test can not work for a queue manager < 8.0
@@ -48,6 +48,7 @@ class TestMQ80(unittest.TestCase):
         command_level = pcf.MQCMD_INQUIRE_Q_MGR()[0][CMQC.MQIA_COMMAND_LEVEL]
         self.assertGreaterEqual(command_level, 800)
         conn.disconnect()
+
 
     def test_connect_with_credentials(self):
         """ Connecting with user credentials provided should succeed.
@@ -64,8 +65,8 @@ class TestMQ80(unittest.TestCase):
         # Modify original valid password to some bogus value
         bogus_password = self.password + '_Wr0nG_Pa$$w0rd'
         with self.assertRaises(pymqi.MQMIError) as errorcontext:
-            qmgr = pymqi.connect(self.name, self.channel, '{}({})'.format(
-                self.host, self.port), self.user, bogus_password)
+            qmgr = pymqi.connect(self.name, self.channel, '{0}({1})'.format(
+                self.host, self.port), self.user + '_bogus_user', bogus_password)
             exception = errorcontext.exception
             self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
             self.assertFalse(qmgr.is_connected)
@@ -85,7 +86,7 @@ class TestMQ80(unittest.TestCase):
         """
 
         with self.assertRaises(pymqi.MQMIError) as errorcontext:
-            qmgr = pymqi.connect(self.name, self.channel, '{}({})'.format(
+            qmgr = pymqi.connect(self.name, self.channel, '{0}({1})'.format(
                 self.host, self.port))
             exception = errorcontext.exception
             self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
@@ -99,7 +100,7 @@ class TestMQ80(unittest.TestCase):
         """Connecting without user credentials should succeed for a queue
         manager that has optional user/password connection authentication. 
         """
-        qmgr = pymqi.connect(self.name, self.channel, '{}({})'.format(
+        qmgr = pymqi.connect(self.name, self.channel, '{0}({1})'.format(
                 self.host, self.port))
         self.assertTrue(qmgr.is_connected)
         qmgr.disconnect()
