@@ -7,8 +7,9 @@
 import sys, os
 from struct import calcsize
 
-from setuptools import setup, find_packages
-from distutils.core import Extension
+# from setuptools import setup, find_packages
+from distutils.core import setup, Extension
+# from setuptools import find_packages
 
 version = "1.7.2.post1"
 
@@ -129,10 +130,11 @@ setup(name = 'pymqi',
     url='https://dsuch.github.io/pymqi/',
     download_url='https://pypi.python.org/pypi/pymqi',
     platforms='OS Independent',
-    packages = find_packages('pymqi'),
+    #packages = find_packages('pymqi'),
+    packages = ['pymqi'],
     license='Python Software Foundation License',
     keywords=('pymqi OBM WebSphere MQ WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
-    install_requires = [],
+    # install_requires = [],
 
     classifiers = [
         'Development Status :: 5 - Production/Stable',
@@ -146,8 +148,7 @@ setup(name = 'pymqi',
         'Topic :: Software Development :: Object Brokering',
         ],
     py_modules = ['pymqi.CMQC', 'pymqi.CMQCFC', 'pymqi.CMQXC', 'pymqi.CMQZC'],
-    ext_modules = [Extension('pymqi.pymqe',['pymqi/pymqe.c'],
-            define_macros=[('PYQMI_SERVERBUILD', build_server)],
+    ext_modules = [Extension('pymqi.pymqe',['pymqi/pymqe.c'], define_macros=[('PYQMI_SERVERBUILD', build_server)],
         library_dirs = library_dirs,
         include_dirs = include_dirs,
         libraries = libraries)])
