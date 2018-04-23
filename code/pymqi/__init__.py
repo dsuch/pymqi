@@ -93,17 +93,17 @@ their MQI counterparts.
 
 # Stdlib
 import struct
-import sys
 import threading
 import ctypes
 
 # PyMQI
 import pymqe
 from pymqi import CMQCFC
-from pymqi import CMQC, CMQC, CMQXC, CMQZC
+from pymqi import CMQC, CMQXC
 
 use_minidom = False
 try:
+    # noinspection PyUnresolvedReferences
     import lxml.etree
 except ImportError:
     from xml.dom.minidom import parseString
@@ -118,15 +118,6 @@ __mqbuild__ = pymqe.__mqbuild__
 #
 # Python 3 compatibility
 #
-
-if sys.version_info[0] >= 3:
-    def apply(f, args, kwargs=None):
-        """Bring back old-school apply() to py3"""
-        if kwargs is None:
-            return f(args[0], *args[1:])
-        else:
-            return f(args[0], *args[1:], **kwargs)
-
 
 def py23long(x):
     """convert:
@@ -247,7 +238,7 @@ class MQOpts(object):
         for i in memlist:
             setattr(self, i[0], i[1])
             self.__format = self.__format + i[2]
-        apply(MQOpts.set, (self,), kw)
+        self.set(**kw)
 
     def pack(self):
         """ pack()
@@ -256,8 +247,7 @@ class MQOpts(object):
         calls. The pack order is as defined to the MQOpts
         ctor. Returns the structure as a string buffer"""
 
-        # Build tuple for struct.pack() argument. Start with format
-        # string.
+        # Build tuple for struct.pack() argument. Start with format string.
         args = [self.__format]
         # Now add the current attribute values to the tuple
         for i in self.__list:
@@ -266,16 +256,18 @@ class MQOpts(object):
             if isinstance(v, list):
                 for x in v:
                     if ispy3str(x):
-                        args.append(x.encode('utf-8'))
+                        raise TypeError("Values passed to pymqe C functions must use 'bytes', "
+                                        "but found 'str' ('{}':[..., '{}', ...])".format(i[0], x))
                     else:
                         args.append(x)
             else:
                 if ispy3str(v):
-                    args.append(v.encode('utf-8'))
+                    raise TypeError("Values passed to pymqe C functions must use 'bytes', "
+                                    "but found 'str' ('{}':'{}')".format(i[0], v))
                 else:
                     args.append(v)
 
-        return apply(struct.pack, args)
+        return struct.pack(*args)
 
     def unpack(self, buff):
         """unpack(buff)
@@ -287,6 +279,9 @@ class MQOpts(object):
         r = struct.unpack(self.__format, buff)
         x = 0
         for i in self.__list:
+            if ispy3str(r[x]):
+                raise TypeError("Values unpacked from pymqe C functions must use 'bytes', "
+                                "but found 'str' ('{}':'{}')".format(i[0], r[x]))
             setattr(self, i[0], r[x])
             x = x + 1
 
@@ -439,26 +434,26 @@ class gmo(MQOpts):
 
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQGMO_STRUC_ID, '4s'],
-            ['Version', CMQC.MQGMO_VERSION_1, MQLONG_TYPE],
-            ['Options', CMQC.MQGMO_NO_WAIT, MQLONG_TYPE],
-            ['WaitInterval', 0, MQLONG_TYPE],
-            ['Signal1', 0, MQLONG_TYPE],
-            ['Signal2', 0, MQLONG_TYPE],
-            ['ResolvedQName', b'', '48s'],
-            ['MatchOptions', CMQC.MQMO_MATCH_MSG_ID+CMQC.MQMO_MATCH_CORREL_ID, MQLONG_TYPE],
-            ['GroupStatus', CMQC.MQGS_NOT_IN_GROUP, 'b'],
-            ['SegmentStatus', CMQC.MQSS_NOT_A_SEGMENT, 'b'],
-            ['Segmentation', CMQC.MQSEG_INHIBITED, 'b'],
-            ['Reserved1', b' ', 'c'],
-            ['MsgToken', b'', '16s'],
-            ['ReturnedLength', CMQC.MQRL_UNDEFINED, MQLONG_TYPE],]
+                ['Version', CMQC.MQGMO_VERSION_1, MQLONG_TYPE],
+                ['Options', CMQC.MQGMO_NO_WAIT, MQLONG_TYPE],
+                ['WaitInterval', 0, MQLONG_TYPE],
+                ['Signal1', 0, MQLONG_TYPE],
+                ['Signal2', 0, MQLONG_TYPE],
+                ['ResolvedQName', b'', '48s'],
+                ['MatchOptions', CMQC.MQMO_MATCH_MSG_ID+CMQC.MQMO_MATCH_CORREL_ID, MQLONG_TYPE],
+                ['GroupStatus', CMQC.MQGS_NOT_IN_GROUP, 'b'],
+                ['SegmentStatus', CMQC.MQSS_NOT_A_SEGMENT, 'b'],
+                ['Segmentation', CMQC.MQSEG_INHIBITED, 'b'],
+                ['Reserved1', b' ', 'c'],
+                ['MsgToken', b'', '16s'],
+                ['ReturnedLength', CMQC.MQRL_UNDEFINED, MQLONG_TYPE], ]
 
         if "7.0" in pymqe.__mqlevels__:
             opts += [
                 ['Reserved2', py23long(0), MQLONG_TYPE],
                 ['MsgHandle', py23long(0), 'q']]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(gmo, self).__init__(*tuple(opts), **kw)
 
 
 # Backward compatibility
@@ -498,10 +493,12 @@ class pmo(MQOpts):
                 ['Action', py23long(0), MQLONG_TYPE],
                 ['PubLevel', py23long(0), MQLONG_TYPE]]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(pmo, self).__init__(*tuple(opts), **kw)
+
 
 # Backward compatibility
 PMO = pmo
+
 
 class od(MQOpts):
     """od(**kw)
@@ -512,23 +509,23 @@ class od(MQOpts):
 
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQOD_STRUC_ID, '4s'],
-            ['Version', CMQC.MQOD_VERSION_1, MQLONG_TYPE],
-            ['ObjectType', CMQC.MQOT_Q, MQLONG_TYPE],
-            ['ObjectName', '', '48s'],
-            ['ObjectQMgrName', '', '48s'],
-            ['DynamicQName', 'AMQ.*', '48s'],
-            ['AlternateUserId', '', '12s'],
-            ['RecsPresent', 0, MQLONG_TYPE],
-            ['KnownDestCount', 0, MQLONG_TYPE],
-            ['UnknownDestCount', 0, MQLONG_TYPE],
-            ['InvalidDestCount', 0, MQLONG_TYPE],
-            ['ObjectRecOffset', 0, MQLONG_TYPE],
-            ['ResponseRecOffset', 0, MQLONG_TYPE],
-            ['ObjectRecPtr', 0, 'P'],
-            ['ResponseRecPtr', 0, 'P'],
-            ['AlternateSecurityId', '', '40s'],
-            ['ResolvedQName', '', '48s'],
-            ['ResolvedQMgrName', '', '48s'],]
+                ['Version', CMQC.MQOD_VERSION_1, MQLONG_TYPE],
+                ['ObjectType', CMQC.MQOT_Q, MQLONG_TYPE],
+                ['ObjectName', b'', '48s'],
+                ['ObjectQMgrName', b'', '48s'],
+                ['DynamicQName', b'AMQ.*', '48s'],
+                ['AlternateUserId', b'', '12s'],
+                ['RecsPresent', 0, MQLONG_TYPE],
+                ['KnownDestCount', 0, MQLONG_TYPE],
+                ['UnknownDestCount', 0, MQLONG_TYPE],
+                ['InvalidDestCount', 0, MQLONG_TYPE],
+                ['ObjectRecOffset', 0, MQLONG_TYPE],
+                ['ResponseRecOffset', 0, MQLONG_TYPE],
+                ['ObjectRecPtr', 0, 'P'],
+                ['ResponseRecPtr', 0, 'P'],
+                ['AlternateSecurityId', b'', '40s'],
+                ['ResolvedQName', b'', '48s'],
+                ['ResolvedQMgrName', b'', '48s'], ]
 
         if "7.0" in pymqe.__mqlevels__:
             opts += [
@@ -559,12 +556,14 @@ class od(MQOpts):
             # For 64bit platforms MQLONG is an int and this pad
             # needs to be here for WMQ 7.0
             if MQLONG_TYPE == 'i':
-                opts += [['pad','', '4s']]
+                opts += [['pad', b'', '4s']]
 
-        apply(MQOpts.__init__, (self, tuple(opts)), kw)
+        super(od, self).__init__(*tuple(opts), **kw)
+
 
 # Backward compatibility
 OD = od
+
 
 class md(MQOpts):
     """md(**kw)
@@ -574,7 +573,7 @@ class md(MQOpts):
     'kw'."""
 
     def __init__(self, **kw):
-        apply(MQOpts.__init__, (self, (
+        super(md, self).__init__(*tuple([
             ['StrucId', CMQC.MQMD_STRUC_ID, '4s'],
             ['Version', CMQC.MQMD_VERSION_1, MQLONG_TYPE],
             ['Report', CMQC.MQRO_NONE, MQLONG_TYPE],
@@ -603,10 +602,12 @@ class md(MQOpts):
             ['MsgSeqNumber', 1, MQLONG_TYPE],
             ['Offset', 0, MQLONG_TYPE],
             ['MsgFlags', CMQC.MQMF_NONE, MQLONG_TYPE],
-            ['OriginalLength', CMQC.MQOL_UNDEFINED, MQLONG_TYPE])), kw)
+            ['OriginalLength', CMQC.MQOL_UNDEFINED, MQLONG_TYPE]]), **kw)
+
 
 # Backward compatibility
 MD = md
+
 
 # RFH2 Header parsing/creation Support - Hannes Wagener - 2010.
 class RFH2(MQOpts):
@@ -619,13 +620,13 @@ class RFH2(MQOpts):
     """
 
     initial_opts = [['StrucId', CMQC.MQRFH_STRUC_ID, '4s'],
-            ['Version', CMQC.MQRFH_VERSION_2, MQLONG_TYPE],
-            ['StrucLength', 0, MQLONG_TYPE],
-            ['Encoding', CMQC.MQENC_NATIVE, MQLONG_TYPE],
-            ['CodedCharSetId', CMQC.MQCCSI_Q_MGR, MQLONG_TYPE],
-            ['Format', CMQC.MQFMT_NONE, '8s'],
-            ['Flags', 0, MQLONG_TYPE],
-            ['NameValueCCSID', CMQC.MQCCSI_Q_MGR, MQLONG_TYPE]]
+                    ['Version', CMQC.MQRFH_VERSION_2, MQLONG_TYPE],
+                    ['StrucLength', 0, MQLONG_TYPE],
+                    ['Encoding', CMQC.MQENC_NATIVE, MQLONG_TYPE],
+                    ['CodedCharSetId', CMQC.MQCCSI_Q_MGR, MQLONG_TYPE],
+                    ['Format', CMQC.MQFMT_NONE, '8s'],
+                    ['Flags', 0, MQLONG_TYPE],
+                    ['NameValueCCSID', CMQC.MQCCSI_Q_MGR, MQLONG_TYPE]]
 
     big_endian_encodings = [CMQC.MQENC_INTEGER_NORMAL,
                             CMQC.MQENC_DECIMAL_NORMAL,
@@ -648,7 +649,7 @@ class RFH2(MQOpts):
     def __init__(self, **kw):
         # take a copy of private initial_opts
         self.opts = [list(x) for x in self.initial_opts]
-        apply(MQOpts.__init__, (self, tuple(self.opts)), kw)
+        super(RFH2, self).__init__(*tuple(self.opts), **kw)
 
     def add_folder(self, folder_data):
         """add_folder(folder_data)
@@ -658,37 +659,28 @@ class RFH2(MQOpts):
 
         """
 
-        folder_name = None
         # check that the folder is valid xml and get the root tag name.
         if use_minidom:
             try:
                 folder_name = parseString(folder_data). \
                                             documentElement.tagName
             except Exception as e:
-                raise PYIFError("RFH2 - XML Folder not well formed. " \
-                                "Exception: %s" % str(e))
+                raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
         else:
             try:
                 folder_name = lxml.etree.fromstring(folder_data).tag
             except Exception as e:
-                raise PYIFError("RFH2 - XML Folder not well formed. " \
-                                "Exception: %s" % str(e))
+                raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
         # make sure folder length divides by 4 - else add spaces
+        folder_data = folder_data + " " * (4 - len(folder_data) % 4)
         folder_length = len(folder_data)
-        remainder = folder_length % 4
-        num_spaces = 0
-        if remainder != 0:
-            num_spaces = 4 - remainder
-            folder_data = folder_data + " " * num_spaces
-            folder_length = len(folder_data)
 
-        self.opts.append([folder_name + "Length", py23long(folder_length),
-                          MQLONG_TYPE])
+        self.opts.append([folder_name + "Length", py23long(folder_length), MQLONG_TYPE])
         self.opts.append([folder_name, folder_data, "%is" % folder_length])
         # save the current values
         saved_values = self.get()
         # reinit MQOpts with new fields added
-        apply(MQOpts.__init__, (self, tuple(self.opts)), )
+        super(RFH2, self).__init__(*tuple(self.opts))
         # reset the values to the saved values
         self.set(**saved_values)
         # calculate the correct StrucLength
@@ -706,11 +698,11 @@ class RFH2(MQOpts):
                 self.opts[0][2] = ">" + self.initial_opts[0][2]
                 saved_values = self.get()
                 # apply the new opts
-                apply(MQOpts.__init__, (self, tuple(self.opts)), )
+                super(RFH2, self).__init__(*tuple(self.opts))
                 # set from saved values
                 self.set(**saved_values)
 
-        return MQOpts.pack(self)
+        return super(RFH2, self).pack()
 
     def unpack(self, buff, encoding=None):
         """unpack(buff, encoding)
@@ -725,8 +717,8 @@ class RFH2(MQOpts):
                             buff[0:4])
 
         if len(buff) < 36:
-            raise PYIFError("RFH2 - Buffer too short. Should be 36 bytes or " \
-                            "longer.  Buffer Length: %s" % str(len(buff)))
+            raise PYIFError("RFH2 - Buffer too short. Should be 36 bytes or longer.  Buffer Length: %s" %
+                            str(len(buff)))
         # take a copy of initial_opts and the lists inside
         self.opts = [list(x) for x in self.initial_opts]
 
@@ -742,8 +734,8 @@ class RFH2(MQOpts):
         if big_endian:
             self.opts[0][2] = ">" + self.opts[0][2]
         # apply and parse the default header
-        apply(MQOpts.__init__, (self, tuple(self.opts)), )
-        MQOpts.unpack(self, buff[0:36])
+        super(RFH2, self).__init__(*tuple(self.opts))
+        super(RFH2, self).unpack(buff[0:36])
 
         if self['StrucLength'] < 0:
             raise PYIFError("RFH2 - 'StrucLength' is negative. Check numeric encoding.")
@@ -758,7 +750,6 @@ class RFH2(MQOpts):
         while s:
             # first 4 bytes is the folder length. supposed to divide by 4.
             len_bytes = s[0:4]
-            folder_length = 0
             if big_endian:
                 folder_length = struct.unpack(">l", len_bytes)[0]
             else:
@@ -768,22 +759,18 @@ class RFH2(MQOpts):
             s = s[4:]
             # extract the folder string
             folder_data = py23str(s[:folder_length])
-            # check that the folder is valid xml and get the root tag name
-            folder_name = None
             # check that the folder is valid xml and get the root tag name.
             if use_minidom:
                 try:
                     folder_name = parseString(folder_data). \
                                                 documentElement.tagName
                 except Exception as e:
-                    raise PYIFError("RFH2 - XML Folder not well formed. " \
-                                    "Exception: %s" % str(e))
+                    raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
             else:
                 try:
                     folder_name = lxml.etree.fromstring(folder_data).tag
                 except Exception as e:
-                    raise PYIFError("RFH2 - XML Folder not well formed. " \
-                                    "Exception: %s" % str(e))
+                    raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
             # append folder length and folder string to self.opts types
             self.opts.append([folder_name + "Length", py23long(folder_length),
                               MQLONG_TYPE])
@@ -795,11 +782,12 @@ class RFH2(MQOpts):
         # save the current values
         saved_values = self.get()
         # apply the new opts
-        apply(MQOpts.__init__, (self, tuple(self.opts)), )
+        super(RFH2, self).__init__(*tuple(self.opts))
         # set from saved values
         self.set(**saved_values)
         # unpack the buffer? - should get same result?
-        # MQOpts.unpack(self, buff[0:self["StrucLength"]])
+        # super(RFH2, self).unpack(buff[0:self["StrucLength"]])
+
 
 class TM(MQOpts):
     """TM(**kw)
@@ -810,16 +798,16 @@ class TM(MQOpts):
     """
 
     def __init__(self, **kw):
-        apply(MQOpts.__init__, (self, (
+        super(TM, self).__init__(*tuple([
             ['StrucId', CMQC.MQTM_STRUC_ID, '4s'],
             ['Version', CMQC.MQTM_VERSION_1, MQLONG_TYPE],
-            ['QName', '', '48s'],
-            ['ProcessName', '', '48s'],
-            ['TriggerData', '', '64s'],
+            ['QName', b'', '48s'],
+            ['ProcessName', b'', '48s'],
+            ['TriggerData', b'', '64s'],
             ['ApplType', 0, MQLONG_TYPE],
-            ['ApplId', '', '256s'],
-            ['EnvData', '', '128s'],
-            ['UserData', '', '128s'])), kw)
+            ['ApplId', b'', '256s'],
+            ['EnvData', b'', '128s'],
+            ['UserData', b'', '128s']]), **kw)
 
 
 class TMC2(MQOpts):
@@ -831,7 +819,7 @@ class TMC2(MQOpts):
     """
 
     def __init__(self, **kw):
-        apply(MQOpts.__init__, (self, (
+        super(TMC2, self).__init__(*tuple([
             ['StrucId', CMQC.MQTMC_STRUC_ID, '4s'],
             ['Version', CMQC.MQTMC_VERSION_2, '4s'],
             ['QName', '', '48s'],
@@ -841,10 +829,11 @@ class TMC2(MQOpts):
             ['ApplId', '', '256s'],
             ['EnvData', '', '128s'],
             ['UserData', '', '128s'],
-            ['QMgrName', '', '48s'])), kw)
+            ['QMgrName', '', '48s']]), **kw)
 
 # MQCONNX code courtesy of John OSullivan (mailto:jos@onebox.com)
 # SSL additions courtesy of Brian Vicente (mailto:sailbv@netscape.net)
+
 
 class cd(MQOpts):
     """cd(**kw)
@@ -997,7 +986,7 @@ class cd(MQOpts):
             if MQLONG_TYPE == 'i':
                 opts += [['pad', '', '4s']]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(cd, self).__init__(*tuple(opts), **kw)
 
 
 # Backward compatibility
@@ -1032,8 +1021,8 @@ class sco(MQOpts):
         opts = [
             ['StrucId', CMQC.MQSCO_STRUC_ID, '4s'],
             ['Version', _mqcsco_version, MQLONG_TYPE],
-            ['KeyRepository', '', '256s'],
-            ['CryptoHardware', '', '256s'],
+            ['KeyRepository', b'', '256s'],
+            ['CryptoHardware', b'', '256s'],
             ['AuthInfoRecCount', py23long(0), MQLONG_TYPE],
             ['AuthInfoRecOffset', py23long(0), MQLONG_TYPE],
             ['AuthInfoRecPtr', 0, 'P']]
@@ -1051,12 +1040,12 @@ class sco(MQOpts):
             opts += [['CertificateValPolicy', py23long(0), MQLONG_TYPE]]
 
             if MQLONG_TYPE == 'i':
-                opts += [['pad','', '4s']]
+                opts += [['pad', b'', '4s']]
 
         if "8.0.0" in pymqe.__mqlevels__:
-            opts += [['CertificateLabel', '', '64s']]
+            opts += [['CertificateLabel', b'', '64s']]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(sco, self).__init__(*tuple(opts), **kw)
 
 
 # Backward compatibility
@@ -1074,8 +1063,8 @@ class SD(MQOpts):
         opts = [['StrucId', CMQC.MQSD_STRUC_ID, '4s'],
                 ['Version', CMQC.MQSD_VERSION_1, MQLONG_TYPE],
                 ['Options', CMQC.MQSO_NON_DURABLE, MQLONG_TYPE],
-                ['ObjectName', '', '48s'],
-                ['AlternateUserId', '', '12s'],
+                ['ObjectName', b'', '48s'],
+                ['AlternateUserId', b'', '12s'],
                 ['AlternateSecurityId', CMQC.MQSID_NONE, '40s'],
                 ['SubExpiry', CMQC.MQEI_UNLIMITED, MQLONG_TYPE],
 
@@ -1103,7 +1092,7 @@ class SD(MQOpts):
                 ['SubCorrelId', CMQC.MQCI_NONE, '24s'],
                 ['PubPriority', CMQC.MQPRI_PRIORITY_AS_Q_DEF, MQLONG_TYPE],
                 ['PubAccountingToken', CMQC.MQACT_NONE, '32s'],
-                ['PubApplIdentityData', '', '32s'],
+                ['PubApplIdentityData', b'', '32s'],
 
                 # SelectionString
                 ['SelectionStringVSPtr', 0, 'P'],
@@ -1121,7 +1110,7 @@ class SD(MQOpts):
                 ['ResObjectStringVSLength', py23long(0), MQLONG_TYPE],
                 ['ResObjectStringVSCCSID', py23long(0), MQLONG_TYPE]]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(SD, self).__init__(*tuple(opts), **kw)
 
 
 class SRO(MQOpts):
@@ -1137,7 +1126,7 @@ class SRO(MQOpts):
                 ['Options', CMQC.MQSRO_FAIL_IF_QUIESCING, MQLONG_TYPE],
                 ['NumPubs', 0, MQLONG_TYPE]]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(SRO, self).__init__(*tuple(opts), **kw)
 
 
 class CMHO(MQOpts):
@@ -1151,11 +1140,11 @@ class CMHO(MQOpts):
                 ['Version', CMQC.MQCMHO_VERSION_1, MQLONG_TYPE],
                 ['Options', CMQC.MQCMHO_DEFAULT_VALIDATION, MQLONG_TYPE]]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(CMHO, self).__init__(*tuple(opts), **kw)
 
 
 class PD(MQOpts):
-    """CMHO(**kw)
+    """PD(**kw)
 
     Construct an MQPD Structure with default values as per MQI. The
     default values may be overridden by the optional keyword arguments
@@ -1168,7 +1157,7 @@ class PD(MQOpts):
                 ['Context', CMQC.MQPD_NO_CONTEXT, MQLONG_TYPE],
                 ['CopyOptions', CMQC.MQCOPY_DEFAULT, MQLONG_TYPE]]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(PD, self).__init__(*tuple(opts), **kw)
 
 
 class SMPO(MQOpts):
@@ -1184,7 +1173,7 @@ class SMPO(MQOpts):
                 ['ValueEncoding', CMQC.MQENC_NATIVE, MQLONG_TYPE],
                 ['ValueCCSID', CMQC.MQCCSI_APPL, MQLONG_TYPE]]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(SMPO, self).__init__(*tuple(opts), **kw)
 
 
 class IMPO(MQOpts):
@@ -1210,9 +1199,9 @@ class IMPO(MQOpts):
                 ['ReturnedNameVSLength', py23long(0), MQLONG_TYPE],
                 ['ReturnedNameVSCCSID', py23long(0), MQLONG_TYPE],
 
-                ['TypeString', '', '8s']]
+                ['TypeString', b'', '8s']]
 
-        super(MQOpts, self).__init__(*tuple(opts), **kw)
+        super(IMPO, self).__init__(*tuple(opts), **kw)
 
 
 #
@@ -1237,8 +1226,8 @@ class _MQConst2String(object):
             pfxlen = len(self.__prefix)
             for i in self.__module.__dict__.keys():
                 if i[0:pfxlen] == self.__prefix:
-                    newKey, newVal = self.__module.__dict__[i], i
-                    self.__stringDict[newKey] = newVal
+                    new_key, new_val = self.__module.__dict__[i], i
+                    self.__stringDict[new_key] = new_val
         self.__lock.release()
 
     def __getitem__(self, code):
@@ -1246,11 +1235,12 @@ class _MQConst2String(object):
         return self.__stringDict[code]
 
     def __contains__(self, key):
-        return self.has_key(key)
-
-    def has_key(self, key):
         self.__build()
         return key in self.__stringDict
+
+    def has_key(self, key):
+        """"Deprecated. Use 'in' operator instead."""
+        return key in self
 
 
 #######################################################################
@@ -1329,10 +1319,10 @@ class QueueManager(object):
     the connection may be deferred until a call to connect().
     """
 
-    def __init__(self, name=''):
-        """QueueManager(name = '')
+    def __init__(self, name=None):
+        """QueueManager(name = None)
 
-        Connect to the Queue Manager 'name' (default value ''). If
+        Connect to the Queue Manager 'name' (default value None). If
         'name' is None, don't connect now, but defer the connection
         until connect() is called."""
 
@@ -1453,7 +1443,7 @@ class QueueManager(object):
 
         if not self.__handle:
             raise PYIFError('not connected')
-        rv = pymqe.MQDISC(self.__handle)
+        pymqe.MQDISC(self.__handle)
         self.__handle = self.__qmobj = None
 
     def getHandle(self):
@@ -1570,28 +1560,31 @@ class QueueManager(object):
 
 # Some support functions for Queue ops.
 def makeQDesc(qDescOrString):
-    "Maybe make MQOD from string. Module Private"
+    """Maybe make MQOD from string. Module Private"""
     if isinstance(qDescOrString, (str, bytes)):
-        return od(ObjectName = qDescOrString)
+        return od(ObjectName=qDescOrString)
     else:
         return qDescOrString
 
+
 make_q_desc = makeQDesc
 
+
 def commonQArgs(*opts):
-    "Process args common to put/get/put1. Module Private."
-    l = len(opts)
-    if l > 2:
+    """Process args common to put/get/put1. Module Private."""
+    ln = len(opts)
+    if ln > 2:
         raise TypeError('Too many args')
-    mDesc = None
-    pgOpts = None
-    if l > 0:
-        mDesc = opts[0]
-    if l == 2:
-        pgOpts = opts[1]
-    if mDesc == None:
-        mDesc = md()
-    return(mDesc, pgOpts)
+    m_desc = None
+    pg_opts = None
+    if ln > 0:
+        m_desc = opts[0]
+    if ln == 2:
+        pg_opts = opts[1]
+    if m_desc is None:
+        m_desc = md()
+    return m_desc, pg_opts
+
 
 common_q_args = commonQArgs
 
@@ -1606,10 +1599,9 @@ class Queue:
     string (in which case a default MQOD structure is created using
     that name), or by passing a ready constructed MQOD class."""
 
-
     def __realOpen(self):
-        "Really open the queue."
-        if self.__qDesc == None:
+        """Really open the queue."""
+        if self.__qDesc is None:
             raise PYIFError('The Queue Descriptor has not been set.')
         rv = pymqe.MQOPEN(self.__qMgr.getHandle(),
                           self.__qDesc.pack(), self.__openOpts)
@@ -1644,12 +1636,12 @@ class Queue:
 
         self.__qMgr = qMgr
         self.__qHandle = self.__qDesc = self.__openOpts = None
-        l = len(opts)
-        if l > 2:
+        ln = len(opts)
+        if ln > 2:
             raise TypeError('Too many args')
-        if l > 0:
+        if ln > 0:
             self.__qDesc = makeQDesc(opts[0])
-        if l == 2:
+        if ln == 2:
             self.__openOpts = opts[1]
             self.__realOpen()
 
@@ -1674,16 +1666,15 @@ class Queue:
         openOpts is not passed, the Queue open is deferred until a
         subsequent put() or get() call."""
 
-        l = len(opts)
-        if l > 1:
+        ln = len(opts)
+        if ln > 1:
             raise TypeError('Too many args')
         if self.__qHandle:
             raise PYIFError('The Queue is already open')
         self.__qDesc = makeQDesc(qDesc)
-        if l == 1:
+        if ln == 1:
             self.__openOpts = opts[0]
             self.__realOpen()
-
 
     def put(self, msg, *opts):
         """put(msg[, mDesc ,putOpts])
@@ -1703,7 +1694,7 @@ class Queue:
         updated by the put operation."""
 
         mDesc, putOpts = commonQArgs(*opts)
-        if putOpts == None:
+        if putOpts is None:
             putOpts = pmo()
         # If queue open was deferred, open it for put now
         if not self.__qHandle:
@@ -1745,59 +1736,59 @@ class Queue:
         else:
             self.put(msg, *opts)
 
-    def get(self, maxLength = None, *opts):
-        """get([maxLength [, mDesc, getOpts]])
+    def get(self, maxLength=None, *opts):
+        """get([maxLength [, m_desc, get_opts]])
 
         Return a message from the queue. If the queue is not already
         open, it is opened now with the option 'MQOO_INPUT_AS_Q_DEF'.
 
         maxLength, if present, specifies the maximum length for the
         message. If the message received exceeds maxLength, then the
-        behavior is as defined by MQI and the getOpts argument.
+        behavior is as defined by MQI and the get_opts argument.
 
         If maxLength is not specified, or is None, then the entire
         message is returned regardless of its size. This may require
         multiple calls to the underlying MQGET API.
 
-        mDesc is the pymqi.md() MQMD Message Descriptor for receiving
+        m_desc is the pymqi.md() MQMD Message Descriptor for receiving
         the message. If it is not passed, or is None, then a default
         md() object is used.
 
-        getOpts is the pymqi.gmo() MQGMO Get Message Options
+        get_opts is the pymqi.gmo() MQGMO Get Message Options
         structure for the get call. If it is not passed, or is None,
         then a default gmo() object is used.
 
-        If mDesc and/or getOpts arguments were supplied, they may be
+        If m_desc and/or get_opts arguments were supplied, they may be
         updated by the get operation."""
 
-        mDesc, getOpts = commonQArgs(*opts)
-        if getOpts == None:
-            getOpts = gmo()
+        m_desc, get_opts = commonQArgs(*opts)
+        if get_opts is None:
+            get_opts = gmo()
         # If queue open was deferred, open it for put now
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_INPUT_AS_Q_DEF
             self.__realOpen()
 
         # Truncated message fix thanks to Maas-Maarten Zeeman
-        if maxLength == None:
+        if maxLength is None:
             length = 4096
         else:
             length = maxLength
 
         rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle,
-                        mDesc.pack(), getOpts.pack(), length)
+                        m_desc.pack(), get_opts.pack(), length)
 
         if not rv[-2]:
             # Everything A OK
-            mDesc.unpack(rv[1])
-            getOpts.unpack(rv[2])
+            m_desc.unpack(rv[1])
+            get_opts.unpack(rv[2])
             return rv[0]
 
         # Some error. If caller supplied buffer, maybe it wasn't big
         # enough, so just return the error/warning.
         # CAVEAT: If message truncated, this exception loses the
         # partially filled buffer.
-        if maxLength != None and maxLength >= 0:
+        if maxLength is not None and maxLength >= 0:
             raise MQMIError(rv[-2], rv[-1])
 
         # Default buffer used, if not truncated, give up
@@ -1806,18 +1797,18 @@ class Queue:
 
         # Message truncated, but we know its size. Do another MQGET
         # to retrieve it from the queue.
-        mDesc.unpack(rv[1])  # save the message id
+        m_desc.unpack(rv[1])  # save the message id
         length = rv[-3]
         rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle,
-                         mDesc.pack(), getOpts.pack(), length)
+                         m_desc.pack(), get_opts.pack(), length)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
-        mDesc.unpack(rv[1])
-        getOpts.unpack(rv[2])
+        m_desc.unpack(rv[1])
+        get_opts.unpack(rv[2])
 
         return rv[0]
 
-    def get_rfh2(self, max_length=None, *opts):
+    def get_rfh2(self, maxLength=None, *opts):
         """get_rfh2([maxLength [, mDesc, getOpts, [rfh2_header_1, ]]])
 
         Get a message and attempt to unpack the rfh2 headers.
@@ -1832,7 +1823,7 @@ class Queue:
                 if not isinstance(opts[2], list):
                     raise TypeError("Third item of opts should be a list.")
 
-                msg = self.get(max_length, *opts[0:2])
+                msg = self.get(maxLength, *opts[0:2])
                 mqmd = opts[0]
                 rfh2_headers = []
                 # If format is not CMQC.MQFMT_RF_HEADER_2 then do not parse.
@@ -1845,7 +1836,7 @@ class Queue:
                     format = rfh2_header["Format"]
                 opts[2].extend(rfh2_headers)
         else:
-            msg = self.get(max_length, *opts)
+            msg = self.get(maxLength, *opts)
 
         return msg
 
@@ -1906,6 +1897,7 @@ class Queue:
 
         return self.__qHandle
 
+
 # Publish Subscribe support - Hannes Wagener 2011
 class Topic:
     """Topic(queue_manager, topic_name, topic_string, topic_desc, open_opts)
@@ -1932,7 +1924,7 @@ class Topic:
 
         """
 
-        if self.__topic_desc == None:
+        if self.__topic_desc is None:
             raise PYIFError('The Topic Descriptor has not been set.')
 
         rv = pymqe.MQOPEN(self.__queue_manager.getHandle(),
@@ -1983,7 +1975,8 @@ class Topic:
         if self.__open_opts:
             self.__real_open()
 
-    def __create_topic_desc(self, topic_name, topic_string):
+    @staticmethod
+    def __create_topic_desc(topic_name, topic_string):
         """__create_topic(topic_name, topic_string)
 
         Creates a topic object descriptor from a given topic_name/topic_string.
@@ -2063,7 +2056,7 @@ class Topic:
 
         msg_desc, put_opts = commonQArgs(*opts)
 
-        if put_opts == None:
+        if put_opts is None:
             put_opts = pmo()
 
         # If queue open was deferred, open it for put now
@@ -2102,7 +2095,7 @@ class Topic:
 
         return sub
 
-    def close(self, options = CMQC.MQCO_NONE):
+    def close(self, options=CMQC.MQCO_NONE):
         """close([options])
 
         Close the topic, using options.
@@ -2137,6 +2130,8 @@ class Subscription:
         self.sub_opts = sub_opts
         self.topic_name = topic_name
         self.topic_string = topic_string
+        self.__sub_handle = None
+        self.__open_opts = None
 
         if self.__sub_desc:
             self.sub(sub_desc=self.__sub_desc)
@@ -2240,6 +2235,7 @@ class Subscription:
         except PYIFError:
             pass
 
+
 class MessageHandle(object):
     """ A higher-level wrapper around the MQI's native MQCMHO structure.
     """
@@ -2297,7 +2293,6 @@ class MessageHandle(object):
 
             return value
 
-
         def set(self, name, value, property_type=CMQC.MQTYPE_STRING,
                 value_length=CMQC.MQVL_NULL_TERMINATED, pd=None, smpo=None):
             """ Allows for setting arbitrary properties of a message. 'name'
@@ -2322,12 +2317,13 @@ class MessageHandle(object):
         cmho = cmho if cmho else CMHO()
 
         comp_code, comp_reason, self.msg_handle = pymqe.MQCRTMH(self.conn_handle,
-                                                            cmho.pack())
+                                                                cmho.pack())
 
         if comp_code != CMQC.MQCC_OK:
             raise MQMIError(comp_code, comp_reason)
 
         self.properties = self._Properties(self.conn_handle, self.msg_handle)
+
 
 class _Filter(object):
     """ The base class for MQAI filters. The initializer expectes user to provide
@@ -2346,15 +2342,18 @@ class _Filter(object):
         return msg % (self.__class__.__name__, hex(id(self)), self.selector,
                       self.value, self.operator)
 
+
 class StringFilter(_Filter):
     """ A subclass of pymqi._Filter suitable for passing MQAI string filters around.
     """
     _pymqi_filter_type = 'string'
 
+
 class IntegerFilter(_Filter):
     """ A subclass of pymqi._Filter suitable for passing MQAI integer filters around.
     """
     _pymqi_filter_type = 'integer'
+
 
 class FilterOperator(object):
     """ Creates low-level filters basing on what's been provided in the high-level
@@ -2381,9 +2380,9 @@ class FilterOperator(object):
     def __call__(self, value):
 
         # Do we support the given attribute filter?
-        if self.pub_filter.selector >= CMQC.MQIA_FIRST and self.pub_filter.selector <= CMQC.MQIA_LAST:
+        if CMQC.MQIA_FIRST <= self.pub_filter.selector <= CMQC.MQIA_LAST:
             priv_filter_class = IntegerFilter
-        elif self.pub_filter.selector >= CMQC.MQCA_FIRST and self.pub_filter.selector <= CMQC.MQCA_LAST:
+        elif CMQC.MQCA_FIRST <= self.pub_filter.selector <= CMQC.MQCA_LAST:
             priv_filter_class = StringFilter
         else:
             msg = 'selector [%s] is of an unsupported type (neither integer ' \
@@ -2398,6 +2397,7 @@ class FilterOperator(object):
             raise Error(msg % self.pub_filter.operator)
 
         return priv_filter_class(self.pub_filter.selector, value, operator)
+
 
 class Filter(object):
     """ The user-facing MQAI filtering class which provides syntactic sugar
@@ -2416,6 +2416,8 @@ class Filter(object):
         self.operator = name
 
         return FilterOperator(self)
+
+
 #
 # This piece of magic shamelessly plagiarised from xmlrpclib.py. It
 # works a bit like a C++ STL functor.
@@ -2468,10 +2470,10 @@ class PCFExecute(QueueManager):
 
         if isinstance(qm, QueueManager):
             self.qm = qm
-            super(QueueManager, self).__init__(name=None)
+            super(PCFExecute, self).__init__(name=None)
         else:
             self.qm = None
-            super(QueueManager, self).__init__(name=name)
+            super(PCFExecute, self).__init__(name=name)
 
     def __getattr__(self, name):
         """MQCMD_*(attrDict)
