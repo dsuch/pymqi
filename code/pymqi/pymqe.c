@@ -142,19 +142,26 @@ static PyObject *ErrorObj;
 
 
 /* Python 3 compatibility
-*/
+ * Considerations:
+ *   PyDict_GetItemString - safe to keep, the "String" here refers to C's char*
+ *   PyErr_SetString - safe to keep, it will take C's char* and pyt it in Python's exception
+ *                     (in Py3 it'll auto decode it with UTF-8, but in this file all instances are
+ *                      hard-coded ascii anyway, so no issues.)
+ *
+ * Other functions renamed as per below between Py2 and Py3:
+ */
 #if PY_MAJOR_VERSION==2
-#define Py23String_FromString PyString_FromString
-#define Py23String_FromStringAndSize PyString_FromStringAndSize
-#define Py23String_AsString PyString_AsString
-#define Py23String_Size PyString_Size
-#define Py23String_Check PyString_Check
+#define Py23String_FromString PyString_FromString // converts C char* to Py2 bytes/str
+#define Py23String_FromStringAndSize PyString_FromStringAndSize // converts C char* to Py2 bytes/str
+#define Py23String_AsString PyString_AsString  // converts Py3 bytes/str to C char*
+#define Py23String_Size PyString_Size  // get length of Py3 bytes/str
+#define Py23String_Check PyString_Check  // check object is Py2 bytes/str
 #else
-#define Py23String_FromString PyUnicode_FromString
-#define Py23String_FromStringAndSize PyUnicode_FromStringAndSize
-#define Py23String_AsString PyBytes_AsString
-#define Py23String_Size PyBytes_Size
-#define Py23String_Check PyBytes_Check
+#define Py23String_FromString PyBytes_FromString  // converts C char* to Py3 bytes
+#define Py23String_FromStringAndSize PyBytes_FromStringAndSize  // converts C char* to Py3 bytes
+#define Py23String_AsString PyBytes_AsString  // converts Py3 bytes to C char*
+#define Py23String_Size PyBytes_Size  // get length of Py3 bytes
+#define Py23String_Check PyBytes_Check  // check object is Py3 bytes
 #endif
 
 
@@ -231,7 +238,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
 #if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "sls#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #else
-  if (!PyArg_ParseTuple(args, "sly#O|y#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
+  if (!PyArg_ParseTuple(args, "yly#O|y#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #endif
     return 0;
   }
@@ -242,7 +249,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
 #if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "sls#", &name, &options, &mqcd, &mqcd_buf_len)) {
 #else
-  if (!PyArg_ParseTuple(args, "sly#", &name, &options, &mqcd, &mqcd_buf_len)) {
+  if (!PyArg_ParseTuple(args, "yly#", &name, &options, &mqcd, &mqcd_buf_len)) {
 #endif
     return 0;
   }
@@ -610,7 +617,6 @@ static PyObject *pymqe_MQGET(PyObject *self, PyObject *args) {
 #endif
              mDescP, PYMQI_MQMD_SIZEOF, gmoP, PYMQI_MQGMO_SIZEOF,
              (long) actualLength, (long) compCode, (long) compReason);
-
   free(msgBuffer);
   return rv;
 }
@@ -798,9 +804,9 @@ static PyObject *pymqe_MQSET(PyObject *self, PyObject *args) {
 #ifdef MQCMDL_LEVEL_700
 
 static char pymqe_MQSUB__doc__[] =
-"MQSUB(connectionHandle, sd, objectHandle, subHandle, compCode, reasonCode) \
+"MQSUB(connectionHandle, sd, objectHandle) \
  \
-Calls the MQI MQSUB(connectionHandle, subDesc, objectHandle, subHandle, compCode, reasonCode) \
+Calls the MQI MQSUB(connectionHandle, subDesc, objectHandle) \
 ";
 
 static PyObject * pymqe_MQSUB(PyObject *self, PyObject *args) {
