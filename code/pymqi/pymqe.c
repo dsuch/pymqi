@@ -205,7 +205,8 @@ static PyObject * pymqe_MQCONN(PyObject *self, PyObject *args) {
  */
 
 static char pymqe_MQCONNX__doc__[] =
-"MQCONNX(mgrName, options, mqcd, mqsco) \
+#ifdef PYMQI_FEATURE_SSL
+"MQCONNX(mgrName, options, mqcd, userpass, mqsco) \
  \
 Calls the MQI MQCONNX(mgrName, options, mqcno) function to connect the Queue \
 Manager specified by the string mgrName using options with the channel descriptor \
@@ -215,6 +216,18 @@ passed to subsequent calls to MQOPEN, etc.\
  \
 NOTE: The argument mqcd refers to the MQI MQCD structure, not MQCNO. \
 ";
+#else
+"MQCONNX(mgrName, options, mqcd) \
+ \
+Calls the MQI MQCONNX(mgrName, options, mqcno) function to connect the Queue \
+Manager specified by the string mgrName using options with the channel descriptor \
+mqcd. The optional mqsco specifies SSL information. \
+The tuple (handle, comp, reason) is returned. Handle should be \
+passed to subsequent calls to MQOPEN, etc.\
+ \
+NOTE: The argument mqcd refers to the MQI MQCD structure, not MQCNO. \
+";
+#endif
 
 static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   char* name = NULL;
@@ -903,7 +916,7 @@ static PyObject* pymqe_MQCRTMH(PyObject *self, PyObject *args) {
 }
 
 static char pymqe_MQSETMP__doc__[] =
-"MQSETMP(conn_handle, msg_handle, smpo, name, pd, type) \
+"MQSETMP(conn_handle, msg_handle, smpo, name, pd, type, value, value_length) \
  \
 Calls the MQI's MQSETMP function \
 ";
@@ -1044,7 +1057,7 @@ static void cleanupBags(MQHBAG adminBag, MQHBAG responseBag) {
 
 
 static char pymqe_mqaiExecute__doc__[] =
-"mqaiExecute(qMgr, cmd, args)\
+"mqaiExecute(qMgr, cmd, args, filters)\
 \
 Execute the PCF command 'cmd' on Queue Manager 'qMgr', with the \
 optional dictionary 'args'.  The command is a MQCMD_* code from \
