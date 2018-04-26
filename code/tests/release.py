@@ -9,16 +9,17 @@ from uuid import uuid4
 
 # PyMQI
 import pymqi
-import CMQC, CMQCFC
+import CMQC
+import CMQCFC
 
-queue_manager = 'QM01'
-channel = 'SVRCONN.1'
-host = '192.168.1.126'
-port = '1434'
+queue_manager = 'MQTEST'
+channel = 'CH1'
+host = '127.0.0.1'
+port = '8887'
 conn_info = '{}({})'.format(host, port)
 
-queue_name = uuid4().hex
-message = uuid4().hex
+queue_name = uuid4().hex.encode('ascii')
+message = uuid4().hex.encode('ascii')
 
 # Connect ..
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
@@ -41,7 +42,7 @@ queue.close()
 pcf.MQCMD_DELETE_Q({CMQC.MQCA_Q_NAME: queue_name, CMQC.MQIA_Q_TYPE: CMQC.MQQT_LOCAL})
 
 # .. and just to be sure, grab some channels as well ..
-result = pcf.MQCMD_INQUIRE_CHANNEL({CMQCFC.MQCACH_CHANNEL_NAME:'*'})
+result = pcf.MQCMD_INQUIRE_CHANNEL({CMQCFC.MQCACH_CHANNEL_NAME: b'*'})
 assert len(result) > 1
 
 # .. finally, close the connection.

@@ -2,7 +2,6 @@
 """
 
 # stdlib
-import sys
 import os
 import unittest
 from uuid import uuid4
@@ -14,7 +13,6 @@ from nose.tools import eq_
 from testfixtures import Replacer
 
 # test env, configuration & utilities
-import env
 import config
 import utils
 
@@ -63,7 +61,7 @@ class TestQueueManager(unittest.TestCase):
     @utils.with_env_complement('MQSERVER', config.MQ.MQSERVER)
     def test_connect(self):
         # connecting with queue manager name needs MQSERVER set properly
-        print os.environ['MQSERVER']
+        print(os.environ['MQSERVER'])
         qmgr = pymqi.QueueManager(None)
         self.assertFalse(qmgr.is_connected)
         qmgr.connect(self.qm_name)
@@ -132,7 +130,7 @@ class TestQueueManager(unittest.TestCase):
         qmgr.connect_tcp_client(
             self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
             password=self.password)
-        input_msg = 'Hello world!'
+        input_msg = b'Hello world!'
         qmgr.put1(self.queue_name, input_msg)
         # now get the message from the queue
         queue = pymqi.Queue(qmgr, self.queue_name)
@@ -145,7 +143,7 @@ class TestQueueManager(unittest.TestCase):
             self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
             password=self.password)
         attribute = pymqi.CMQC.MQCA_Q_MGR_NAME
-        expected_value = self.qm_name
+        expected_value = utils.py3str2bytes(self.qm_name)
         attribute_value = qmgr.inquire(attribute)
         self.assertEqual(len(attribute_value), pymqi.CMQC.MQ_Q_MGR_NAME_LENGTH)  
         self.assertEqual(attribute_value.strip(), expected_value)
@@ -167,10 +165,12 @@ class TestQueueManager(unittest.TestCase):
 
             for expected in(True, False):
 
+                # noinspection PyUnusedLocal
                 def _connect_tcp_client(*ignored_args, **ignored_kwargs):
                     pass
 
-                def _getattr(self, name):
+                # noinspection PyUnusedLocal
+                def _getattr(self2, name):
                     if expected:
                         class _DummyMethod(object):
                             pass
@@ -195,4 +195,3 @@ class TestQueueManager(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-

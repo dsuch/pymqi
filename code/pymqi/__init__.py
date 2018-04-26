@@ -95,12 +95,8 @@ their MQI counterparts.
 import struct
 import threading
 import ctypes
-
-# PyMQI
-import pymqe
-from pymqi import CMQCFC
-from pymqi import CMQC, CMQXC
-
+import inspect
+# import xml parser.  lxml/etree only available since python 2.5
 use_minidom = False
 try:
     # noinspection PyUnresolvedReferences
@@ -109,6 +105,10 @@ except ImportError:
     from xml.dom.minidom import parseString
     use_minidom = True
 
+# PyMQI
+import pymqe
+from pymqi import CMQCFC
+from pymqi import CMQC, CMQXC, CMQZC
 
 __version__ = "1.6.0"
 __mqlevels__ = pymqe.__mqlevels__
@@ -136,18 +136,42 @@ def ispy3str(s):
         return False
 
 
-def py23bytes(s):
-    if isinstance(s, str) and not isinstance(s, bytes):
-        return s.encode('utf-8')  # py3
-    else:
-        return s  # py2
+def check_not_py3str(var):
+    if ispy3str(var):
+        raise TypeError("Python 3 style string found but not allowed here: '{0}'. Convert to bytes.".format(var))
 
 
-def py23str(b):
-    if isinstance(b, bytes) and not isinstance(b, str):
-        return b.decode('utf-8')  # py3
+def py3str2bytes(s, encoding='ascii'):
+    if ispy3str(s):
+        return s.encode(encoding)
     else:
-        return b  # py2
+        return s
+
+
+def check_args(**args_map):
+    # noinspection PyDeprecation
+    def check_args_func(func):
+        arg_names, _, _, args_defaults = inspect.getargspec(func)
+        if args_defaults is None:
+            arg_names_pos = arg_names[:]
+        else:
+            arg_names_pos = arg_names[:len(args_defaults)]
+
+        def check_args_impl(*func_args, **func_kwargs):
+            for arg_name in args_map.keys():
+                try:
+                    # positional argument
+                    pos_arg_idx = arg_names_pos.index(arg_name)  # throws ValeError if not found
+                    arg_value = func_args[pos_arg_idx]  # throws IndexError if arg invoked with kw and moved to kwargs
+                except (ValueError, IndexError):
+                    # kw argument
+                    arg_value = func_kwargs.get(arg_name)  # get() returns None if key is missing
+                if arg_value is not None and not isinstance(arg_value, args_map[arg_name]):
+                    raise TypeError("Arg '{0}' expected to be '{1}', found '{2}' in call to '{3}'".format(
+                                    arg_name, args_map[arg_name].__name__, type(arg_value).__name__, func.__name__))
+                return func(*func_args, **func_kwargs)
+        return check_args_impl
+    return check_args_func
 
 
 #
@@ -255,17 +279,11 @@ class MQOpts(object):
             # Flatten attribs that are arrays
             if isinstance(v, list):
                 for x in v:
-                    if ispy3str(x):
-                        raise TypeError("Values packed to pymqe C functions must use 'bytes', "
-                                        "but found 'str' ('{}':[..., '{}', ...])".format(i[0], x))
-                    else:
-                        args.append(x)
+                    check_not_py3str(x)  # Python 3 bytes check
+                    args.append(x)
             else:
-                if ispy3str(v):
-                    raise TypeError("Values passed to pymqe C functions must use 'bytes', "
-                                    "but found 'str' ('{}':'{}')".format(i[0], v))
-                else:
-                    args.append(v)
+                check_not_py3str(v)  # Python 3 bytes check
+                args.append(v)
 
         return struct.pack(*args)
 
@@ -274,14 +292,14 @@ class MQOpts(object):
 
         Unpack a 'C' structure 'buff' into self."""
 
+        check_not_py3str(buff)  # Python 3 bytes check
+
         # Unpack returns a tuple of the unpacked data, in the same
         # order (I hope!) as in the ctor's list arg.
         r = struct.unpack(self.__format, buff)
         x = 0
         for i in self.__list:
-            if ispy3str(r[x]):
-                raise TypeError("Values unpacked from pymqe C functions must use 'bytes', "
-                                "but found 'str' ('{}':'{}')".format(i[0], r[x]))
+            check_not_py3str(r[x])  # Python 3 bytes check
             setattr(self, i[0], r[x])
             x = x + 1
 
@@ -296,6 +314,7 @@ class MQOpts(object):
             # Only set if the attribute already exists. getattr raises
             # an exception if it doesn't.
             getattr(self, str(i))
+            check_not_py3str(kw[i])  # Python 3 bytes check
             setattr(self, str(i), kw[i])
 
     def __setitem__(self, key, value):
@@ -308,6 +327,7 @@ class MQOpts(object):
         # Only set if the attribute already exists. getattr raises an
         # exception if it doesn't.
         getattr(self, key)
+        check_not_py3str(value)  # Python 3 bytes check
         setattr(self, key, value)
 
     def get(self):
@@ -371,6 +391,8 @@ class MQOpts(object):
 
         """
 
+        check_not_py3str(vs_value)  # Python 3 bytes check
+
         # if the VSPtr name is passed - remove VSPtr to be left with name.
         if vs_name.endswith("VSPtr"):
             vs_name_vsptr = vs_name
@@ -386,8 +408,6 @@ class MQOpts(object):
         c_vs_value_p = 0
 
         if vs_value is not None:
-            if isinstance(vs_value, str) and not isinstance(vs_value, bytes):
-                vs_value = vs_value.encode('utf-8')
             c_vs_value = ctypes.create_string_buffer(vs_value)
             c_vs_value_p = ctypes.cast(c_vs_value, ctypes.c_void_p).value
 
@@ -424,8 +444,8 @@ class MQOpts(object):
 # Sub-classes of MQOpts representing real MQI structures.
 #
 
-class gmo(MQOpts):
-    """gmo(**kw)
+class GMO(MQOpts):
+    """GMO(**kw)
 
     Construct a MQGMO Structure with default values as per MQI. The
     default values may be overridden by the optional keyword arguments
@@ -452,15 +472,15 @@ class gmo(MQOpts):
                 ['Reserved2', py23long(0), MQLONG_TYPE],
                 ['MsgHandle', py23long(0), 'q']]
 
-        super(gmo, self).__init__(tuple(opts), **kw)
+        super(GMO, self).__init__(tuple(opts), **kw)
 
 
 # Backward compatibility
-GMO = gmo
+gmo = GMO
 
 
-class pmo(MQOpts):
-    """pmo(**kw)
+class PMO(MQOpts):
+    """PMO(**kw)
 
     Construct a MQPMO Structure with default values as per MQI. The
     default values may be overridden by the optional keyword arguments
@@ -476,8 +496,8 @@ class pmo(MQOpts):
             ['KnownDestCount', 0, MQLONG_TYPE],
             ['UnknownDestCount', 0, MQLONG_TYPE],
             ['InvalidDestCount', 0, MQLONG_TYPE],
-            ['ResolvedQName', '', '48s'],
-            ['ResolvedQMgrName', '', '48s'],
+            ['ResolvedQName', b'', '48s'],
+            ['ResolvedQMgrName', b'', '48s'],
             ['RecsPresent', 0, MQLONG_TYPE],
             ['PutMsgRecFields',  0, MQLONG_TYPE],
             ['PutMsgRecOffset', 0, MQLONG_TYPE],
@@ -492,15 +512,15 @@ class pmo(MQOpts):
                 ['Action', py23long(0), MQLONG_TYPE],
                 ['PubLevel', py23long(0), MQLONG_TYPE]]
 
-        super(pmo, self).__init__(tuple(opts), **kw)
+        super(PMO, self).__init__(tuple(opts), **kw)
 
 
 # Backward compatibility
-PMO = pmo
+pmo = PMO
 
 
-class od(MQOpts):
-    """od(**kw)
+class OD(MQOpts):
+    """OD(**kw)
 
     Construct a MQOD Structure with default values as per MQI. The
     default values may be overridden by the optional keyword arguments
@@ -557,22 +577,22 @@ class od(MQOpts):
             if MQLONG_TYPE == 'i':
                 opts += [['pad', b'', '4s']]
 
-        super(od, self).__init__(tuple(opts), **kw)
+        super(OD, self).__init__(tuple(opts), **kw)
 
 
 # Backward compatibility
-OD = od
+od = OD
 
 
-class md(MQOpts):
-    """md(**kw)
+class MD(MQOpts):
+    """MD(**kw)
 
     Construct a MQMD Structure with default values as per MQI. The
     default values may be overridden by the optional keyword arguments
     'kw'."""
 
     def __init__(self, **kw):
-        super(md, self).__init__(tuple([
+        super(MD, self).__init__(tuple([
             ['StrucId', CMQC.MQMD_STRUC_ID, '4s'],
             ['Version', CMQC.MQMD_VERSION_1, MQLONG_TYPE],
             ['Report', CMQC.MQRO_NONE, MQLONG_TYPE],
@@ -605,7 +625,7 @@ class md(MQOpts):
 
 
 # Backward compatibility
-MD = md
+md = MD
 
 
 # RFH2 Header parsing/creation Support - Hannes Wagener - 2010.
@@ -658,6 +678,8 @@ class RFH2(MQOpts):
 
         """
 
+        check_not_py3str(folder_data)  # Python 3 bytes check
+
         # check that the folder is valid xml and get the root tag name.
         if use_minidom:
             try:
@@ -671,8 +693,12 @@ class RFH2(MQOpts):
             except Exception as e:
                 raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
         # make sure folder length divides by 4 - else add spaces
-        folder_data = folder_data + " " * (4 - len(folder_data) % 4)
         folder_length = len(folder_data)
+        remainder = folder_length % 4
+        if remainder != 0:
+            num_spaces = 4 - remainder
+            folder_data = folder_data + b" " * num_spaces
+            folder_length = len(folder_data)
 
         self.opts.append([folder_name + "Length", py23long(folder_length), MQLONG_TYPE])
         self.opts.append([folder_name, folder_data, "%is" % folder_length])
@@ -710,6 +736,8 @@ class RFH2(MQOpts):
         Encoding meant to come from the MQMD.
 
         """
+
+        check_not_py3str(buff)  # Python 3 bytes check
 
         if buff[0:4] != CMQC.MQRFH_STRUC_ID:
             raise PYIFError("RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s" %
@@ -757,7 +785,7 @@ class RFH2(MQOpts):
             # move on past four byte length
             s = s[4:]
             # extract the folder string
-            folder_data = py23str(s[:folder_length])
+            folder_data = s[:folder_length]
             # check that the folder is valid xml and get the root tag name.
             if use_minidom:
                 try:
@@ -821,14 +849,14 @@ class TMC2(MQOpts):
         super(TMC2, self).__init__(tuple([
             ['StrucId', CMQC.MQTMC_STRUC_ID, '4s'],
             ['Version', CMQC.MQTMC_VERSION_2, '4s'],
-            ['QName', '', '48s'],
-            ['ProcessName', '', '48s'],
-            ['TriggerData', '', '64s'],
-            ['ApplType', '', '4s'],
-            ['ApplId', '', '256s'],
-            ['EnvData', '', '128s'],
-            ['UserData', '', '128s'],
-            ['QMgrName', '', '48s']]), **kw)
+            ['QName', b'', '48s'],
+            ['ProcessName', b'', '48s'],
+            ['TriggerData', b'', '64s'],
+            ['ApplType', b'', '4s'],
+            ['ApplId', b'', '256s'],
+            ['EnvData', b'', '128s'],
+            ['UserData', b'', '128s'],
+            ['QMgrName', b'', '48s']]), **kw)
 
 # MQCONNX code courtesy of John OSullivan (mailto:jos@onebox.com)
 # SSL additions courtesy of Brian Vicente (mailto:sailbv@netscape.net)
@@ -994,8 +1022,8 @@ cd = CD
 
 
 # SCO Class for SSL Support courtesy of Brian Vicente (mailto:sailbv@netscape.net)
-class sco(MQOpts):
-    """sco(**kw)
+class SCO(MQOpts):
+    """SCO(**kw)
 
     Construct a MQSCO Structure with default values as per MQI. The
     default values maybe overridden by the optional keyword arguments
@@ -1003,14 +1031,18 @@ class sco(MQOpts):
 
     def __init__(self, **kw):
 
-        if '6.0' in pymqe.__mqlevels__:
-            _mqcsco_version = CMQC.MQSCO_VERSION_2
-        elif '7.0' in pymqe.__mqlevels__:
-            _mqcsco_version = CMQC.MQSCO_VERSION_3
+        if '8.0.0' in pymqe.__mqlevels__:
+            _mqcsco_version = CMQC.MQSCO_VERSION_5
+
         elif '7.1' in pymqe.__mqlevels__:
             _mqcsco_version = CMQC.MQSCO_VERSION_4
-        elif '8.0.0' in pymqe.__mqlevels__:
-            _mqcsco_version = CMQC.MQSCO_VERSION_5
+
+        elif '7.0' in pymqe.__mqlevels__:
+            _mqcsco_version = CMQC.MQSCO_VERSION_3
+
+        elif '6.0' in pymqe.__mqlevels__:
+            _mqcsco_version = CMQC.MQSCO_VERSION_2
+
         else:
             _mqcsco_version = CMQC.MQSCO_VERSION_1
 
@@ -1041,11 +1073,11 @@ class sco(MQOpts):
         if "8.0.0" in pymqe.__mqlevels__:
             opts += [['CertificateLabel', b'', '64s']]
 
-        super(sco, self).__init__(tuple(opts), **kw)
+        super(SCO, self).__init__(tuple(opts), **kw)
 
 
 # Backward compatibility
-SCO = sco
+sco = SCO
 
 
 class SD(MQOpts):
@@ -1322,6 +1354,8 @@ class QueueManager(object):
         'name' is None, don't connect now, but defer the connection
         until connect() is called."""
 
+        #name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
+
         self.__handle = None
         self.__name = name
         self.__qmobj = None
@@ -1361,9 +1395,9 @@ class QueueManager(object):
 # SSL additions courtesy of Brian Vicente (mailto:sailbv@netscape.net)
 # Connect options suggested by Jaco Smuts (mailto:JSmuts@clover.co.za)
 
-    def connectWithOptions(self, name, *bwopts, **kw):
-        """connectWithOptions(name [, opts=cnoopts][ ,cd=mqcd][ ,sco=mqsco])
-           connectWithOptions(name, cd, [sco])
+    def connect_with_options(self, name, *bwopts, **kw):
+        """connect_with_options(name [, opts=cnoopts][ ,cd=mqcd][ ,sco=mqsco])
+           connect_with_options(name, cd, [sco])
 
         Connect immediately to the Queue Manager 'name', using the
         optional MQCNO Options opts, the optional MQCD connection
@@ -1373,6 +1407,8 @@ class QueueManager(object):
         older (broken) versions of pymqi. It connects immediately to
         the Queue Manager 'name', using the MQCD connection descriptor
         cd and the optional MQSCO SSL options sco."""
+
+        name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
 
         # Deal with old style args
         bwopts_len = len(bwopts)
@@ -1388,6 +1424,9 @@ class QueueManager(object):
         user = kw.get('user')
         password = kw.get('password')
 
+        user = py3str2bytes(user, 'utf-8')  # Python 3 strings to be converted to bytes
+        password = py3str2bytes(password, 'utf-8')  # Python 3 strings to be converted to bytes
+
         if user:
             # We check for None because password can be an empty string
             if password is None:
@@ -1401,6 +1440,7 @@ class QueueManager(object):
 
         options = CMQC.MQCNO_NONE
         ocd = CD()
+        osco = SCO()
         if 'opts' in kw:
             options = kw['opts']
         if 'cd' in kw:
@@ -1408,14 +1448,14 @@ class QueueManager(object):
         if 'sco' in kw:
             rv = pymqe.MQCONNX(name, options, ocd.pack(), user_password, kw['sco'].pack())
         else:
-            rv = pymqe.MQCONNX(name, options, ocd.pack(), user_password, CMQC.MQCO_NONE)
+            rv = pymqe.MQCONNX(name, options, ocd.pack(), user_password, osco.pack())
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
         self.__handle = rv[0]
         self.__name = name
 
     # Backward compatibility
-    connect_with_options = connectWithOptions
+    connectWithOptions = connect_with_options
 
     def connect_tcp_client(self, name, cd_obj, channel, conn_name, user, password):
         """ Connect immediately to the remote Queue Manager 'name', using
@@ -1423,11 +1463,12 @@ class QueueManager(object):
         TCP connection string 'conn_name'. All other connection
         optons come from 'cd'.
         """
-        setattr(cd_obj, 'ChannelName', channel)
-        setattr(cd_obj, 'ConnectionName', conn_name)
+
+        setattr(cd_obj, 'ChannelName', py3str2bytes(channel))
+        setattr(cd_obj, 'ConnectionName', py3str2bytes(conn_name))
         setattr(cd_obj, 'ChannelType', CMQC.MQCHT_CLNTCONN)
         setattr(cd_obj, 'TransportType', CMQC.MQXPT_TCP)
-        self.connectWithOptions(name, cd, user=user, password=password)
+        self.connect_with_options(name, cd_obj, user=user, password=password)
 
     # Backward compatibility
     connectTCPClient = connect_tcp_client
@@ -1442,7 +1483,7 @@ class QueueManager(object):
         pymqe.MQDISC(self.__handle)
         self.__handle = self.__qmobj = None
 
-    def getHandle(self):
+    def get_handle(self):
         """getHandle()
 
         Get the queue manager handle. The handle is used for other
@@ -1454,7 +1495,7 @@ class QueueManager(object):
             raise PYIFError('not connected')
 
     # Backward compatibility
-    get_handle = getHandle
+    getHandle = get_handle
 
     def begin(self):
         """begin()
@@ -1507,7 +1548,9 @@ class QueueManager(object):
         If mDesc and/or putOpts arguments were supplied, they may be
         updated by the put1 operation."""
 
-        m_desc, put_opts = commonQArgs(*opts)
+        check_not_py3str(msg)  # Python 3 bytes check
+
+        m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
             put_opts = pmo()
 
@@ -1523,6 +1566,8 @@ class QueueManager(object):
 
         Inquire on queue manager 'attribute'. Returns either the
         integer or string value for the attribute."""
+
+        attribute = py3str2bytes(attribute)  # Python 3 strings to be converted to bytes
 
         if self.__qmobj is None:
             # Make an od for the queue manager, open the qmgr & cache result
@@ -1558,15 +1603,16 @@ class QueueManager(object):
 def make_q_desc(qDescOrString):
     """Maybe make MQOD from string. Module Private"""
     if isinstance(qDescOrString, (str, bytes)):
-        return od(ObjectName=qDescOrString)
+        return od(ObjectName=py3str2bytes(qDescOrString))  # Python 3 strings to be converted to bytes
     else:
         return qDescOrString
 
 
+# Backward compatibility
 makeQDesc = make_q_desc
 
 
-def commonQArgs(*opts):
+def common_q_args(*opts):
     """Process args common to put/get/put1. Module Private."""
     ln = len(opts)
     if ln > 2:
@@ -1582,7 +1628,8 @@ def commonQArgs(*opts):
     return m_desc, pg_opts
 
 
-common_q_args = commonQArgs
+# Backward compatibility
+commonQArgs = common_q_args
 
 
 class Queue:
@@ -1630,13 +1677,13 @@ class Queue:
              Y       Y       Immediately
         """
 
-        self.__qMgr = qMgr
+        self.__qMgr = py3str2bytes(qMgr)  # Python 3 strings to be converted to bytes
         self.__qHandle = self.__qDesc = self.__openOpts = None
         ln = len(opts)
         if ln > 2:
             raise TypeError('Too many args')
         if ln > 0:
-            self.__qDesc = makeQDesc(opts[0])
+            self.__qDesc = make_q_desc(opts[0])
         if ln == 2:
             self.__openOpts = opts[1]
             self.__realOpen()
@@ -1667,7 +1714,7 @@ class Queue:
             raise TypeError('Too many args')
         if self.__qHandle:
             raise PYIFError('The Queue is already open')
-        self.__qDesc = makeQDesc(qDesc)
+        self.__qDesc = make_q_desc(qDesc)
         if ln == 1:
             self.__openOpts = opts[0]
             self.__realOpen()
@@ -1689,7 +1736,9 @@ class Queue:
         If m_desc and/or put_opts arguments were supplied, they may be
         updated by the put operation."""
 
-        m_desc, put_opts = commonQArgs(*opts)
+        check_not_py3str(msg)  # Python 3 bytes check
+
+        m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
             put_opts = pmo()
         # If queue open was deferred, open it for put now
@@ -1712,6 +1761,8 @@ class Queue:
 
         """
 
+        check_not_py3str(msg)  # Python 3 bytes check
+
         rfh2_buff = b""
         if len(opts) >= 3:
             if opts[2] is not None:
@@ -1727,7 +1778,7 @@ class Queue:
                         rfh2_buff = rfh2_buff + rfh2_header.pack(encoding)
                         encoding = rfh2_header["Encoding"]
 
-                msg = rfh2_buff + py23bytes(msg)
+                msg = rfh2_buff + msg
             self.put(msg, *opts[0:2])
         else:
             self.put(msg, *opts)
@@ -1757,7 +1808,7 @@ class Queue:
         If m_desc and/or get_opts arguments were supplied, they may be
         updated by the get operation."""
 
-        m_desc, get_opts = commonQArgs(*opts)
+        m_desc, get_opts = common_q_args(*opts)
         if get_opts is None:
             get_opts = gmo()
         # If queue open was deferred, open it for put now
@@ -1854,6 +1905,8 @@ class Queue:
         open, it is opened for Inquire. Returns either the integer or
         string value for the attribute."""
 
+        attribute = py3str2bytes(attribute)  # Python 3 strings to be converted to bytes
+
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_INQUIRE
             self.__realOpen()
@@ -1866,6 +1919,10 @@ class Queue:
         """set(attribute, arg)
 
         Sets the Queue attribute to arg."""
+
+        attribute = py3str2bytes(attribute)  # Python 3 strings to be converted to bytes
+        check_not_py3str(arg)  # Python 3 bytes check
+
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_SET
             self.__realOpen()
@@ -1951,6 +2008,10 @@ class Topic:
              Y       Y       Immediately
         """
 
+        queue_manager = py3str2bytes(queue_manager)  # Python 3 strings to be converted to bytes
+        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
+
         self.__queue_manager = queue_manager
         self.__topic_handle = None
         self.__topic_desc = topic_desc
@@ -1977,6 +2038,9 @@ class Topic:
         Creates a topic object descriptor from a given topic_name/topic_string.
 
         """
+
+        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         topic_desc = od()
         topic_desc["ObjectType"] = CMQC.MQOT_TOPIC
@@ -2011,6 +2075,9 @@ class Topic:
         subsequent pub() call.
 
         """
+
+        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         if self.__topic_handle:
             raise PYIFError('The Topic is already open.')
@@ -2049,7 +2116,9 @@ class Topic:
 
         """
 
-        msg_desc, put_opts = commonQArgs(*opts)
+        check_not_py3str(msg)  # Python 3 bytes check
+
+        msg_desc, put_opts = common_q_args(*opts)
 
         if put_opts is None:
             put_opts = pmo()
@@ -2118,6 +2187,12 @@ class Subscription:
     """
     def __init__(self, queue_manager, sub_desc=None, sub_name=None,
                  sub_queue=None, sub_opts=None, topic_name=None, topic_string=None):
+
+        queue_manager = py3str2bytes(queue_manager)  # Python 3 strings to be converted to bytes
+        sub_name = py3str2bytes(sub_name)  # Python 3 strings to be converted to bytes
+        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
+
         self.__queue_manager = queue_manager
         self.sub_queue = sub_queue
         self.__sub_desc = sub_desc
@@ -2158,6 +2233,10 @@ class Subscription:
         Queue object handle.
 
         """
+
+        sub_name = py3str2bytes(sub_name)  # Python 3 strings to be converted to bytes
+        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         if topic_name:
             self.topic_name = topic_name
@@ -2296,6 +2375,9 @@ class MessageHandle(object):
             customization, you can also use 'pd' and 'smpo' parameters for
             passing in MQPD and MQSMPO structures.
             """
+
+            value = py3str2bytes(value)  # Python 3 strings to be converted to bytes
+
             pd = pd if pd else PD()
             smpo = smpo if smpo else SMPO()
 
@@ -2327,9 +2409,9 @@ class _Filter(object):
     _pymqi_filter_type = None
 
     def __init__(self, selector, value, operator):
-        self.selector = selector
-        self.value = value
-        self.operator = operator
+        self.selector = selector  # this is int
+        self.value = py3str2bytes(value)  # Python 3 strings to be converted to bytes
+        self.operator = operator  # this is int
 
     def __repr__(self):
         msg = '<%s at %s %s:%s:%s>'
@@ -2372,6 +2454,8 @@ class FilterOperator(object):
         self.pub_filter = pub_filter
 
     def __call__(self, value):
+
+        value = py3str2bytes(value)  # Python 3 strings to be converted to bytes
 
         # Do we support the given attribute filter?
         if CMQC.MQIA_FIRST <= self.pub_filter.selector <= CMQC.MQIA_LAST:
@@ -2456,7 +2540,7 @@ class PCFExecute(QueueManager):
     caStringDict = _MQConst2String(CMQC, "MQCA_")
 
     def __init__(self, qm=None, name=''):
-        """PCFExecute(qm = '')
+        """PCFExecute(qm = None, name = '')
 
         Connect to the Queue Manager 'name' (default value '') ready
         for a PCF command. If name is a QueueManager instance, it is

@@ -20,4 +20,3 @@ def add_syspath(p):
 # Add pymqi code directory to sys.path for import from checkout
 # (needs in-place build of pymqe.so)
 add_syspath(os.path.normpath(os.path.join(os.path.dirname(__file__), '..')))
-

@@ -44,11 +44,11 @@ class TestRFH2(unittest.TestCase):
             self.assertEqual(rfh2["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2["Flags"])))
             self.assertEqual(rfh2["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2["NameValueCCSID"])))
             self.assertEqual(rfh2["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2["pscLength"])))
-            self.assertEqual(rfh2["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
+            self.assertEqual(rfh2["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
             self.assertEqual(rfh2["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
-            self.assertEqual(rfh2["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
+            self.assertEqual(rfh2["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
             self.assertEqual(rfh2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2["mcdLength"])))
-            self.assertEqual(rfh2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
+            self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
         except Exception as e:
             self.fail(e)
 
@@ -88,11 +88,11 @@ class TestRFH2(unittest.TestCase):
             self.assertEqual(rfh2["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2["Flags"])))
             self.assertEqual(rfh2["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2["NameValueCCSID"])))
             self.assertEqual(rfh2["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2["pscLength"])))
-            self.assertEqual(rfh2["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
+            self.assertEqual(rfh2["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
             self.assertEqual(rfh2["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
-            self.assertEqual(rfh2["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
+            self.assertEqual(rfh2["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
             self.assertEqual(rfh2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2["mcdLength"])))
-            self.assertEqual(rfh2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
+            self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
 
         except Exception as e:
             self.fail(e)
@@ -124,14 +124,14 @@ class TestRFH2(unittest.TestCase):
             self.assertEqual(rfh2["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2["Flags"])))
             self.assertEqual(rfh2["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2["NameValueCCSID"])))
             self.assertEqual(rfh2["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2["pscLength"])))
-            self.assertEqual(rfh2["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
+            self.assertEqual(rfh2["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
             self.assertEqual(rfh2["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
-            self.assertEqual(rfh2["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
+            self.assertEqual(rfh2["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
             self.assertEqual(rfh2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2["mcdLength"])))
-            self.assertEqual(rfh2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
+            self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
 
 
-            rfh2.add_folder("<testFolder2><testVar>testValue</testVar></testFolder2>")
+            rfh2.add_folder(b"<testFolder2><testVar>testValue</testVar></testFolder2>")
 
             self.assertEqual(len(rfh2.get()), 16, "Number of attributes incorrect.  Should be 12? But is %s" % str(len(rfh2.get())))
             self.assertEqual(rfh2["StrucId"], CMQC.MQRFH_STRUC_ID, "StrucId has incorrect value. Should be: %s But is: %s" % (CMQC.MQRFH_STRUC_ID, str(rfh2["StrucId"])))
@@ -143,13 +143,13 @@ class TestRFH2(unittest.TestCase):
             self.assertEqual(rfh2["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2["Flags"])))
             self.assertEqual(rfh2["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2["NameValueCCSID"])))
             self.assertEqual(rfh2["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2["pscLength"])))
-            self.assertEqual(rfh2["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
+            self.assertEqual(rfh2["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
             self.assertEqual(rfh2["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
-            self.assertEqual(rfh2["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
+            self.assertEqual(rfh2["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
             self.assertEqual(rfh2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2["mcdLength"])))
-            self.assertEqual(rfh2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
+            self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
             self.assertEqual(rfh2["testFolder2Length"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
-            self.assertEqual(rfh2["testFolder2"], "<testFolder2><testVar>testValue</testVar></testFolder2> ", "testFolder2 has incorrect value. Should be: %s But is: %s" % ("<testFolder2><testVar>testValue</testVar></testFolder2> ", str(rfh2["testFolder2"])))
+            self.assertEqual(rfh2["testFolder2"], b"<testFolder2><testVar>testValue</testVar></testFolder2> ", "testFolder2 has incorrect value. Should be: %s But is: %s" % ("<testFolder2><testVar>testValue</testVar></testFolder2> ", str(rfh2["testFolder2"])))
 
 
 
@@ -173,11 +173,11 @@ class TestRFH2(unittest.TestCase):
             self.assertEqual(rfh2["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2["Flags"])))
             self.assertEqual(rfh2["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2["NameValueCCSID"])))
             self.assertEqual(rfh2["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2["pscLength"])))
-            self.assertEqual(rfh2["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
+            self.assertEqual(rfh2["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
             self.assertEqual(rfh2["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
-            self.assertEqual(rfh2["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
+            self.assertEqual(rfh2["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
             self.assertEqual(rfh2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2["mcdLength"])))
-            self.assertEqual(rfh2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
+            self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
             self.assertEqual(self.single_rfh2_message[0:rfh2["StrucLength"]], rfh2.pack(), "result of RFH2.pack() not equal to original buffer used in unpack?")
         except Exception as e:
             self.fail(e)
@@ -199,9 +199,9 @@ class TestRFH2(unittest.TestCase):
             new_rfh2["Format"] =  CMQC.MQFMT_STRING
             new_rfh2["Flags"] = 0
             new_rfh2["NameValueCCSID"] = 1208
-            new_rfh2.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
-            new_rfh2.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
-            new_rfh2.add_folder("<mcd><Msd>xmlnsc</Msd></mcd>")
+            new_rfh2.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+            new_rfh2.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
+            new_rfh2.add_folder(b"<mcd><Msd>xmlnsc</Msd></mcd>")
             self.assertEqual(self.single_rfh2_message[0:rfh2["StrucLength"]], new_rfh2.pack(encoding=273), "New RFH2 Header does not match publishmessage?")
         except Exception as e:
             self.fail(e)
@@ -252,7 +252,7 @@ class TestRFH2(unittest.TestCase):
 
         rfh2 = pymqi.RFH2()
         try:
-            rfh2.add_folder("<a><b>c</a>")
+            rfh2.add_folder(b"<a><b>c</a>")
         except pymqi.PYIFError as e:
             # Don't depend on the actual XML library getting used (lxml or
             # minidom produce different error messages)

@@ -151,18 +151,92 @@ static PyObject *ErrorObj;
  * Other functions renamed as per below between Py2 and Py3:
  */
 #if PY_MAJOR_VERSION==2
-#define Py23String_FromString PyString_FromString // converts C char* to Py2 bytes/str
-#define Py23String_FromStringAndSize PyString_FromStringAndSize // converts C char* to Py2 bytes/str
-#define Py23String_AsString PyString_AsString  // converts Py3 bytes/str to C char*
-#define Py23String_Size PyString_Size  // get length of Py3 bytes/str
-#define Py23String_Check PyString_Check  // check object is Py2 bytes/str
+// Py 2 Bytes - simples
+#define Py23Bytes_FromString PyString_FromString // converts C char* to Py2 bytes/str
+#define Py23Bytes_FromStringAndSize PyString_FromStringAndSize // converts C char* to Py2 bytes/str
+#define Py23Bytes_AsString PyString_AsString  // converts Py2 bytes/str to C char*
+#define Py23Bytes_Size PyString_Size  // get length of Py2 bytes/str
+#define Py23Bytes_Check PyString_Check  // check object is Py2 bytes/str
+// Py 2 String (same as bytes) - simples
+#define Py23Text_FromString PyString_FromString  // converts C char* to Py2 bytes/string
+//#define Py23Text_Check PyString_Check  // check object is Py2 bytes/str
+//#define Py23Text_AsString PyString_AsString  // converts Py2 bytes/str to C char*
+//#define Py23Text_Size PyString_Size  // get length of Py2 bytes/str
+static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
+  if(PyString_Check(txtObj)) {
+    // bytes/str
+    if (outLen != NULL) {
+      (*outLen) = (int)PyString_Size(txtObj);
+    }
+    return PyString_AsString(txtObj);
+  } else {
+    return NULL;
+  }
+}
 #else
-#define Py23String_FromString PyBytes_FromString  // converts C char* to Py3 bytes
-#define Py23String_FromStringAndSize PyBytes_FromStringAndSize  // converts C char* to Py3 bytes
-#define Py23String_AsString PyBytes_AsString  // converts Py3 bytes to C char*
-#define Py23String_Size PyBytes_Size  // get length of Py3 bytes
-#define Py23String_Check PyBytes_Check  // check object is Py3 bytes
-#endif
+// Py 3 Bytes - simples
+#define Py23Bytes_FromString PyBytes_FromString  // converts C char* to Py3 bytes
+#define Py23Bytes_FromStringAndSize PyBytes_FromStringAndSize  // converts C char* to Py3 bytes
+#define Py23Bytes_AsString PyBytes_AsString  // converts Py3 bytes to C char*
+#define Py23Bytes_Size PyBytes_Size  // get length of Py3 bytes
+#define Py23Bytes_Check PyBytes_Check  // check object is Py3 bytes
+// Py 3 String - tricky!
+#define Py23Text_FromString PyUnicode_FromString  // converts C char* to Py3 str
+//#define Py23Text_Check PyUnicode_Check  // check object is Py3 str
+
+//static char* Py23Text_AsString(PyObject *txtObj) {  // converts Py3 str to C char* (works for UTF-8 only!)
+//  PyObject *bytesObj;
+//  if (PyUnicode_Check(txtObj)) {
+//    bytesObj = PyUnicode_AsUTF8(txtObj);  // PyUnicode_AsUTF8 is not to be used on binary data! Text only.
+//    char *bytes;
+//    bytes = PyBytes_AsString(bytesObj);
+//    return bytes;
+//  } else {
+//    return NULL;
+//  }
+//}
+
+//static int Py23Text_Size(PyObject *txtObj) {  // get length of Py3 str (in 8-bit bytes) (works for UTF-8 only!)
+//  PyObject *bytesObj;
+//  if (PyUnicode_Check(txtObj)) {
+//    bytesObj = PyUnicode_AsUTF8(txtObj);  // PyUnicode_AsUTF8 is not to be used on binary data! Text only.
+//    int len = PyBytes_Size(bytesObj);
+//    return len;
+//  } else {
+//    return NULL;
+//  }
+//}
+
+static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
+  if(Py23Bytes_Check(txtObj)) {
+    // bytes
+    if (outLen != NULL) {
+      (*outLen) = (int)Py23Bytes_Size(txtObj);
+    }
+    return Py23Bytes_AsString(txtObj);
+  } else if (PyUnicode_Check(txtObj)) {
+    PyObject *bytesObj;
+    bytesObj = PyUnicode_AsUTF8String(txtObj);  // PyUnicode_AsUTF8 will return NULL on binary data! Text only.
+    if (bytesObj != NULL) {
+      if (outLen != NULL) {
+        (*outLen) = PyBytes_Size(bytesObj);
+      }
+      return PyBytes_AsString(bytesObj);
+    } else {
+      return NULL;
+    }
+  } else {
+    return NULL;
+  }
+}
+
+#endif /*PY_MAJOR_VERSION==2*/
+
+
+static char* Py23BytesOrText_AsString(PyObject *txtObj) {
+  return Py23BytesOrText_AsStringAndSize(txtObj, NULL);
+}
+
 
 
 /* ----------------------------------------------------- */
@@ -290,10 +364,12 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
     PyObject *password = PyDict_GetItemString(user_password, "password");
 
     csp.AuthenticationType = MQCSP_AUTH_USER_ID_AND_PWD;
-    csp.CSPUserIdPtr = Py23String_AsString(user);
-    csp.CSPUserIdLength = (int)Py23String_Size(user);
-    csp.CSPPasswordPtr = Py23String_AsString(password);
-    csp.CSPPasswordLength =(int) Py23String_Size(password);
+    csp.CSPUserIdPtr = Py23BytesOrText_AsStringAndSize(user, &csp.CSPUserIdLength);
+    csp.CSPPasswordPtr = Py23BytesOrText_AsStringAndSize(password, &csp.CSPPasswordLength);
+    if ((csp.CSPUserIdPtr == NULL && user!= NULL) || (csp.CSPPasswordPtr == NULL && password != NULL)) {
+      PyErr_Format(ErrorObj, "Failed to parse user/password. Check they are bytes or string.");
+      return NULL;
+    }
   }
 
   cno.ClientConnPtr = (MQCD *)mqcd;
@@ -798,11 +874,11 @@ static PyObject *pymqe_MQSET(PyObject *self, PyObject *args) {
     intAttrs[0] = PyLong_AsLong(attrArg);
     intAttrCount = 1;
   } else {
-    if (!Py23String_Check(attrArg)) {
-      PyErr_SetString(ErrorObj, "Arg is not a string");
+    if (!Py23Bytes_Check(attrArg)) {
+      PyErr_SetString(ErrorObj, "Arg is not a byte-string");
       return NULL;
     }
-    strncpy(charAttrs, Py23String_AsString(attrArg), MAX_CHARATTR_LENGTH);
+    strncpy(charAttrs, Py23Bytes_AsString(attrArg), MAX_CHARATTR_LENGTH);
     charAttrCount = (MQLONG)strlen(charAttrs);
   }
 
@@ -1176,7 +1252,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
               return NULL;
             }
 
-            filter_type = Py23String_AsString(_pymqi_filter_type);
+            filter_type = Py23BytesOrText_AsString(_pymqi_filter_type);
 
             /* String filter */
             if(0 == strcmp(filter_type, "string")) {
@@ -1184,7 +1260,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
               mqAddStringFilter(adminBag,
                                   (MQLONG)PyLong_AsLong(filter_selector),
                                   (MQLONG)PyObject_Length(filter_value),
-                                  (PMQCHAR)Py23String_AsString(filter_value),
+                                  (PMQCHAR)Py23Bytes_AsString(filter_value),
                                   (MQLONG)PyLong_AsLong(filter_operator),
                                   &compCode,
                                   &compReason);
@@ -1193,7 +1269,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                 PyErr_Format(ErrorObj, "Could not invoke 'mqAddStringFilter' compCode=[%d], " \
                             "compReason=[%d], filter_selector=[%d], filter_value=[%s], " \
                             "filter_operator=[%d]", (int)compCode, (int)compReason, (int)PyLong_AsLong(filter_selector),
-                                  Py23String_AsString(filter_value),
+                                  Py23BytesOrText_AsString(filter_value),
                                   (int)PyLong_AsLong(filter_operator));
 
                 PYMQI_MQAI_FILTERS_CLEANUP
@@ -1260,7 +1336,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                   if(!PyLong_Check(key)) {
 #endif
                       PyObject *keyStr = PyObject_Str(key);  /* Owned ref */
-                      PyErr_Format(ErrorObj, "Argument: %s is not integer", Py23String_AsString(keyStr));
+                      PyErr_Format(ErrorObj, "Argument: %s is not integer", Py23BytesOrText_AsString(keyStr));
                       Py_XDECREF(keyStr);
                       Py_DECREF(resultsList);
                       cleanupBags(adminBag, responseBag);
@@ -1286,8 +1362,8 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                        mqAddInteger(adminBag, paramType, intArg, &compCode, &compReason);
 #endif
                    }
-                   else if (Py23String_Check(value)) {
-                       strArg = Py23String_AsString(value);
+                   else if (Py23Bytes_Check(value)) {
+                       strArg = Py23Bytes_AsString(value);
                        mqAddString(adminBag, paramType, MQBL_NULL_TERMINATED, strArg, &compCode, &compReason);
                   } else {
                       isByteString = PyObject_HasAttrString(value, "pymqi_byte_string");
@@ -1295,7 +1371,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                         /* value is a ByteString.  have to use its "value" attribute */
                         PyObject *byteStringValue;
                         byteStringValue = PyObject_GetAttrString(value, "value"); /* Owned ref */
-                        strByteArg = (MQBYTE *)Py23String_AsString(byteStringValue);
+                        strByteArg = (MQBYTE *)Py23Bytes_AsString(byteStringValue);
 
 #ifdef MQCMDL_LEVEL_700
                         mqAddByteString(adminBag, paramType, (MQLONG)PyObject_Length(value), strByteArg, &compCode, &compReason);
@@ -1304,10 +1380,14 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                         Py_XDECREF(byteStringValue);
                         }
                       else {
-                        PyObject *keyStr = PyObject_Str(key);    /* Owned ref */
-                        PyObject *valStr = PyObject_Str(value);  /* Owned ref */
+                        PyObject *keyStr = PyObject_ASCII(key);    /* Owned ref */
+                        PyObject *valStr = PyObject_ASCII(value);  /* Owned ref */
+#if PY_MAJOR_VERSION==2
                         PyErr_Format(ErrorObj, "Value %s for key %s is not a long, string nor a pymqi.ByteString instance",
-                                     Py23String_AsString(valStr), Py23String_AsString(keyStr));
+#else
+                        PyErr_Format(ErrorObj, "Value %s for key %s is not a long, bytes nor a pymqi.ByteString instance",
+#endif
+                                     Py23BytesOrText_AsString(valStr), Py23BytesOrText_AsString(keyStr));
                         Py_XDECREF(keyStr);
                         Py_XDECREF(valStr);
                         Py_DECREF(resultsList);
@@ -1496,7 +1576,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
 
                                         itemStrVal[strLength] = 0;
 
-                                        pyItemStrVal = Py23String_FromString(itemStrVal);
+                                        pyItemStrVal = Py23Bytes_FromString(itemStrVal);
 
                                         if (PyDict_Contains(resultsDict, key) > 0) {
                                               resultDictValue = PyDict_GetItem(resultsDict, key);
@@ -1559,7 +1639,7 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                                         }
 
                                         /*byte strings may contain nulls */
-                                        pyItemStrVal = Py23String_FromStringAndSize((char *)itemByteStrVal, byteStrLength);
+                                        pyItemStrVal = Py23Bytes_FromStringAndSize((char *)itemByteStrVal, byteStrLength);
                                         PyDict_SetItem(resultsDict, key, pyItemStrVal);
 
                                         free(itemByteStrVal);
@@ -1673,8 +1753,8 @@ PyMODINIT_FUNC PyInit_pymqe(void) {
   ErrorObj = PyErr_NewException("pymqe.error", NULL, NULL);
   PyDict_SetItemString(d, "pymqe.error", ErrorObj);
 
-  PyDict_SetItemString(d, "__doc__", Py23String_FromString(pymqe_doc));
-  PyDict_SetItemString(d,"__version__", Py23String_FromString(__version__));
+  PyDict_SetItemString(d, "__doc__", Py23Bytes_FromString(pymqe_doc));
+  PyDict_SetItemString(d,"__version__", Py23Bytes_FromString(__version__));
 
   /*
    * Build the tuple of supported command levels, but only for versions
@@ -1683,40 +1763,34 @@ PyMODINIT_FUNC PyInit_pymqe(void) {
   {
     PyObject *versions = PyList_New(0);
 #ifdef MQCMDL_LEVEL_500
-      PyList_Append(versions, Py23String_FromString("5.0"));
+      PyList_Append(versions, Py23Text_FromString("5.0"));
 #endif
 #ifdef MQCMDL_LEVEL_510
-      PyList_Append(versions, Py23String_FromString("5.1"));
+      PyList_Append(versions, Py23Text_FromString("5.1"));
 #endif
 #ifdef MQCMDL_LEVEL_520
-      PyList_Append(versions, Py23String_FromString("5.2"));
+      PyList_Append(versions, Py23Text_FromString("5.2"));
 #endif
 #ifdef MQCMDL_LEVEL_530
-      PyList_Append(versions, Py23String_FromString("5.3"));
+      PyList_Append(versions, Py23Text_FromString("5.3"));
 #endif
 #ifdef MQCMDL_LEVEL_600
-      PyList_Append(versions, Py23String_FromString("6.0"));
+      PyList_Append(versions, Py23Text_FromString("6.0"));
 #endif
 #ifdef MQCMDL_LEVEL_700
-      PyList_Append(versions, Py23String_FromString("7.0"));
+      PyList_Append(versions, Py23Text_FromString("7.0"));
 #endif
 #ifdef MQCMDL_LEVEL_710
-      PyList_Append(versions, Py23String_FromString("7.1"));
+      PyList_Append(versions, Py23Text_FromString("7.1"));
 #endif
 #ifdef MQCMDL_LEVEL_750
-      PyList_Append(versions, Py23String_FromString("7.5"));
-#endif
-#ifdef MQCMDL_LEVEL_710
-      PyList_Append(versions, Py23String_FromString("7.1"));
-#endif
-#ifdef MQCMDL_LEVEL_750
-      PyList_Append(versions, Py23String_FromString("7.5"));
+      PyList_Append(versions, Py23Text_FromString("7.5"));
 #endif
 #ifdef MQCMDL_LEVEL_800
-      PyList_Append(versions, Py23String_FromString("8.0.0"));
+      PyList_Append(versions, Py23Text_FromString("8.0.0"));
 #endif
 #ifdef MQCMDL_LEVEL_801
-      PyList_Append(versions, Py23String_FromString("8.0.1"));
+      PyList_Append(versions, Py23Text_FromString("8.0.1"));
 #endif
       PyDict_SetItemString(d,"__mqlevels__", PyList_AsTuple(versions));
       Py_XDECREF(versions);
@@ -1726,9 +1800,9 @@ PyMODINIT_FUNC PyInit_pymqe(void) {
    * Set the client/server build flag
    */
 #if PYQMI_SERVERBUILD == 1
-  PyDict_SetItemString(d,"__mqbuild__", Py23String_FromString("server"));
+  PyDict_SetItemString(d,"__mqbuild__", Py23Text_FromString("server"));
 #else
-  PyDict_SetItemString(d,"__mqbuild__", Py23String_FromString("client"));
+  PyDict_SetItemString(d,"__mqbuild__", Py23Text_FromString("client"));
 #endif
 
   /* Check for errors */
