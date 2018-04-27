@@ -106,7 +106,10 @@ except ImportError:
     use_minidom = True
 
 # PyMQI
-import pymqe
+try:
+    from . import pymqe
+except ImportError:
+    import pymqe  # Backward compatibility
 from pymqi import CMQCFC
 from pymqi import CMQC, CMQXC, CMQZC
 
