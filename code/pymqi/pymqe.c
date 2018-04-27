@@ -157,6 +157,7 @@ static PyObject *ErrorObj;
 #define Py23Bytes_AsString PyString_AsString  // converts Py2 bytes/str to C char*
 #define Py23Bytes_Size PyString_Size  // get length of Py2 bytes/str
 #define Py23Bytes_Check PyString_Check  // check object is Py2 bytes/str
+#define Py23Object_Bytes PyObject_Str  // gets PyObject of Py2 type bytes/str
 // Py 2 String (same as bytes) - simples
 #define Py23Text_FromString PyString_FromString  // converts C char* to Py2 bytes/string
 //#define Py23Text_Check PyString_Check  // check object is Py2 bytes/str
@@ -173,6 +174,7 @@ static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
     return NULL;
   }
 }
+#define Py23BytesOrText_AsString PyString_AsString
 #else
 // Py 3 Bytes - simples
 #define Py23Bytes_FromString PyBytes_FromString  // converts C char* to Py3 bytes
@@ -180,6 +182,7 @@ static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
 #define Py23Bytes_AsString PyBytes_AsString  // converts Py3 bytes to C char*
 #define Py23Bytes_Size PyBytes_Size  // get length of Py3 bytes
 #define Py23Bytes_Check PyBytes_Check  // check object is Py3 bytes
+#define Py23Object_Bytes PyObject_ASCII  // gets PyObject of Py3 type bytes
 // Py 3 String - tricky!
 #define Py23Text_FromString PyUnicode_FromString  // converts C char* to Py3 str
 //#define Py23Text_Check PyUnicode_Check  // check object is Py3 str
@@ -230,12 +233,14 @@ static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
   }
 }
 
-#endif /*PY_MAJOR_VERSION==2*/
-
-
 static char* Py23BytesOrText_AsString(PyObject *txtObj) {
   return Py23BytesOrText_AsStringAndSize(txtObj, NULL);
 }
+
+#endif /*PY_MAJOR_VERSION==2*/
+
+
+
 
 
 
@@ -1380,13 +1385,9 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                         Py_XDECREF(byteStringValue);
                         }
                       else {
-                        PyObject *keyStr = PyObject_ASCII(key);    /* Owned ref */
-                        PyObject *valStr = PyObject_ASCII(value);  /* Owned ref */
-#if PY_MAJOR_VERSION==2
-                        PyErr_Format(ErrorObj, "Value %s for key %s is not a long, string nor a pymqi.ByteString instance",
-#else
+                        PyObject *keyStr = Py23Object_Bytes(key);    /* Owned ref */
+                        PyObject *valStr = Py23Object_Bytes(value);  /* Owned ref */
                         PyErr_Format(ErrorObj, "Value %s for key %s is not a long, bytes nor a pymqi.ByteString instance",
-#endif
                                      Py23BytesOrText_AsString(valStr), Py23BytesOrText_AsString(keyStr));
                         Py_XDECREF(keyStr);
                         Py_XDECREF(valStr);
@@ -1753,8 +1754,8 @@ PyMODINIT_FUNC PyInit_pymqe(void) {
   ErrorObj = PyErr_NewException("pymqe.error", NULL, NULL);
   PyDict_SetItemString(d, "pymqe.error", ErrorObj);
 
-  PyDict_SetItemString(d, "__doc__", Py23Bytes_FromString(pymqe_doc));
-  PyDict_SetItemString(d,"__version__", Py23Bytes_FromString(__version__));
+  PyDict_SetItemString(d, "__doc__", Py23Text_FromString(pymqe_doc));
+  PyDict_SetItemString(d,"__version__", Py23Text_FromString(__version__));
 
   /*
    * Build the tuple of supported command levels, but only for versions

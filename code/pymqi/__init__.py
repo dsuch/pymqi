@@ -2587,7 +2587,7 @@ class PCFExecute(QueueManager):
             if isinstance(rawDict[k], bytes):
                 d = PCFExecute.caStringDict
             elif isinstance(rawDict[k], str):
-                raise TypeError("In Python 3 use bytes, not str (found '{}':'{}')".format(k, rawDict[k]))
+                raise TypeError("In Python 3 use bytes, not str (found '{0}':'{1}')".format(k, rawDict[k]))
             else:
                 d = PCFExecute.iaStringDict
             try:
