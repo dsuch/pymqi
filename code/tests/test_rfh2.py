@@ -1,12 +1,11 @@
-'''
+"""
 Created on 15 Nov 2010
 
 @author: hannes
-'''
+"""
 
 import os
 import unittest
-import env
 import pymqi
 from pymqi import CMQC
 
@@ -130,7 +129,6 @@ class TestRFH2(unittest.TestCase):
             self.assertEqual(rfh2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2["mcdLength"])))
             self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
 
-
             rfh2.add_folder(b"<testFolder2><testVar>testValue</testVar></testFolder2>")
 
             self.assertEqual(len(rfh2.get()), 16, "Number of attributes incorrect.  Should be 12? But is %s" % str(len(rfh2.get())))
@@ -150,8 +148,6 @@ class TestRFH2(unittest.TestCase):
             self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
             self.assertEqual(rfh2["testFolder2Length"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
             self.assertEqual(rfh2["testFolder2"], b"<testFolder2><testVar>testValue</testVar></testFolder2> ", "testFolder2 has incorrect value. Should be: %s But is: %s" % ("<testFolder2><testVar>testValue</testVar></testFolder2> ", str(rfh2["testFolder2"])))
-
-
 
         except Exception as e:
             self.fail(e)
@@ -182,7 +178,6 @@ class TestRFH2(unittest.TestCase):
         except Exception as e:
             self.fail(e)
 
-
     def test_rfh2_create(self):
         """Test the creation of a brand new RFH2.  Compare the resulting byte array against identical known correct message.
         """
@@ -195,8 +190,8 @@ class TestRFH2(unittest.TestCase):
             new_rfh2["Version"] = CMQC.MQRFH_VERSION_2
             new_rfh2["StrucLength"] = 188
             new_rfh2["Encoding"] = 273
-            new_rfh2["CodedCharSetId"]= 1208
-            new_rfh2["Format"] =  CMQC.MQFMT_STRING
+            new_rfh2["CodedCharSetId"] = 1208
+            new_rfh2["Format"] = CMQC.MQFMT_STRING
             new_rfh2["Flags"] = 0
             new_rfh2["NameValueCCSID"] = 1208
             new_rfh2.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
@@ -214,7 +209,9 @@ class TestRFH2(unittest.TestCase):
         try:
             rfh2.unpack(self.single_rfh2_message[116:])
         except pymqi.PYIFError as e:
-            self.assertEqual(str(e), "PYMQI Error: RFH2 - StrucId not MQRFH_STRUC_ID. Value: b'ame>'", "StrucId not = '%s'" % (CMQC.MQRFH_STRUC_ID) )
+            self.assertEqual(str(e),
+                             "PYMQI Error: RFH2 - StrucId not MQRFH_STRUC_ID. Value: b'ame>'",
+                             "StrucId not = '%s'" % CMQC.MQRFH_STRUC_ID)
 
     def test_buffer_too_short_for_default_rfh2_exception(self):
         """Test exception occurs when buffer is too short for default RFH2.
@@ -224,7 +221,9 @@ class TestRFH2(unittest.TestCase):
         try:
             rfh2.unpack(self.single_rfh2_message[0:32])
         except pymqi.PYIFError as e:
-            self.assertEqual(str(e), "PYMQI Error: RFH2 - Buffer too short. Should be 36 bytes or longer.  Buffer Length: 32", "Not Buffer to short exception?" )
+            self.assertEqual(str(e),
+                             "PYMQI Error: RFH2 - Buffer too short. Should be 36 bytes or longer. Buffer Length: 32",
+                             "Not Buffer to short exception?")
 
     def test_buffer_too_short_for_complete_rfh2_exception(self):
         """Test exception occurs when buffer is too short for complete RFH2.
@@ -234,7 +233,9 @@ class TestRFH2(unittest.TestCase):
         try:
             rfh2.unpack(self.single_rfh2_message[0:188])
         except pymqi.PYIFError as e:
-            self.assertEqual(str(e), "PYMQI Error: RFH2 - Buffer too short. Expected: 284 Buffer Length: 188", "Not Buffer to short to parse complete RFH2 exception?" )
+            self.assertEqual(str(e),
+                             "PYMQI Error: RFH2 - Buffer too short. Expected: 284 Buffer Length: 188",
+                             "Not Buffer to short to parse complete RFH2 exception?")
 
     def test_folder_not_well_formed_exception_on_parse(self):
         """Test exception when parsing a message that contains not well formed XML folder.
@@ -257,11 +258,8 @@ class TestRFH2(unittest.TestCase):
             # Don't depend on the actual XML library getting used (lxml or
             # minidom produce different error messages)
             self.assertTrue(
-                str(e).startswith(
-                    "PYMQI Error: RFH2 - XML Folder not well formed. "
-                    "Exception:"),
-                    "Not 'XML Folder not well formed' exception (add_folder): "
-                    "%s" % (e, ))
+                str(e).startswith("PYMQI Error: RFH2 - XML Folder not well formed. Exception:"),
+                "Not 'XML Folder not well formed' exception (add_folder): %s" % (e, ))
 
     def test_encoding_on_pack_big_endian(self):
         """Test that pack() creates numeric fields with correct encoding. Big endian Test.
