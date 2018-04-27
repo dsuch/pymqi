@@ -9,14 +9,14 @@ from uuid import uuid4
 
 # PyMQI
 import pymqi
-import CMQC
-import CMQCFC
+from pymqi import CMQC
+from pymqi import CMQCFC
 
 queue_manager = 'MQTEST'
 channel = 'CH1'
 host = '127.0.0.1'
 port = '8887'
-conn_info = '{}({})'.format(host, port)
+conn_info = '{0}({1})'.format(host, port)
 
 queue_name = uuid4().hex.encode('ascii')
 message = uuid4().hex.encode('ascii')
