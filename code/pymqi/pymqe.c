@@ -267,10 +267,12 @@ static PyObject * pymqe_MQCONN(PyObject *self, PyObject *args) {
   char *name;
   MQHCONN handle;
   MQLONG compCode, compReason;
+  PyObject *nameObj;
 
-  if (!PyArg_ParseTuple(args, "s", &name)) {
+  if (!PyArg_ParseTuple(args, "O|", &nameObj)) {
     return NULL;
   }
+  name = Py23BytesOrText_AsString(nameObj);
   Py_BEGIN_ALLOW_THREADS
   MQCONN(name, &handle, &compCode, &compReason);
   Py_END_ALLOW_THREADS

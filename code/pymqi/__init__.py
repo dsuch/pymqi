@@ -151,32 +151,6 @@ def py3str2bytes(s, encoding='ascii'):
         return s
 
 
-def check_args(**args_map):
-    # noinspection PyDeprecation
-    def check_args_func(func):
-        arg_names, _, _, args_defaults = inspect.getargspec(func)
-        if args_defaults is None:
-            arg_names_pos = arg_names[:]
-        else:
-            arg_names_pos = arg_names[:len(args_defaults)]
-
-        def check_args_impl(*func_args, **func_kwargs):
-            for arg_name in args_map.keys():
-                try:
-                    # positional argument
-                    pos_arg_idx = arg_names_pos.index(arg_name)  # throws ValeError if not found
-                    arg_value = func_args[pos_arg_idx]  # throws IndexError if arg invoked with kw and moved to kwargs
-                except (ValueError, IndexError):
-                    # kw argument
-                    arg_value = func_kwargs.get(arg_name)  # get() returns None if key is missing
-                if arg_value is not None and not isinstance(arg_value, args_map[arg_name]):
-                    raise TypeError("Arg '{0}' expected to be '{1}', found '{2}' in call to '{3}'".format(
-                                    arg_name, args_map[arg_name].__name__, type(arg_value).__name__, func.__name__))
-                return func(*func_args, **func_kwargs)
-        return check_args_impl
-    return check_args_func
-
-
 #
 # 64bit suppport courtesy of Brent S. Elmer, Ph.D. (mailto:webe3vt@aim.com)
 #
@@ -394,7 +368,11 @@ class MQOpts(object):
 
         """
 
-        check_not_py3str(vs_value)  # Python 3 bytes check
+        if vs_name in ['SubName',  # subject name
+                       'ObjectString']:  # topic name
+            vs_value = py3str2bytes(vs_value)  # allow known args be a string in Py3
+        else:
+            check_not_py3str(vs_value)  # Python 3 bytes check
 
         # if the VSPtr name is passed - remove VSPtr to be left with name.
         if vs_name.endswith("VSPtr"):
@@ -792,8 +770,7 @@ class RFH2(MQOpts):
             # check that the folder is valid xml and get the root tag name.
             if use_minidom:
                 try:
-                    folder_name = parseString(folder_data). \
-                                                documentElement.tagName
+                    folder_name = parseString(folder_data).documentElement.tagName
                 except Exception as e:
                     raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
             else:
@@ -1350,14 +1327,14 @@ class QueueManager(object):
     the connection may be deferred until a call to connect().
     """
 
-    def __init__(self, name=None):
-        """QueueManager(name = None)
+    def __init__(self, name=''):
+        """QueueManager(name = '')
 
-        Connect to the Queue Manager 'name' (default value None). If
+        Connect to the Queue Manager 'name' (default value ''). If
         'name' is None, don't connect now, but defer the connection
         until connect() is called."""
 
-        #name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
+        name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
 
         self.__handle = None
         self.__name = name
@@ -1373,8 +1350,7 @@ class QueueManager(object):
         if self.__handle:
             if self.__qmobj:
                 try:
-                    options = CMQC.MQCO_NONE
-                    pymqe.MQCLOSE(self.__handle, self.__qmobj, options)
+                    pymqe.MQCLOSE(self.__handle, self.__qmobj, CMQC.MQCO_NONE)
                 except Exception:
                     pass
             try:
@@ -1427,9 +1403,6 @@ class QueueManager(object):
         user = kw.get('user')
         password = kw.get('password')
 
-        user = py3str2bytes(user, 'utf-8')  # Python 3 strings to be converted to bytes
-        password = py3str2bytes(password, 'utf-8')  # Python 3 strings to be converted to bytes
-
         if user:
             # We check for None because password can be an empty string
             if password is None:
@@ -1438,8 +1411,8 @@ class QueueManager(object):
             if not (isinstance(user, (str, bytes)) and isinstance(password, (str, bytes))):
                 raise ValueError('Both user and password must be instances of str or bytes')
 
-            user_password['user'] = user
-            user_password['password'] = password
+            user_password['user'] = py3str2bytes(user, 'utf-8')
+            user_password['password'] = py3str2bytes(password, 'utf-8')
 
         options = CMQC.MQCNO_NONE
         ocd = CD()
@@ -1460,18 +1433,18 @@ class QueueManager(object):
     # Backward compatibility
     connectWithOptions = connect_with_options
 
-    def connect_tcp_client(self, name, cd_obj, channel, conn_name, user, password):
+    def connect_tcp_client(self, name, cd, channel, conn_name, user, password):
         """ Connect immediately to the remote Queue Manager 'name', using
         a TCP Client connection, with channnel 'channel' and the
         TCP connection string 'conn_name'. All other connection
         optons come from 'cd'.
         """
 
-        setattr(cd_obj, 'ChannelName', py3str2bytes(channel))
-        setattr(cd_obj, 'ConnectionName', py3str2bytes(conn_name))
-        setattr(cd_obj, 'ChannelType', CMQC.MQCHT_CLNTCONN)
-        setattr(cd_obj, 'TransportType', CMQC.MQXPT_TCP)
-        self.connect_with_options(name, cd_obj, user=user, password=password)
+        cd.set(**{'ChannelName': py3str2bytes(channel),
+                  'ConnectionName': py3str2bytes(conn_name),
+                  'ChannelType': CMQC.MQCHT_CLNTCONN,
+                  'TransportType': CMQC.MQXPT_TCP})
+        self.connect_with_options(name, cd, user=user, password=password)
 
     # Backward compatibility
     connectTCPClient = connect_tcp_client
@@ -1529,7 +1502,7 @@ class QueueManager(object):
         if rv[0]:
             raise MQMIError(rv[0], rv[1])
 
-    def put1(self, q_desc, msg, *opts):
+    def put1(self, qDesc, msg, *opts):
         """put1(qDesc, msg [, mDesc, putOpts])
 
         Put the single message in string buffer 'msg' on the queue
@@ -1537,10 +1510,10 @@ class QueueManager(object):
         MQPUT and MQCLOSE. put1 is the optimal way to put a single
         message on a queue.
 
-        q_desc identifies the Queue either by name (if its a string),
+        qDesc identifies the Queue either by name (if its a string),
         or by MQOD (if its a pymqi.od() instance).
 
-        m_desc is the pymqi.md() MQMD Message Descriptor for the
+        mDesc is the pymqi.md() MQMD Message Descriptor for the
         message. If it is not passed, or is None, then a default md()
         object is used.
 
@@ -1555,10 +1528,11 @@ class QueueManager(object):
 
         m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
-            put_opts = pmo()
+            put_opts = PMO()
 
         # Now send the message
-        rv = pymqe.MQPUT1(self.__handle, makeQDesc(q_desc).pack(), m_desc.pack(), put_opts.pack(), msg)
+        rv = pymqe.MQPUT1(self.__handle, make_q_desc(qDesc).pack(),
+                          m_desc.pack(), put_opts.pack(), msg)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
         m_desc.unpack(rv[0])
@@ -1591,7 +1565,7 @@ class QueueManager(object):
         the app will disconnect between checking QueueManager.is_connected
         and the next MQ call.
         """
-        pcf = PCFExecute(qm=self)
+        pcf = PCFExecute(self)
         try:
             pcf.MQCMD_PING_Q_MGR()
         except Exception:
@@ -1606,7 +1580,7 @@ class QueueManager(object):
 def make_q_desc(qDescOrString):
     """Maybe make MQOD from string. Module Private"""
     if isinstance(qDescOrString, (str, bytes)):
-        return od(ObjectName=py3str2bytes(qDescOrString))  # Python 3 strings to be converted to bytes
+        return OD(ObjectName=py3str2bytes(qDescOrString))  # Python 3 strings to be converted to bytes
     else:
         return qDescOrString
 
@@ -1657,18 +1631,18 @@ class Queue:
         self.__qDesc.unpack(rv[1])
 
     def __init__(self, qMgr, *opts):
-        """Queue(qMgr, [qDesc [,openOpts]])
+        """Queue(qMgr, [q_desc [,open_opts]])
 
         Associate a Queue instance with the QueueManager object 'qMgr'
         and optionally open the Queue.
 
-        If qDesc is passed, it identifies the Queue either by name (if
+        If q_desc is passed, it identifies the Queue either by name (if
         its a string), or by MQOD (if its a pymqi.od() instance). If
-        qDesc is not defined, then the Queue is not opened
+        q_desc is not defined, then the Queue is not opened
         immediately, but deferred to a subsequent call to open().
 
         If openOpts is passed, it specifies queue open options, and
-        the queue is opened immediately. If openOpts is not passed,
+        the queue is opened immediately. If open_opts is not passed,
         the queue open is deferred to a subsequent call to open(),
         put() or get().
 
@@ -1757,7 +1731,7 @@ class Queue:
         put_opts.unpack(rv[1])
 
     def put_rfh2(self, msg, *opts):
-        """put_rfh2(msg[, mDesc ,putOpts, [rfh2_header, ]])
+        """put_rfh2(msg[, m_desc ,put_opts, [rfh2_header, ]])
 
         Put a RFH2 message. opts[2] is a list of RFH2 headers.
         MQMD and RFH2's must be correct.
@@ -1825,7 +1799,8 @@ class Queue:
         else:
             length = maxLength
 
-        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), get_opts.pack(), length)
+        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle,
+                         m_desc.pack(), get_opts.pack(), length)
 
         if not rv[-2]:
             # Everything A OK
@@ -1857,8 +1832,8 @@ class Queue:
 
         return rv[0]
 
-    def get_rfh2(self, maxLength=None, *opts):
-        """get_rfh2([maxLength [, mDesc, getOpts, [rfh2_header_1, ]]])
+    def get_rfh2(self, max_length=None, *opts):
+        """get_rfh2([max_length [, m_desc, get_opts, [rfh2_header_1, ]]])
 
         Get a message and attempt to unpack the rfh2 headers.
         opts[2] should be a empty list.
@@ -1866,13 +1841,12 @@ class Queue:
         CMQC.MQFMT_RF_HEADER_2.
 
         """
-        msg = None
         if len(opts) >= 3:
             if opts[2] is not None:
                 if not isinstance(opts[2], list):
                     raise TypeError("Third item of opts should be a list.")
 
-                msg = self.get(maxLength, *opts[0:2])
+                msg = self.get(max_length, *opts[0:2])
                 mqmd = opts[0]
                 rfh2_headers = []
                 # If format is not CMQC.MQFMT_RF_HEADER_2 then do not parse.
@@ -1884,8 +1858,10 @@ class Queue:
                     msg = msg[rfh2_header["StrucLength"]:]
                     frmt = rfh2_header["Format"]
                 opts[2].extend(rfh2_headers)
+            else:
+                raise AttributeError('get_opts cannot be None if passed.')
         else:
-            msg = self.get(maxLength, *opts)
+            msg = self.get(max_length, *opts)
 
         return msg
 
@@ -2045,7 +2021,7 @@ class Topic:
         topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
         topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
 
-        topic_desc = od()
+        topic_desc = OD()
         topic_desc["ObjectType"] = CMQC.MQOT_TOPIC
         topic_desc["Version"] = CMQC.MQOD_VERSION_4
 
@@ -2155,7 +2131,7 @@ class Topic:
 
         sub_queue = None
         if len(opts) > 1:
-            sub_queue = opts[1]
+            sub_queue = py3str2bytes(opts[1])  # Python 3 strings to be converted to bytes
 
         sub = Subscription(self.__queue_manager)
         sub.sub(sub_desc=sub_desc, sub_queue=sub_queue, topic_name=self.topic_name, topic_string=self.topic_string)
@@ -2237,6 +2213,7 @@ class Subscription:
 
         """
 
+        sub_queue = py3str2bytes(sub_queue)  # Python 3 strings to be converted to bytes
         sub_name = py3str2bytes(sub_name)  # Python 3 strings to be converted to bytes
         topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
         topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
@@ -2345,8 +2322,8 @@ class MessageHandle(object):
             """
             return self.set(name, value)
 
-        def get(self, name, max_value_length=None,
-                impo_options=CMQC.MQIMPO_INQ_FIRST,
+        def get(self, name, default=None, max_value_length=None,
+                impo_options=CMQC.MQIMPO_INQ_FIRST, pd=CMQC.MQPD_NONE,
                 property_type=CMQC.MQTYPE_AS_SET):
             """ Returns the value of message property 'name'. 'default' is the
             value to return if the property is missing. 'max_value_length'
@@ -2379,7 +2356,8 @@ class MessageHandle(object):
             passing in MQPD and MQSMPO structures.
             """
 
-            value = py3str2bytes(value)  # Python 3 strings to be converted to bytes
+            name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
+            check_not_py3str(value)  # Python 3 only bytes allowed
 
             pd = pd if pd else PD()
             smpo = smpo if smpo else SMPO()
@@ -2458,7 +2436,7 @@ class FilterOperator(object):
 
     def __call__(self, value):
 
-        value = py3str2bytes(value)  # Python 3 strings to be converted to bytes
+        check_not_py3str(value)  # Python 3 bytes accepted here
 
         # Do we support the given attribute filter?
         if CMQC.MQIA_FIRST <= self.pub_filter.selector <= CMQC.MQIA_LAST:
@@ -2542,19 +2520,19 @@ class PCFExecute(QueueManager):
     iaStringDict = _MQConst2String(CMQC, "MQIA_")
     caStringDict = _MQConst2String(CMQC, "MQCA_")
 
-    def __init__(self, qm=None, name=''):
-        """PCFExecute(qm = None, name = '')
+    def __init__(self, name=''):
+        """PCFExecute(name = '')
 
         Connect to the Queue Manager 'name' (default value '') ready
         for a PCF command. If name is a QueueManager instance, it is
         used for the connection, otherwise a new connection is made """
 
-        if isinstance(qm, QueueManager):
-            self.qm = qm
-            super(PCFExecute, self).__init__(name=None)
+        if isinstance(name, QueueManager):
+            self.qm = name
+            super(PCFExecute, self).__init__(None)
         else:
             self.qm = None
-            super(PCFExecute, self).__init__(name=name)
+            super(PCFExecute, self).__init__(name)
 
     def __getattr__(self, name):
         """MQCMD_*(attrDict)

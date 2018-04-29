@@ -2,8 +2,8 @@
 # -*- coding: iso-8859-15 -*-
 
 import config
-import sys
 import pymqi
+import sys
 import unittest
 import unicodedata
 import utils
@@ -35,13 +35,13 @@ class TestPubSub(unittest.TestCase):
     5. tearDown(): delete objects
     """
     def setUp(self):
-        self._topic_string_template = "/UNITTEST/{prefix}/PUBSUB/{{type}}/{{destination}}/{{durable}}".format(
+        self.topic_string_template = "/UNITTEST/{prefix}/PUBSUB/{{type}}/{{destination}}/{{durable}}".format(
             prefix=config.MQ.QUEUE.PREFIX)
-        self._subname_template = "{prefix}'s {{type}} {{destination}} {{durable}} Subscription".format(
+        self.subname_template = "{prefix}'s {{type}} {{destination}} {{durable}} Subscription".format(
             prefix=config.MQ.QUEUE.PREFIX)
-        self._msg_template = "Hello World in the topic string \"{{topic_string}}\"".format()
+        self.msg_template = "Hello World in the topic string \"{{topic_string}}\"".format()
         # max length of queue names is 48 characters
-        self._queue_name_template = "{prefix}_Q_TEST_PUBSUB_{{type}}_PROVIDED_{{durable}}".format(prefix=config.MQ.QUEUE.PREFIX)
+        self.queue_name_template = "{prefix}_Q_TEST_PUBSUB_{{type}}_PROVIDED_{{durable}}".format(prefix=config.MQ.QUEUE.PREFIX)
         self.queue_manager = config.MQ.QM.NAME
         self.channel = config.MQ.QM.CHANNEL
         self.host = config.MQ.QM.HOST
@@ -57,20 +57,8 @@ class TestPubSub(unittest.TestCase):
         # list of tuples (subscription, subscription descriptions) for tearDown() to delete after the test
         self.sub_desc_list = []
 
-    def topic_string_template(self, **kwargs):
-        res = self._topic_string_template.format(**kwargs)
-        return utils.py3str2bytes(res)
-
-    def subname_template(self, **kwargs):
-        res = self._subname_template.format(**kwargs)
-        return utils.py3str2bytes(res)
-
-    def msg_template(self, **kwargs):
-        res = self._msg_template.format(**kwargs)
-        return utils.py3str2bytes(res)
-
-    def queue_name_template(self, **kwargs):
-        res = self._queue_name_template.format(**kwargs)
+    def msg_format(self, **kwargs):
+        res = self.msg_template.format(**kwargs)
         return utils.py3str2bytes(res)
 
     def delete_sub(self, sub_desc):
@@ -86,7 +74,7 @@ class TestPubSub(unittest.TestCase):
         # must be unmanaged
         if not sub_desc["Options"] & pymqi.CMQC.MQSO_MANAGED:
             pcf = pymqi.PCFExecute(self.qmgr)
-            args = {pymqi.CMQC.MQCA_Q_NAME: queue_name,
+            args = {pymqi.CMQC.MQCA_Q_NAME: utils.py3str2bytes(queue_name),
                     pymqi.CMQCFC.MQIACF_PURGE: pymqi.CMQCFC.MQPO_YES}
             pcf.MQCMD_DELETE_Q(args)
 
@@ -114,7 +102,7 @@ class TestPubSub(unittest.TestCase):
         topic = pymqi.Topic(self.qmgr, topic_string=topic_string)
         topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
         if isinstance(msg, str) and not isinstance(msg, bytes):
-            msg = msg.encode('utf-8')  # py3
+            raise AttributeError('msg must be bytes (not str) to publish to topic.')  # py3
         topic.pub(msg, *opts)
         topic.close()
 
@@ -123,11 +111,11 @@ class TestPubSub(unittest.TestCase):
 
     def create_admin_subscription(self, destination_class, subname, queue_name, topic_string):
         pcf = pymqi.PCFExecute(self.qmgr)
-        args = {pymqi.CMQCFC.MQCACF_SUB_NAME: subname,
-                pymqi.CMQC.MQCA_TOPIC_STRING: topic_string,
+        args = {pymqi.CMQCFC.MQCACF_SUB_NAME: utils.py3str2bytes(subname),
+                pymqi.CMQC.MQCA_TOPIC_STRING: utils.py3str2bytes(topic_string),
                 pymqi.CMQCFC.MQIACF_DESTINATION_CLASS: destination_class}
         if destination_class is pymqi.CMQC.MQDC_PROVIDED:
-            args[pymqi.CMQCFC.MQCACF_DESTINATION] = queue_name
+            args[pymqi.CMQCFC.MQCACF_DESTINATION] = utils.py3str2bytes(queue_name)
         pcf.MQCMD_CREATE_SUBSCRIPTION(args)
 
     @staticmethod
@@ -141,7 +129,7 @@ class TestPubSub(unittest.TestCase):
         queue_type = pymqi.CMQC.MQQT_LOCAL
         max_depth = 123456
 
-        args = {pymqi.CMQC.MQCA_Q_NAME: queue_name,
+        args = {pymqi.CMQC.MQCA_Q_NAME: utils.py3str2bytes(queue_name),
                 pymqi.CMQC.MQIA_Q_TYPE: queue_type,
                 pymqi.CMQC.MQIA_MAX_Q_DEPTH: max_depth}
         pcf = pymqi.PCFExecute(self.qmgr)
@@ -155,9 +143,9 @@ class TestPubSub(unittest.TestCase):
 ############################################################################
 
     def test_pubsub_api_managed_durable(self):
-        topic_string = self.topic_string_template(type="API", destination="MANAGED", durable="DURABLE")
-        subname = self.subname_template(type="Api", destination="Managed", durable="Durable")
-        msg = self.msg_template(topic_string=topic_string)
+        topic_string = self.topic_string_template.format(type="API", destination="MANAGED", durable="DURABLE")
+        subname = self.subname_template.format(type="Api", destination="Managed", durable="Durable")
+        msg = self.msg_format(topic_string=topic_string)
         # register Subscription
         sub = self.create_api_subscription()
 
@@ -179,18 +167,17 @@ class TestPubSub(unittest.TestCase):
         """Test multiple subscriptions."""
         # number of subscriptions
         nsub = 5
-        topic_string = self.topic_string_template(type="API", destination="MANAGED", durable="DURABLE")
-        # subname = self.subname_template(type="Api", destination="Managed", durable="Durable")
-        msg = self.msg_template(topic_string=topic_string)
+        topic_string = self.topic_string_template.format(type="API", destination="MANAGED", durable="DURABLE")
+        msg = self.msg_format(topic_string=topic_string)
         self.sub_desc_list = []
         subscriptions = []
         for n in range(nsub):
+            sub_desc = self.get_subscription_descriptor(
+                self.subname_template.format(type="Api", destination="Managed", durable="Durable{0}".format(n)),
+                self.topic_string_template.format(type="API", destination="MANAGED", durable="DURABLE"),
+                pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_DURABLE + pymqi.CMQC.MQSO_MANAGED)
             # register Subscription
             sub = self.create_api_subscription()
-            sub_desc = self.get_subscription_descriptor(
-                self.subname_template(type="Api", destination="Managed", durable="Durable{0}".format(n+10)),
-                self.topic_string_template(type="API", destination="MANAGED", durable="DURABLE"),
-                pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_DURABLE + pymqi.CMQC.MQSO_MANAGED)
             self.sub_desc_list.append((sub, sub_desc, None))
             sub.sub(sub_desc=sub_desc)
             subscriptions.append(sub)
@@ -205,9 +192,9 @@ class TestPubSub(unittest.TestCase):
             self.assertEqual(data, msg)
 
     def test_pubsub_api_managed_non_durable(self):
-        topic_string = self.topic_string_template(type="API", destination="MANAGED", durable="NON DURABLE")
-        subname = self.subname_template(type="Api", destination="Managed", durable="Non Durable")
-        msg = self.msg_template(topic_string=topic_string)
+        topic_string = self.topic_string_template.format(type="API", destination="MANAGED", durable="NON DURABLE")
+        subname = self.subname_template.format(type="Api", destination="Managed", durable="Non Durable")
+        msg = self.msg_format(topic_string=topic_string)
         sub_desc = self.get_subscription_descriptor(subname, topic_string,
                                                     pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_MANAGED)
         # register Subscription
@@ -222,10 +209,10 @@ class TestPubSub(unittest.TestCase):
         self.assertEqual(data, msg)
 
     def test_pubsub_admin_managed(self):
-        topic_string = self.topic_string_template(type="ADMIN", destination="MANAGED", durable="DURABLE")
-        subname = self.subname_template(type="Admin", destination="Managed", durable="Durable")
-        msg = self.msg_template(topic_string=topic_string)
-        queue_name = self.queue_name_template(type="ADMIN", durable="DURABLE")
+        topic_string = self.topic_string_template.format(type="ADMIN", destination="MANAGED", durable="DURABLE")
+        subname = self.subname_template.format(type="Admin", destination="Managed", durable="Durable")
+        msg = self.msg_format(topic_string=topic_string)
+        queue_name = self.queue_name_template.format(type="ADMIN", durable="DURABLE")
         sub_desc = self.get_subscription_descriptor(subname, topic_string, pymqi.CMQC.MQSO_RESUME)
 
         # register Subscription
@@ -243,12 +230,12 @@ class TestPubSub(unittest.TestCase):
         self.assertEqual(data, msg)
 
     def test_pubsub_api_provided_durable(self):
-        topic_string = self.topic_string_template(type="API", destination="PROVIDED", durable="DURABLE")
-        subname = self.subname_template(type="Api", destination="Provided", durable="Durable")
-        msg = self.msg_template(topic_string=topic_string)
+        topic_string = self.topic_string_template.format(type="API", destination="PROVIDED", durable="DURABLE")
+        subname = self.subname_template.format(type="Api", destination="Provided", durable="Durable")
+        msg = self.msg_format(topic_string=topic_string)
         sub_desc = self.get_subscription_descriptor(subname, topic_string,
                                                     pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_DURABLE)
-        queue_name = self.queue_name_template(type="API", durable="DURABLE")
+        queue_name = self.queue_name_template.format(type="API", durable="DURABLE")
         self.create_queue(queue_name)
 
         # create queue
@@ -268,12 +255,12 @@ class TestPubSub(unittest.TestCase):
         self.assertEqual(data, msg)
 
     def test_pubsub_api_provided_non_durable(self):
-        topic_string = self.topic_string_template(type="API", destination="PROVIDED", durable="NON DURABLE")
-        subname = self.subname_template(type="Api", destination="Provided", durable="None Durable")
-        msg = self.msg_template(topic_string=topic_string)
+        topic_string = self.topic_string_template.format(type="API", destination="PROVIDED", durable="NON DURABLE")
+        subname = self.subname_template.format(type="Api", destination="Provided", durable="None Durable")
+        msg = self.msg_format(topic_string=topic_string)
         sub_desc = self.get_subscription_descriptor(subname, topic_string,
                                                     pymqi.CMQC.MQSO_CREATE)
-        queue_name = self.queue_name_template(type="API", durable="NON_DURABLE")
+        queue_name = self.queue_name_template.format(type="API", durable="NON_DURABLE")
         # create queue
         self.create_queue(queue_name)
         open_opts = pymqi.CMQC.MQOO_INPUT_AS_Q_DEF
@@ -290,10 +277,10 @@ class TestPubSub(unittest.TestCase):
         self.assertEqual(data, msg)
         
     def test_pubsub_admin_provided(self):
-        topic_string = self.topic_string_template(type="ADMIN", destination="PROVIDED", durable="DURABLE")
-        subname = self.subname_template(type="Admin", destination="Provided", durable="Durable")
-        msg = self.msg_template(topic_string=topic_string)
-        queue_name = self.queue_name_template(type="ADMIN", durable="DURABLE")
+        topic_string = self.topic_string_template.format(type="ADMIN", destination="PROVIDED", durable="DURABLE")
+        subname = self.subname_template.format(type="Admin", destination="Provided", durable="Durable")
+        msg = self.msg_format(topic_string=topic_string)
+        queue_name = self.queue_name_template.format(type="ADMIN", durable="DURABLE")
         sub_desc = self.get_subscription_descriptor(subname, topic_string, pymqi.CMQC.MQSO_RESUME)
         # create queue
         self.create_queue(queue_name)
@@ -318,9 +305,8 @@ class TestPubSub(unittest.TestCase):
     def test_pubsub_already_exists(self):
         """Trying to register an already existing subscription should raise an exception.
         """
-        topic_string = self.topic_string_template(type="API", destination="MANAGED", durable="DURABLE")
-        subname = self.subname_template(type="Api", destination="Managed", durable="Durable")
-        # msg = self.msg_template(topic_string=topic_string)
+        topic_string = self.topic_string_template.format(type="API", destination="MANAGED", durable="DURABLE")
+        subname = self.subname_template.format(type="Api", destination="Managed", durable="Durable")
         # define a list self.sub_desc_list of subscription definitions so tearDown() can find it
         sub_desc = self.get_subscription_descriptor(subname, topic_string,
                                                     pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_DURABLE + pymqi.CMQC.MQSO_MANAGED)
@@ -346,8 +332,8 @@ class TestPubSub(unittest.TestCase):
     def test_pubsub_encoding(self):
         """Test Encoding in managed and non durable subscription.
         """
-        topic_string = self.topic_string_template(type="API", destination="MANAGED", durable="NON DURABLE")
-        subname = self.subname_template(type="Api", destination="Managed", durable="Non Durable")
+        topic_string = self.topic_string_template.format(type="API", destination="MANAGED", durable="NON DURABLE")
+        subname = self.subname_template.format(type="Api", destination="Managed", durable="Non Durable")
         messages = ["ascii", unicode("Euro sign: €", "iso-8859-15"), unicode("Umläut", "iso-8859-15"), unicodedata.lookup("INFINITY")]
 
         md = pymqi.md()
