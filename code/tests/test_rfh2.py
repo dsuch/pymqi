@@ -210,7 +210,7 @@ class TestRFH2(unittest.TestCase):
             rfh2.unpack(self.single_rfh2_message[116:])
         except pymqi.PYIFError as e:
             self.assertEqual(str(e),
-                             "PYMQI Error: RFH2 - StrucId not MQRFH_STRUC_ID. Value: b'ame>'",
+                             "PYMQI Error: RFH2 - StrucId not MQRFH_STRUC_ID. Value: {0}".format(b'ame>'),
                              "StrucId not = '%s'" % CMQC.MQRFH_STRUC_ID)
 
     def test_buffer_too_short_for_default_rfh2_exception(self):
