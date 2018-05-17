@@ -163,11 +163,11 @@ static PyObject *ErrorObj;
 //#define Py23Text_Check PyString_Check  // check object is Py2 bytes/str
 //#define Py23Text_AsString PyString_AsString  // converts Py2 bytes/str to C char*
 //#define Py23Text_Size PyString_Size  // get length of Py2 bytes/str
-static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
+static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, MQLONG *outLen) {
   if(PyString_Check(txtObj)) {
     // bytes/str
     if (outLen != NULL) {
-      (*outLen) = (int)PyString_Size(txtObj);
+      (*outLen) = (MQLONG)PyString_Size(txtObj);
     }
     return PyString_AsString(txtObj);
   } else {
@@ -210,19 +210,19 @@ static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
 //  }
 //}
 
-static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, int *outLen) {
-  if(Py23Bytes_Check(txtObj)) {
+static char* Py23BytesOrText_AsStringAndSize(PyObject *txtObj, MQLONG *outLen) {
+  if(PyBytes_Check(txtObj)) {
     // bytes
     if (outLen != NULL) {
-      (*outLen) = (int)Py23Bytes_Size(txtObj);
+      (*outLen) = (MQLONG)PyBytes_Size(txtObj);
     }
-    return Py23Bytes_AsString(txtObj);
+    return PyBytes_AsString(txtObj);
   } else if (PyUnicode_Check(txtObj)) {
     PyObject *bytesObj;
     bytesObj = PyUnicode_AsUTF8String(txtObj);  // PyUnicode_AsUTF8 will return NULL on binary data! Text only.
     if (bytesObj != NULL) {
       if (outLen != NULL) {
-        (*outLen) = PyBytes_Size(bytesObj);
+        (*outLen) = (MQLONG)PyBytes_Size(bytesObj);
       }
       return PyBytes_AsString(bytesObj);
     } else {
