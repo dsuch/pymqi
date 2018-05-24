@@ -1,4 +1,3 @@
-import os
 import os.path
 import utils
 
@@ -11,13 +10,13 @@ class MQ:
 
     # Queue manager connection setup
     class QM:
-        NAME = os.environ.get('PYMQI_TEST_QM_NAME', 'QM01')
+        NAME = os.environ.get('PYMQI_TEST_QM_NAME', 'MQTEST')
         HOST = os.environ.get('PYMQI_TEST_QM_HOST', '127.0.0.1')
-        PORT = os.environ.get('PYMQI_TEST_QM_PORT', '31414')
-        CHANNEL = os.environ.get('PYMQI_TEST_QM_CHANNEL', 'SVRCONN.1')
+        PORT = os.environ.get('PYMQI_TEST_QM_PORT', '8887')
+        CHANNEL = os.environ.get('PYMQI_TEST_QM_CHANNEL', 'CH1')
         TRANSPORT = os.environ.get('PYMQI_TEST_QM_TRANSPORT', 'TCP')
-        USER = os.environ.get('PYMQI_TEST_QM_USER', 'myuser')
-        PASSWORD = os.environ.get('PYMQI_TEST_QM_PASSWORD', 'mypassword')
+        USER = os.environ.get('PYMQI_TEST_QM_USER', '')
+        PASSWORD = os.environ.get('PYMQI_TEST_QM_PASSWORD', '')
 
         MIN_COMMAND_LEVEL = os.environ.get(
             'PYMQI_TEST_QM_MIN_COMMAND_LEVEL', '800')

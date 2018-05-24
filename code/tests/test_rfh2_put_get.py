@@ -1,13 +1,12 @@
-'''
+"""
 Created on 15 Nov 2010
 
 @author: hannes
-'''
+"""
 
 import unittest
 import os.path
 import config
-import env
 import pymqi
 from pymqi import CMQC
 
@@ -59,16 +58,16 @@ class TestRFH2PutGet(unittest.TestCase):
         self.get_queue.close()
         self.qmgr.disconnect()
 
-    def clear_queue(self, queue):
+    @staticmethod
+    def clear_queue(queue):
         try:
-            while(1):
+            while True:
                 queue.get()
-        except Exception, e:
+        except pymqi.MQMIError as e:
             if e.reason == 2033:
                 return
             else:
                 raise e
-
 
     def test_get_rfh2_single(self):
         """Use get_rfh2 to get a known correct 3rd party message that contains a single RFH2 header.
@@ -99,16 +98,15 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(rfh2["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2["Flags"])))
             self.assertEqual(rfh2["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2["NameValueCCSID"])))
             self.assertEqual(rfh2["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2["pscLength"])))
-            self.assertEqual(rfh2["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
+            self.assertEqual(rfh2["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2["psc"]) + "<"))
             self.assertEqual(rfh2["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2["testFolderLength"])))
-            self.assertEqual(rfh2["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
+            self.assertEqual(rfh2["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2["testFolder"])))
             self.assertEqual(rfh2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2["mcdLength"])))
-            self.assertEqual(rfh2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
+            self.assertEqual(rfh2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2["mcd"])))
 
             self.assertEqual(msg, self.single_rfh2_message[rfh2["StrucLength"]:], "Message Payloads do not match?")
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
-
 
     def test_get_rfh2_multiple(self):
         """Use get_rfh2 to get a known correct 3rd party message containing Multiples RFH2 headers.
@@ -140,9 +138,9 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(rfh2_1["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2_1["Flags"])))
             self.assertEqual(rfh2_1["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2_1["NameValueCCSID"])))
             self.assertEqual(rfh2_1["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2_1["pscLength"])))
-            self.assertEqual(rfh2_1["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2_1["psc"]) + "<"))
+            self.assertEqual(rfh2_1["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2_1["psc"]) + "<"))
             self.assertEqual(rfh2_1["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2_1["testFolderLength"])))
-            self.assertEqual(rfh2_1["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2_1["testFolder"])))
+            self.assertEqual(rfh2_1["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2_1["testFolder"])))
 
             rfh2_2 = rfh2_list[1]
             self.assertEqual(len(rfh2_2.get()), 14, "Number of attributes incorrect.  Should be 14? But is %s" % str(len(rfh2_2.get())))
@@ -155,16 +153,15 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(rfh2_2["Flags"], 0, "Flags has incorrect value. Should be: %i But is: %s" % (0, str(rfh2_2["Flags"])))
             self.assertEqual(rfh2_2["NameValueCCSID"], 1208, "NameValueCCSID has incorrect value. Should be: %i But is: %s" % (1208, str(rfh2_2["NameValueCCSID"])))
             self.assertEqual(rfh2_2["pscLength"], 152, "pscLength has incorrect value. Should be: %i But is: %s" % (152, str(rfh2_2["pscLength"])))
-            self.assertEqual(rfh2_2["psc"], "<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2_2["psc"]) + "<"))
+            self.assertEqual(rfh2_2["psc"], b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", "psc has incorrect value. Should be: %s But is: %s" % ("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc> ", ">" + str(rfh2_2["psc"]) + "<"))
             self.assertEqual(rfh2_2["testFolderLength"], 56, "testFolderLength has incorrect value. Should be: %i But is: %s" % (56, str(rfh2_2["testFolderLength"])))
-            self.assertEqual(rfh2_2["testFolder"], "<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2_2["testFolder"])))
+            self.assertEqual(rfh2_2["testFolder"], b"<testFolder><testVar>testValue</testVar></testFolder>   ", "testFolder has incorrect value. Should be: %s But is: %s" % ("<testFolder><testVar>testValue</testVar></testFolder>   ", str(rfh2_2["testFolder"])))
             self.assertEqual(rfh2_2["mcdLength"], 28, "mcdLength has incorrect value. Should be: %i But is: %s" % (28, str(rfh2_2["mcdLength"])))
-            self.assertEqual(rfh2_2["mcd"], "<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2_2["mcd"])))
-
+            self.assertEqual(rfh2_2["mcd"], b"<mcd><Msd>xmlnsc</Msd></mcd>", "mcd has incorrect value. Should be: %s But is: %s" % ("<mcd><Msd>xmlnsc</Msd></mcd>", str(rfh2_2["mcd"])))
 
             self.assertEqual(msg, self.multiple_rfh2_message[rfh2_1["StrucLength"] + rfh2_2["StrucLength"]:], "Message Payloads do not match?")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_rfh2_single(self):
@@ -184,14 +181,14 @@ class TestRFH2PutGet(unittest.TestCase):
             put_rfh2["Version"] = CMQC.MQRFH_VERSION_2
             put_rfh2["StrucLength"] = 188
             put_rfh2["Encoding"] = 273
-            put_rfh2["CodedCharSetId"]= 1208
-            put_rfh2["Format"] =  CMQC.MQFMT_STRING
+            put_rfh2["CodedCharSetId"] = 1208
+            put_rfh2["Format"] = CMQC.MQFMT_STRING
             put_rfh2["Flags"] = 0
             put_rfh2["NameValueCCSID"] = 1208
-            put_rfh2.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
-            put_rfh2.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
-            put_rfh2.add_folder("<mcd><Msd>xmlnsc</Msd></mcd>")
-            put_msg = "<testData><testVar>testValue</testVar></testData>"
+            put_rfh2.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+            put_rfh2.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
+            put_rfh2.add_folder(b"<mcd><Msd>xmlnsc</Msd></mcd>")
+            put_msg = b"<testData><testVar>testValue</testVar></testData>"
             self.put_queue.put_rfh2(put_msg, put_mqmd, put_opts, [put_rfh2])
 
             get_mqmd = pymqi.md()
@@ -199,7 +196,7 @@ class TestRFH2PutGet(unittest.TestCase):
             get_msg = self.get_queue.get(None, get_mqmd, get_opts)
 
             self.assertEqual(get_msg, self.single_rfh2_message, "Message got from Queue does not match known correct RFH2 message.")
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_rfh2_multiple(self):
@@ -219,27 +216,27 @@ class TestRFH2PutGet(unittest.TestCase):
             put_rfh2_1["Version"] = CMQC.MQRFH_VERSION_2
             put_rfh2_1["StrucLength"] = 188
             put_rfh2_1["Encoding"] = 273
-            put_rfh2_1["CodedCharSetId"]= 1208
-            put_rfh2_1["Format"] =  CMQC.MQFMT_RF_HEADER_2
+            put_rfh2_1["CodedCharSetId"] = 1208
+            put_rfh2_1["Format"] = CMQC.MQFMT_RF_HEADER_2
             put_rfh2_1["Flags"] = 0
             put_rfh2_1["NameValueCCSID"] = 1208
-            put_rfh2_1.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
-            put_rfh2_1.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
+            put_rfh2_1.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+            put_rfh2_1.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
 
             put_rfh2_2 = pymqi.RFH2()
             put_rfh2_2["StrucId"] = CMQC.MQRFH_STRUC_ID
             put_rfh2_2["Version"] = CMQC.MQRFH_VERSION_2
             put_rfh2_2["StrucLength"] = 188
             put_rfh2_2["Encoding"] = 273
-            put_rfh2_2["CodedCharSetId"]= 1208
-            put_rfh2_2["Format"] =  CMQC.MQFMT_STRING
+            put_rfh2_2["CodedCharSetId"] = 1208
+            put_rfh2_2["Format"] = CMQC.MQFMT_STRING
             put_rfh2_2["Flags"] = 0
             put_rfh2_2["NameValueCCSID"] = 1208
-            put_rfh2_2.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
-            put_rfh2_2.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
-            put_rfh2_2.add_folder("<mcd><Msd>xmlnsc</Msd></mcd>")
+            put_rfh2_2.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+            put_rfh2_2.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
+            put_rfh2_2.add_folder(b"<mcd><Msd>xmlnsc</Msd></mcd>")
 
-            put_msg = "<testData><testVar>testValue</testVar></testData>"
+            put_msg = b"<testData><testVar>testValue</testVar></testData>"
             self.put_queue.put_rfh2(put_msg, put_mqmd, put_opts, [put_rfh2_1, put_rfh2_2])
 
             get_mqmd = pymqi.md()
@@ -249,7 +246,7 @@ class TestRFH2PutGet(unittest.TestCase):
 
             self.assertEqual(get_msg, self.multiple_rfh2_message, "Message got from Queue does not match known correct RFH2 message.")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_get_rfh2_single(self):
@@ -269,14 +266,14 @@ class TestRFH2PutGet(unittest.TestCase):
             put_rfh2["Version"] = CMQC.MQRFH_VERSION_2
             put_rfh2["StrucLength"] = 188
             put_rfh2["Encoding"] = 273
-            put_rfh2["CodedCharSetId"]= 1208
-            put_rfh2["Format"] =  CMQC.MQFMT_STRING
+            put_rfh2["CodedCharSetId"] = 1208
+            put_rfh2["Format"] = CMQC.MQFMT_STRING
             put_rfh2["Flags"] = 0
             put_rfh2["NameValueCCSID"] = 1208
-            put_rfh2.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
-            put_rfh2.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
-            put_rfh2.add_folder("<mcd><Msd>xmlnsc</Msd></mcd>")
-            put_msg = "<testData><testVar>testValue</testVar></testData>"
+            put_rfh2.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+            put_rfh2.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
+            put_rfh2.add_folder(b"<mcd><Msd>xmlnsc</Msd></mcd>")
+            put_msg = b"<testData><testVar>testValue</testVar></testData>"
 
             put_rfh2_list = [put_rfh2]
             self.put_queue.put_rfh2(put_msg, put_mqmd, put_opts, put_rfh2_list)
@@ -290,7 +287,7 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(get_rfh2_list[0].get(), put_rfh2_list[0].get()), "Put and Get RFH2 Lists do not match."
             self.assertEqual(get_msg, put_msg, "Put and Get messages do not match.")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
     def test_put_get_rfh2_multiple(self):
@@ -310,27 +307,27 @@ class TestRFH2PutGet(unittest.TestCase):
             put_rfh2_1["Version"] = CMQC.MQRFH_VERSION_2
             put_rfh2_1["StrucLength"] = 188
             put_rfh2_1["Encoding"] = 273
-            put_rfh2_1["CodedCharSetId"]= 1208
-            put_rfh2_1["Format"] =  CMQC.MQFMT_RF_HEADER_2
+            put_rfh2_1["CodedCharSetId"] = 1208
+            put_rfh2_1["Format"] = CMQC.MQFMT_RF_HEADER_2
             put_rfh2_1["Flags"] = 0
             put_rfh2_1["NameValueCCSID"] = 1208
-            put_rfh2_1.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
-            put_rfh2_1.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
+            put_rfh2_1.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+            put_rfh2_1.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
 
             put_rfh2_2 = pymqi.RFH2()
             put_rfh2_2["StrucId"] = CMQC.MQRFH_STRUC_ID
             put_rfh2_2["Version"] = CMQC.MQRFH_VERSION_2
             put_rfh2_2["StrucLength"] = 188
             put_rfh2_2["Encoding"] = 273
-            put_rfh2_2["CodedCharSetId"]= 1208
-            put_rfh2_2["Format"] =  CMQC.MQFMT_STRING
+            put_rfh2_2["CodedCharSetId"] = 1208
+            put_rfh2_2["Format"] = CMQC.MQFMT_STRING
             put_rfh2_2["Flags"] = 0
             put_rfh2_2["NameValueCCSID"] = 1208
-            put_rfh2_2.add_folder("<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
-            put_rfh2_2.add_folder("<testFolder><testVar>testValue</testVar></testFolder>")
-            put_rfh2_2.add_folder("<mcd><Msd>xmlnsc</Msd></mcd>")
+            put_rfh2_2.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+            put_rfh2_2.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
+            put_rfh2_2.add_folder(b"<mcd><Msd>xmlnsc</Msd></mcd>")
             put_rfh2_list = [put_rfh2_1, put_rfh2_2]
-            put_msg = "<testData><testVar>testValue</testVar></testData>"
+            put_msg = b"<testData><testVar>testValue</testVar></testData>"
 
             self.put_queue.put_rfh2(put_msg, put_mqmd, put_opts, put_rfh2_list)
 
@@ -344,7 +341,7 @@ class TestRFH2PutGet(unittest.TestCase):
             self.assertEqual(get_rfh2_list[1].get(), put_rfh2_list[1].get()), "Put and Get RFH2 Lists do not match."
             self.assertEqual(get_msg, put_msg, "Put and Get messages do not match.")
 
-        except Exception, e:
+        except Exception as e:
             self.fail(e)
 
 
