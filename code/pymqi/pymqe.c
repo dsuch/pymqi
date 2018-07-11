@@ -45,7 +45,7 @@ PERFORMANCE OF THIS SOFTWARE.
  *
  */
 
-static char __version__[] = "1.6.0";
+static char __version__[] = "1.8.0";
 
 static char pymqe_doc[] = " \
 pymqe - A Python MQ Extension.  This presents a low-level Python \
@@ -318,7 +318,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   int mqcd_buf_len = 0;
   MQCNO cno = {MQCNO_DEFAULT};
   PyObject* user_password = NULL;
-  
+
   MQCSP csp = {MQCSP_DEFAULT};
 
   /*  Note: MQLONG is an int on 64 bit platforms and MQHCONN is an MQLONG
