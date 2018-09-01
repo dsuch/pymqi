@@ -376,7 +376,8 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
     if ((csp.CSPUserIdPtr == NULL && user!= NULL) || (csp.CSPPasswordPtr == NULL && password != NULL)) {
       PyErr_Format(ErrorObj, "Failed to parse user/password. Check they are bytes or string.");
       return NULL;
-    } {
+    }
+    else {
       cno.SecurityParmsPtr = &csp;
     }
   }
