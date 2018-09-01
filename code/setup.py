@@ -11,7 +11,7 @@ from struct import calcsize
 from distutils.core import setup, Extension
 # from setuptools import find_packages
 
-version = "1.8.0"
+version = "1.8.1"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0

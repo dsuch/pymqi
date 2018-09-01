@@ -45,7 +45,7 @@ PERFORMANCE OF THIS SOFTWARE.
  *
  */
 
-static char __version__[] = "1.8.0";
+static char __version__[] = "1.8.1";
 
 static char pymqe_doc[] = " \
 pymqe - A Python MQ Extension.  This presents a low-level Python \
@@ -376,12 +376,13 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
     if ((csp.CSPUserIdPtr == NULL && user!= NULL) || (csp.CSPPasswordPtr == NULL && password != NULL)) {
       PyErr_Format(ErrorObj, "Failed to parse user/password. Check they are bytes or string.");
       return NULL;
+    } {
+      cno.SecurityParmsPtr = &csp;
     }
   }
 
   cno.ClientConnPtr = (MQCD *)mqcd;
   cno.Options = (MQLONG)options;
-  cno.SecurityParmsPtr = &csp;
 
   Py_BEGIN_ALLOW_THREADS
   MQCONNX(name, &cno, &handle, &comp_code, &comp_reason);
