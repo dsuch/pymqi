@@ -1,11 +1,13 @@
 code/build/*
 code/dist
 code/develop-eggs/*
+code/MANIFEST
 *pymqe.so
 docs/_build/
+*.egg-info*
 *.pyc
 *.pyo
-*.egg-info*
+*.swp
 *.*~
 ~
 
