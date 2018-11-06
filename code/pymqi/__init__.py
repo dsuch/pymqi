@@ -1018,7 +1018,11 @@ class SCO(MQOpts):
             _mqcsco_version = CMQC.MQSCO_VERSION_4
 
         elif '7.0' in pymqe.__mqlevels__:
-            _mqcsco_version = CMQC.MQSCO_VERSION_3
+         
+            if CMQC.MQSCO_CURRENT_VERSION:
+                _mqcsco_version = CMQC.MQSCO_CURRENT_VERSION
+            else:
+                _mqcsco_version = CMQC.MQSCO_VERSION_3
 
         elif '6.0' in pymqe.__mqlevels__:
             _mqcsco_version = CMQC.MQSCO_VERSION_2
@@ -1041,7 +1045,7 @@ class SCO(MQOpts):
             opts += [['KeyResetCount', py23long(0), MQLONG_TYPE],
                      ['FipsRequired', py23long(0), MQLONG_TYPE]]
 
-        if "7.0" in pymqe.__mqlevels__:
+        if "7.0" in pymqe.__mqlevels__ and CMQC.MQSCO_CURRENT_VERSION > 2::
             opts += [['EncryptionPolicySuiteB', [0, 0, 0, 0], '4' + MQLONG_TYPE]]
 
         if "7.1" in pymqe.__mqlevels__:
