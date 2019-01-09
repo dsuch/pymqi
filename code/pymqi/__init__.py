@@ -1327,7 +1327,7 @@ class QueueManager(object):
     the connection may be deferred until a call to connect().
     """
 
-    def __init__(self, name='', disconnect_on_exit=False):
+    def __init__(self, name='', disconnect_on_exit=True):
         """QueueManager(name = '')
 
         Connect to the Queue Manager 'name' (default value ''). If
@@ -2596,7 +2596,7 @@ class ByteString(object):
         return len(self.value)
 
 
-def connect(queue_manager, channel=None, conn_info=None, user=None, password=None, disconnect_on_exit=False):
+def connect(queue_manager, channel=None, conn_info=None, user=None, password=None, disconnect_on_exit=True):
     """ A convenience wrapper for connecting to MQ queue managers. If given the
     'queue_manager' parameter only, will try connecting to it in bindings mode.
     If given both 'channel' and 'conn_info' will connect in client mode.
