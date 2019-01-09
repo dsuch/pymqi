@@ -1327,7 +1327,7 @@ class QueueManager(object):
     the connection may be deferred until a call to connect().
     """
 
-    def __init__(self, name=''):
+    def __init__(self, name='', disconnect_on_exit=True):
         """QueueManager(name = '')
 
         Connect to the Queue Manager 'name' (default value ''). If
@@ -1338,6 +1338,7 @@ class QueueManager(object):
 
         self.__handle = None
         self.__name = name
+        self.__disconnect_on_exit = disconnect_on_exit
         self.__qmobj = None
         if name is not None:
             self.connect(name)
@@ -1353,10 +1354,12 @@ class QueueManager(object):
                     pymqe.MQCLOSE(self.__handle, self.__qmobj, CMQC.MQCO_NONE)
                 except Exception:
                     pass
-            try:
-                self.disconnect()
-            except Exception:
-                pass
+
+            if self.__disconnect_on_exit:
+                try:
+                    self.disconnect()
+                except Exception:
+                    pass
 
     def connect(self, name):
         """connect(name)
@@ -2593,19 +2596,19 @@ class ByteString(object):
         return len(self.value)
 
 
-def connect(queue_manager, channel=None, conn_info=None, user=None, password=None):
+def connect(queue_manager, channel=None, conn_info=None, user=None, password=None, disconnect_on_exit=True):
     """ A convenience wrapper for connecting to MQ queue managers. If given the
     'queue_manager' parameter only, will try connecting to it in bindings mode.
     If given both 'channel' and 'conn_info' will connect in client mode.
     A pymqi.QueueManager is returned on successfully establishing a connection.
     """
     if channel and conn_info:
-        qmgr = QueueManager(None)
+        qmgr = QueueManager(None, disconnect_on_exit)
         qmgr.connect_tcp_client(queue_manager or '', CD(), channel, conn_info, user, password)
         return qmgr
 
     elif queue_manager:
-        qmgr = QueueManager(queue_manager)
+        qmgr = QueueManager(queue_manager, disconnect_on_exit)
         return qmgr
 
     else:
