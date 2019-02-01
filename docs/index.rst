@@ -78,7 +78,9 @@ This includes IBM MQ queue managers along with ability to seamlessly integrate w
 .. image:: https://zato.io/support/pymqi/mqdef.png
    :width: 55%
 
-Check out this
-`blog post <https://zato.io/blog/posts/websphere-mq-python-zato.html?pymqi>`_
+Read these
+[blog](https://zato.io/blog/posts/python-ibm-mq-part-1.html)
+[posts](https://zato.io/blog/posts/websphere-mq-python-zato.html?pymqi-gh)
 for an introduction
-and visit `Zato documentation <https://zato.io/docs?pymqi-idx03>`_ for more information.
+and visit [Zato documentation](https://zato.io/docs?pymqi-gh03) for more information.
+
