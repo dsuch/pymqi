@@ -111,6 +111,22 @@ elif sys.platform == 'sunos5' or sys.platform == 'linux-s390':
 elif sys.platform.startswith('aix'):
     library_dirs, include_dirs, libraries = get_aix_settings()
 
+# Possibly Mac
+elif os.environ.get('MQ_INSTALLATION_PATH'):
+    mq_installation_path = os.environ['MQ_INSTALLATION_PATH']
+
+    if bits == 64:
+        library_dirs = ['{}/lib64'.format(mq_installation_path)]
+    else:
+        library_dirs = ['{}/lib'.format(mq_installation_path)]
+
+    include_dirs = ['{}/inc'.format(mq_installation_path)]
+
+    if build_server:
+        libraries = ['mqm_r']
+    else:
+        libraries = ['mqic_r']
+
 # Try generic UNIX for any other platform, including Linux
 else:
     library_dirs, include_dirs, libraries = get_generic_unix_settings()
