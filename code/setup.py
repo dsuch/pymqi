@@ -11,7 +11,7 @@ from distutils.core import setup, Extension
 from distutils import spawn
 from struct import calcsize
 
-version = "1.9"
+version = "1.9.0post1"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -131,24 +131,29 @@ elif sys.platform == 'sunos5' or sys.platform == 'linux-s390':
 elif sys.platform.startswith('aix'):
     library_dirs, include_dirs, libraries = get_aix_settings()
 
-# At this point we try out if it is Mac or, should that not succeed,
-# we assume this is a generic Linux/UNIX installation that keeps
-# MQ data in the most common directory.
+# At this point, to preserve backward-compatibility we try out generic
+# UNIX settings first, i.e. libraries and include files in well-known locations.
+# Otherwise, to support Mac, we look up dspmqver in $PATH.
 else:
 
-    # On Mac, users can install MQ to any location so we look up
-    # the path that dspmqver is installed to and find the rest
-    # of the information needed in relation to that base directory.
-    dspmqver_path = spawn.find_executable('dspmqver')
+    has_generic_lib = os.path.exists('/opt/mqm/lib64') if bits == 64 else os.path.exists('/opt/mqm/lib')
 
-    # We have found the command so we will be able to extract the relevant directories now
-    if dspmqver_path:
-        library_dirs, include_dirs, libraries = get_locations_by_command_path(dspmqver_path)
-
-    # No such command on $PATH, let's try the generic locations then
-    else:
+    if has_generic_lib:
         library_dirs, include_dirs, libraries = get_generic_unix_settings()
 
+    else:
+
+        # On Mac, users can install MQ to any location so we look up
+        # the path that dspmqver is installed to and find the rest
+        # of the information needed in relation to that base directory.
+        dspmqver_path = spawn.find_executable('dspmqver')
+
+        # We have found the command so we will be able to extract the relevant directories now
+        if dspmqver_path:
+            library_dirs, include_dirs, libraries = get_locations_by_command_path(dspmqver_path)
+
+        else:
+            raise Exception('MQ libraries could not be found')
 
 if build_server:
     print("Building PyMQI server %sbits" % bits)
