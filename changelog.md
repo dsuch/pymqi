@@ -1,6 +1,10 @@
 PyMQI changelog
 ---------------
 
+* **1.9.0** (2019-02-15)
+
+  * Added support for Mac OS
+
 * **1.8.0** (2018-07-11)
 
   * Added Python 3 compatibility while still retaining the ability to run under Python 2.6 and 2.7

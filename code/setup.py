@@ -11,7 +11,7 @@ from distutils.core import setup, Extension
 from distutils import spawn
 from struct import calcsize
 
-version = "1.8.2"
+version = "1.9"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
