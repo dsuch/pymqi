@@ -4,14 +4,14 @@
 #
 # Linux build is re-entrant/multithreaded.
 
-import sys, os
+# stdlib
+import os
+import sys
+from distutils.core import setup, Extension
+from distutils import spawn
 from struct import calcsize
 
-# from setuptools import setup, find_packages
-from distutils.core import setup, Extension
-# from setuptools import find_packages
-
-version = "1.8.1"
+version = "1.8.2"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -99,21 +99,11 @@ def get_generic_unix_settings():
 
     return library_dirs, include_dirs, libraries
 
-# Windows
-if sys.platform == 'win32':
-    library_dirs, include_dirs, libraries = get_windows_settings()
-
-# SunOS and z/Linux
-elif sys.platform == 'sunos5' or sys.platform == 'linux-s390':
-    library_dirs, include_dirs, libraries = get_sunos_zlinux_settings()
-
-# AIX
-elif sys.platform.startswith('aix'):
-    library_dirs, include_dirs, libraries = get_aix_settings()
-
-# Possibly Mac
-elif os.environ.get('MQ_INSTALLATION_PATH'):
-    mq_installation_path = os.environ['MQ_INSTALLATION_PATH']
+def get_locations_by_command_path(command_path):
+    """ Extracts directory locations by the path to one of MQ commands, such as dspmqver.
+    """
+    command_dir = os.path.dirname(command_path)
+    mq_installation_path = os.path.abspath(os.path.join(command_dir, '..', '..'))
 
     if bits == 64:
         library_dirs = ['{}/lib64'.format(mq_installation_path)]
@@ -127,9 +117,37 @@ elif os.environ.get('MQ_INSTALLATION_PATH'):
     else:
         libraries = ['mqic_r']
 
-# Try generic UNIX for any other platform, including Linux
+    return library_dirs, include_dirs, libraries
+
+# Windows
+if sys.platform == 'win32':
+    library_dirs, include_dirs, libraries = get_windows_settings()
+
+# SunOS and z/Linux
+elif sys.platform == 'sunos5' or sys.platform == 'linux-s390':
+    library_dirs, include_dirs, libraries = get_sunos_zlinux_settings()
+
+# AIX
+elif sys.platform.startswith('aix'):
+    library_dirs, include_dirs, libraries = get_aix_settings()
+
+# At this point we try out if it is Mac or, should that not succeed,
+# we assume this is a generic Linux/UNIX installation that keeps
+# MQ data in the most common directory.
 else:
-    library_dirs, include_dirs, libraries = get_generic_unix_settings()
+
+    # On Mac, users can install MQ to any location so we look up
+    # the path that dspmqver is installed to and find the rest
+    # of the information needed in relation to that base directory.
+    dspmqver_path = spawn.find_executable('dspmqver')
+
+    # We have found the command so we will be able to extract the relevant directories now
+    if dspmqver_path:
+        library_dirs, include_dirs, libraries = get_locations_by_command_path(dspmqver_path)
+
+    # No such command on $PATH, let's try the generic locations then
+    else:
+        library_dirs, include_dirs, libraries = get_generic_unix_settings()
 
 
 if build_server:
