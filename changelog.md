@@ -1,6 +1,14 @@
 PyMQI changelog
 ---------------
 
+* **1.9.2** (2019-03-12)
+
+  * Added [.get_no_jms]() to return queue messages without JMS/MQRFH2 headers
+
+* **1.9.1** (2019-02-18)
+
+  * Improved installation procedure
+
 * **1.9.0** (2019-02-15)
 
   * Added support for Mac OS

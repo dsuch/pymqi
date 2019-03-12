@@ -11,7 +11,7 @@ from distutils.core import setup, Extension
 from distutils import spawn
 from struct import calcsize
 
-version = "1.9.0post1"
+version = "1.9.2"
 
 # Munge the args if a server or client build was asked for.
 build_server = 0
@@ -103,7 +103,7 @@ def get_locations_by_command_path(command_path):
     """ Extracts directory locations by the path to one of MQ commands, such as dspmqver.
     """
     command_dir = os.path.dirname(command_path)
-    mq_installation_path = os.path.abspath(os.path.join(command_dir, '..', '..'))
+    mq_installation_path = os.path.abspath(os.path.join(command_dir, '..'))
 
     if bits == 64:
         library_dirs = ['{}/lib64'.format(mq_installation_path)]
@@ -169,11 +169,9 @@ setup(name = 'pymqi',
     url='https://dsuch.github.io/pymqi/',
     download_url='https://pypi.python.org/pypi/pymqi',
     platforms='OS Independent',
-    #packages = find_packages('pymqi'),
     packages = ['pymqi'],
     license='Python Software Foundation License',
-    keywords=('pymqi OBM WebSphere MQ WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
-    # install_requires = [],
+    keywords=('pymqi IBM MQ WebSphere WMQ MQSeries IBM middleware messaging queueing asynchronous SOA EAI ESB integration'),
 
     classifiers = [
         'Development Status :: 5 - Production/Stable',
