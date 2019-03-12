@@ -3,7 +3,7 @@ PyMQI changelog
 
 * **1.9.2** (2019-03-12)
 
-  * Added [.get_no_jms]() to return queue messages without JMS/MQRFH2 headers
+  * Added [.get_no_jms](https://dsuch.github.io/pymqi/examples.html#how-to-get-a-message-without-jms-mqrfh2-headers) to return queue messages without JMS/MQRFH2 headers
 
 * **1.9.1** (2019-02-18)
 
