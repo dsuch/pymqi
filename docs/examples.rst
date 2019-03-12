@@ -21,11 +21,11 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
     qmgr.disconnect()
@@ -38,13 +38,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
-    user = 'myuser'
+    user = 'app'
     password = 'mypassword'
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
@@ -63,7 +63,7 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
+    queue_manager = 'QM1'
     qmgr = pymqi.connect(queue_manager)
 
     qmgr.disconnect()
@@ -76,13 +76,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    message = "Hello from Python!"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = 'Hello from Python!'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
@@ -100,12 +100,12 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
@@ -130,12 +130,12 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
@@ -169,12 +169,12 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    conn_info = '%s(%s)' % (host, port)
 
     # Message Descriptor
     md = pymqi.MD()
@@ -212,12 +212,12 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    conn_info = '%s(%s)' % (host, port)
 
     # Message Descriptor
     md = pymqi.MD()
@@ -272,20 +272,20 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
-    message = "Please reply to a dynamic queue, thanks."
-    dynamic_queue_prefix = "MY.REPLIES.*"
-    request_queue = "TEST.1"
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
+    message = 'Please reply to a dynamic queue, thanks.'
+    dynamic_queue_prefix = 'MY.REPLIES.*'
+    request_queue = 'TEST.1'
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
     # Dynamic queue's object descriptor.
     dyn_od = pymqi.OD()
-    dyn_od.ObjectName = "SYSTEM.DEFAULT.MODEL.QUEUE"
+    dyn_od.ObjectName = 'SYSTEM.DEFAULT.MODEL.QUEUE'
     dyn_od.DynamicQName = dynamic_queue_prefix
 
     # Open the dynamic queue.
@@ -326,13 +326,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    message = "Here's a reply"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = 'Here's a reply'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
@@ -363,13 +363,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    topic_string = "/currency/rate/EUR/USD"
-    msg = "1.3961"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    topic_string = '/currency/rate/EUR/USD'
+    msg = '1.3961'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.QueueManager(None)
     qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
@@ -400,32 +400,32 @@ Code::
 
     logging.basicConfig(level=logging.INFO)
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    topic_string = "/currency/rate/EUR/USD"
-    msg = "1.3961"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    topic_string = '/currency/rate/EUR/USD'
+    msg = '1.3961'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.QueueManager(None)
     qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
 
     sub_desc = pymqi.SD()
-    sub_desc["Options"] = pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_RESUME + \
+    sub_desc['Options'] = pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_RESUME + \
         pymqi.CMQC.MQSO_DURABLE + pymqi.CMQC.MQSO_MANAGED
-    sub_desc.set_vs("SubName", "MySub")
-    sub_desc.set_vs("ObjectString", topic_string)
+    sub_desc.set_vs('SubName', 'MySub')
+    sub_desc.set_vs('ObjectString', topic_string)
 
     sub = pymqi.Subscription(qmgr)
     sub.sub(sub_desc=sub_desc)
 
     get_opts = pymqi.GMO(
         Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING + pymqi.CMQC.MQGMO_WAIT)
-    get_opts["WaitInterval"] = 15000
+    get_opts['WaitInterval'] = 15000
 
     data = sub.get(None, pymqi.md(), get_opts)
-    logging.info("Here's the received data: [%s]" % data)
+    logging.info('Here's the received data: [%s]' % data)
 
     sub.close(sub_close_options=pymqi.CMQC.MQCO_KEEP_SUB, close_sub_queue=True)
     qmgr.disconnect()
@@ -438,11 +438,11 @@ Notes:
 * a proper pymqi.SD needs to be created first; note the usage of its *.set_vs* method
   for setting some of the object's properties. It's needed here because parts of
   the pymqi.SD's implementation depend on `ctypes <http://docs.python.org/library/ctypes.html>`_
-  and cannot be set directly through the regular dictionary assignment like the "Options" have been set,
+  and cannot be set directly through the regular dictionary assignment like the 'Options' have been set,
 
 * note well that among other options we're using pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_RESUME,
   in plain words in means *create a new subscription of the name set in the
-  "SubName" key ("MySub" in the example) but if the subscribtion already exists
+  'SubName' key ('MySub' in the example) but if the subscribtion already exists
   then just resume it*, this basically means we won't stumble upon the
   MQRC_SUB_ALREADY_EXISTS error code,
 
@@ -470,15 +470,15 @@ Code::
 
     logging.basicConfig(level=logging.INFO)
 
-    queue_manager = "QM01"
-    channel = "SSL.SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    conn_info = "%s(%s)" % (host, port)
-    ssl_cipher_spec = "TLS_RSA_WITH_AES_256_CBC_SHA"
-    key_repo_location = "/var/mqm/ssl-db/client/KeyringClient"
-    message = "Hello from Python!"
+    queue_manager = 'QM1'
+    channel = 'SSL.SVRCONN.1'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    conn_info = '%s(%s)' % (host, port)
+    ssl_cipher_spec = 'TLS_RSA_WITH_AES_256_CBC_SHA'
+    key_repo_location = '/var/mqm/ssl-db/client/KeyringClient'
+    message = 'Hello from Python!'
 
     cd = pymqi.CD()
     cd.ChannelName = channel
@@ -497,7 +497,7 @@ Code::
     put_queue.put(message)
 
     get_queue = pymqi.Queue(qmgr, queue_name)
-    logging.info("Here's the message again: [%s]" % get_queue.get())
+    logging.info('Here's the message again: [%s]' % get_queue.get())
 
     put_queue.close()
     get_queue.close()
@@ -562,13 +562,13 @@ Code::
 
     logging.basicConfig(level=logging.INFO)
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    message = "Hello from Python!"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = 'Hello from Python!'
+    conn_info = '%s(%s)' % (host, port)
     priority = 2
 
     put_md = pymqi.MD()
@@ -583,7 +583,7 @@ Code::
     get_queue = pymqi.Queue(qmgr, queue_name)
     message_body = get_queue.get(None, get_md)
 
-    logging.info("Received a message, priority [%s]." % get_md.Priority)
+    logging.info('Received a message, priority [%s].' % get_md.Priority)
 
     put_queue.close()
     get_queue.close()
@@ -603,13 +603,13 @@ Code::
     import pymqi
     import CMQXC
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    message = "Hello from Python!" * 10000
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = 'Hello from Python!' * 10000
+    conn_info = '%s(%s)' % (host, port)
 
     cd = pymqi.CD()
     cd.MsgCompList[1] = CMQXC.MQCOMPRESS_ZLIBHIGH
@@ -640,17 +640,17 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "foo.bar" # Note the made up host name
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = 'foo.bar' # Note the made up host name
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
     try:
         qmgr = pymqi.connect(queue_manager, channel, conn_info)
     except pymqi.MQMIError, e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_HOST_NOT_AVAILABLE:
-            logging.error("Such a host [%s] does not exist." % host)
+            logging.error('Such a host [%s] does not exist.' % host)
 
 Notes:
 
@@ -671,17 +671,17 @@ Code::
 
     logging.basicConfig(level=logging.INFO)
 
-    package_name = "MQSeriesClient"
+    package_name = 'MQSeriesClient'
 
     ts = rpm.TransactionSet()
-    mi = ts.dbMatch("name", package_name)
+    mi = ts.dbMatch('name', package_name)
 
     if not mi.count():
-        logging.info("Did not find package [%s] in RPM database." % package_name)
+        logging.info('Did not find package [%s] in RPM database.' % package_name)
     else:
         for header in mi:
-            version = header["version"]
-            msg = "Found package [%s], version [%s]." % (package_name, version)
+            version = header['version']
+            msg = 'Found package [%s], version [%s].' % (package_name, version)
             logging.info(msg)
 
 Notes:
@@ -703,15 +703,15 @@ Code::
 
     logging.basicConfig(level=logging.INFO)
 
-    key_name = "Software\\IBM\\MQSeries\\CurrentVersion"
+    key_name = 'Software\\IBM\\MQSeries\\CurrentVersion'
 
     try:
         key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, key_name)
     except WindowsError:
-        logging.info("Could not find IBM MQ-related information in Windows registry.")
+        logging.info('Could not find IBM MQ-related information in Windows registry.')
     else:
-        version = _winreg.QueryValueEx(key, "VRMF")[0]
-        logging.info("IBM MQ version is [%s]." % version)
+        version = _winreg.QueryValueEx(key, 'VRMF')[0]
+        logging.info('IBM MQ version is [%s].' % version)
 
 
 * Versions of IBM MQ packages installed under Windows can be extracted
@@ -728,14 +728,14 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    message = "Hello from Python!"
-    alternate_user_id = "myuser"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = 'Hello from Python!'
+    alternate_user_id = 'myuser'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
@@ -773,21 +773,21 @@ Code::
     logging.basicConfig(level=logging.INFO)
 
     # Queue manager name
-    qm_name = "QM01"
+    qm_name = 'QM1'
 
     # Listener host and port
-    listener = "192.168.1.135(1434)"
+    listener = '192.168.1.135(1434)'
 
     # Channel to transfer data through
-    channel = "SVRCONN.1"
+    channel = 'DEV.APP.SVRCONN'
 
     # Request Queue
-    request_queue_name = "REQUEST.QUEUE.1"
+    request_queue_name = 'REQUEST.QUEUE.1'
 
     # ReplyTo Queue
-    replyto_queue_name = "REPLYTO.QUEUE.1"
+    replyto_queue_name = 'REPLYTO.QUEUE.1'
 
-    message_prefix = "Test Data. "
+    message_prefix = 'Test Data. '
 
     class Producer(threading.Thread):
         """ A base class for any producer used in this example.
@@ -821,13 +821,13 @@ Code::
                 put_mqmd = pymqi.MD()
 
                 # Set the MsgType to request.
-                put_mqmd["MsgType"] = pymqi.CMQC.MQMT_REQUEST
+                put_mqmd['MsgType'] = pymqi.CMQC.MQMT_REQUEST
 
                 # Set up the ReplyTo QUeue/Queue Manager (Queue Manager is automatically
                 # set by MQ).
 
-                put_mqmd["ReplyToQ"] = replyto_queue_name
-                put_mqmd["ReplyToQMgr"] = qm_name
+                put_mqmd['ReplyToQ'] = replyto_queue_name
+                put_mqmd['ReplyToQMgr'] = qm_name
 
                 # Set up the put options - must do with NO_SYNCPOINT so that the request
                 # message is committed immediately.
@@ -837,13 +837,13 @@ Code::
                 message = message_prefix + uuid.uuid4().hex
 
                 self.req_queue.put(message, put_mqmd, put_opts)
-                logging.info("Put request message.  Message: [%s]" % message)
+                logging.info('Put request message.  Message: [%s]' % message)
 
                 # Set up message descriptor for get.
                 get_mqmd = pymqi.MD()
 
                 # Set the get CorrelId to the put MsgId (which was set by MQ on the put1).
-                get_mqmd["CorrelId"] = put_mqmd["MsgId"]
+                get_mqmd['CorrelId'] = put_mqmd['MsgId']
 
                 # Set up the get options.
                 get_opts = pymqi.GMO(
@@ -851,19 +851,19 @@ Code::
                             pymqi.CMQC.MQGMO_WAIT)
 
                 # Version must be set to 2 to correlate.
-                get_opts["Version"] = pymqi.CMQC.MQGMO_VERSION_2
+                get_opts['Version'] = pymqi.CMQC.MQGMO_VERSION_2
 
                 # Tell MQ that we are matching on CorrelId.
-                get_opts["MatchOptions"] = pymqi.CMQC.MQMO_MATCH_CORREL_ID
+                get_opts['MatchOptions'] = pymqi.CMQC.MQMO_MATCH_CORREL_ID
 
                 # Set the wait timeout of half a second.
-                get_opts["WaitInterval"] = 500
+                get_opts['WaitInterval'] = 500
 
                 # Open the replyto queue and get response message,
                 replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED)
                 response_message = replyto_queue.get(None, get_mqmd, get_opts)
 
-                logging.info("Got response message [%s]" % response_message)
+                logging.info('Got response message [%s]' % response_message)
 
                 time.sleep(1)
 
@@ -896,7 +896,7 @@ Code::
                     response_md = pymqi.MD()
                     response_md.CorrelId = request_md.MsgId
 
-                    response_message = "Response to message %s" % request_message
+                    response_message = 'Response to message %s' % request_message
                     self.replyto_queue.put(response_message, response_md)
 
                     # Reset the MsgId, CorrelId & GroupId so that we can reuse
@@ -946,13 +946,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    message = "Hello from Python!"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = 'Hello from Python!'
+    conn_info = '%s(%s)' % (host, port)
 
     cd = pymqi.CD()
 
@@ -979,13 +979,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    queue_name = "TEST.1"
-    message = "Hello from Python!"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = 'Hello from Python!'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.QueueManager(None)
     qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
@@ -1025,13 +1025,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
-    channel_name = "MYCHANNEL.1"
+    channel_name = 'MYCHANNEL.1'
     channel_type = pymqi.CMQXC.MQCHT_SVRCONN
 
     args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: channel_name,
@@ -1062,13 +1062,13 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
-    queue_name = "MYQUEUE.1"
+    queue_name = 'MYQUEUE.1'
     queue_type = pymqi.CMQC.MQQT_LOCAL
     max_depth = 123456
 
@@ -1105,13 +1105,13 @@ Code::
 
     logging.basicConfig(level=logging.INFO)
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
-    prefix = "SYSTEM.*"
+    prefix = 'SYSTEM.*'
 
     args = {pymqi.CMQCFC.MQCACH_CHANNEL_NAME: prefix}
 
@@ -1122,13 +1122,13 @@ Code::
         response = pcf.MQCMD_INQUIRE_CHANNEL(args)
     except pymqi.MQMIError, e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
-            logging.info("No channels matched prefix [%s]" % prefix)
+            logging.info('No channels matched prefix [%s]' % prefix)
         else:
             raise
     else:
         for channel_info in response:
             channel_name = channel_info[CMQCFC.MQCACH_CHANNEL_NAME]
-            logging.info("Found channel [%s]" % channel_name)
+            logging.info('Found channel [%s]' % channel_name)
 
     qmgr.disconnect()
 
@@ -1154,13 +1154,13 @@ Code::
 
     logging.basicConfig(level=logging.INFO)
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
-    prefix = "SYSTEM.*"
+    prefix = 'SYSTEM.*'
     queue_type = pymqi.CMQC.MQQT_MODEL
 
     args = {pymqi.CMQC.MQCA_Q_NAME: prefix,
@@ -1173,13 +1173,13 @@ Code::
         response = pcf.MQCMD_INQUIRE_Q(args)
     except pymqi.MQMIError, e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
-            logging.info("No queues matched given arguments.")
+            logging.info('No queues matched given arguments.')
         else:
             raise
     else:
         for queue_info in response:
             queue_name = queue_info[pymqi.CMQC.MQCA_Q_NAME]
-            logging.info("Found queue [%s]" % queue_name)
+            logging.info('Found queue [%s]' % queue_name)
 
     qmgr.disconnect()
 
@@ -1199,11 +1199,11 @@ Code::
 
     import pymqi
 
-    queue_manager = "QM01"
-    channel = "SVRCONN.1"
-    host = "192.168.1.135"
-    port = "1434"
-    conn_info = "%s(%s)" % (host, port)
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
