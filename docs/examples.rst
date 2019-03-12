@@ -122,6 +122,43 @@ Notes:
   2033 MQRC_NO_MSG_AVAILABLE, see :ref:`here <wait_single_message>`
   and :ref:`here <wait_multiple_messages>` for info on how to wait for a single or multiple messages.
 
+=================================================
+How to get a message without JMS (MQRFH2) headers
+=================================================
+
+Code::
+
+    import pymqi
+
+    queue_manager = "QM01"
+    channel = "SVRCONN.1"
+    host = "192.168.1.135"
+    port = "1434"
+    queue_name = "TEST.1"
+    conn_info = "%s(%s)" % (host, port)
+
+    qmgr = pymqi.connect(queue_manager, channel, conn_info)
+
+    queue = pymqi.Queue(qmgr, queue_name)
+
+    # Get the message but discard any JMS headers
+    message = queue.get_no_jms()
+
+    # Works exactly as above: get_no_rfh2 is an alias to get_no_jms
+    message = queue.get_no_jms()
+
+    # Close queue and disconnect from queue manager
+    queue.close()
+    qmgr.disconnect()
+
+Notes:
+
+* Depending on how they are configured, JMS-based applications may send a series of headers
+  that are at times not required by Python recipients - use .get_no_jms to receive only
+  business payload without any JMS headers.
+
+* For completeness, .get_no_rfh2 was added as an alias to .get_no_jms - it works exactly the same.
+
 .. _wait_single_message:
 
 ====================================

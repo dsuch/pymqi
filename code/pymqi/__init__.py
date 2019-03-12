@@ -113,7 +113,7 @@ except ImportError:
 from pymqi import CMQCFC
 from pymqi import CMQC, CMQXC, CMQZC
 
-__version__ = "1.9.0"
+__version__ = "1.9.1"
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 
@@ -1834,6 +1834,16 @@ class Queue:
         get_opts.unpack(rv[2])
 
         return rv[0]
+
+    def get_no_jms(self, max_length=None, *args):
+        md, gmo = common_q_args(*args)
+        if not gmo:
+            gmo = GMO()
+        gmo.Options = gmo.Options | CMQC.MQGMO_NO_PROPERTIES | CMQC.MQGMO_FAIL_IF_QUIESCING
+
+        return self.get(max_length, md, gmo)
+
+    get_no_rfh2 = get_no_jms
 
     def get_rfh2(self, max_length=None, *opts):
         """get_rfh2([max_length [, m_desc, get_opts, [rfh2_header_1, ]]])
