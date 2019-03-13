@@ -54,6 +54,8 @@ Notes:
 
 * Connecting with username/password credentials was added in PyMQI 1.5
 * The functionality requires IBM MQ 8.0+ queue managers
+* Credentials need to be provided to PyMQI as regular Python variables - PyMQI will not look them
+  up in any user database or similar
 
 ===============================
 Connecting in bindings mode
