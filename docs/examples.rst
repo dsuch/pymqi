@@ -145,7 +145,7 @@ Code::
     message = queue.get_no_jms()
 
     # Works exactly as above: get_no_rfh2 is an alias to get_no_jms
-    message = queue.get_no_jms()
+    message = queue.get_no_rfh2()
 
     # Close queue and disconnect from queue manager
     queue.close()
