@@ -1804,8 +1804,8 @@ PyMODINIT_FUNC PyInit_pymqe(void) {
   /*
    * Set the client/server build flag
    */
-#if PYQMI_SERVERBUILD == 1
-  PyDict_SetItemString(d,"__mqbuild__", Py23Text_FromString("server"));
+#if PYQMI_BINDINGS_MODE_BUILD == 1
+  PyDict_SetItemString(d,"__mqbuild__", Py23Text_FromString("bindings"));
 #else
   PyDict_SetItemString(d,"__mqbuild__", Py23Text_FromString("client"));
 #endif

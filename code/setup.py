@@ -13,13 +13,13 @@ from struct import calcsize
 
 version = "1.9.2"
 
-# Munge the args if a server or client build was asked for.
-build_server = 0
-if sys.argv[-1] == 'server':
-    build_server = 1
+# Build either in bindings or client mode.
+bindings_mode = 0
+if sys.argv[-1] in ('bindings', 'server'):
+    bindings_mode = 1
     sys.argv = sys.argv[:-1]
 if sys.argv[-1] == 'client':
-    build_server = 0
+    bindings_mode = 0
     sys.argv = sys.argv[:-1]
 
 # Are we running 64bits?
@@ -38,7 +38,7 @@ def get_windows_settings():
         library_dirs = [r"c:\Program Files\IBM\WebSphere MQ\Tools\Lib"]
         include_dirs = [r"c:\Program Files\IBM\WebSphere MQ\tools\c\include"]
 
-    if build_server:
+    if bindings_mode:
         libraries = ['mqm']
     else:
         if bits == 64:
@@ -58,7 +58,7 @@ def get_sunos_zlinux_settings():
 
     include_dirs = ['/opt/mqm/inc']
 
-    if build_server:
+    if bindings_mode:
         libraries = ['mqm','mqmcs','mqmzse']
     else:
         libraries = ['mqic']
@@ -75,7 +75,7 @@ def get_aix_settings():
 
     include_dirs = ['/usr/mqm/inc']
 
-    if build_server:
+    if bindings_mode:
         libraries = ['mqm_r']
     else:
         libraries = ['mqic_r']
@@ -92,7 +92,7 @@ def get_generic_unix_settings():
 
     include_dirs = ['/opt/mqm/inc']
 
-    if build_server:
+    if bindings_mode:
         libraries = ['mqm_r']
     else:
         libraries = ['mqic_r']
@@ -112,7 +112,7 @@ def get_locations_by_command_path(command_path):
 
     include_dirs = ['{}/inc'.format(mq_installation_path)]
 
-    if build_server:
+    if bindings_mode:
         libraries = ['mqm_r']
     else:
         libraries = ['mqic_r']
@@ -155,10 +155,10 @@ else:
         else:
             raise Exception('MQ libraries could not be found')
 
-if build_server:
-    print("Building PyMQI server %sbits" % bits)
+if bindings_mode:
+    print("Building PyMQI bindings mode %sbits" % bits)
 else:
-    print("Building PyMQI client %sbits" % bits)
+    print("Building PyMQI client mode %sbits" % bits)
 
 setup(name = 'pymqi',
     version = version,
@@ -185,7 +185,7 @@ setup(name = 'pymqi',
         'Topic :: Software Development :: Object Brokering',
         ],
     py_modules = ['pymqi.CMQC', 'pymqi.CMQCFC', 'pymqi.CMQXC', 'pymqi.CMQZC'],
-    ext_modules = [Extension('pymqi.pymqe',['pymqi/pymqe.c'], define_macros=[('PYQMI_SERVERBUILD', build_server)],
+    ext_modules = [Extension('pymqi.pymqe',['pymqi/pymqe.c'], define_macros=[('PYQMI_BINDINGS_MODE_BUILD', bindings_mode)],
         library_dirs = library_dirs,
         include_dirs = include_dirs,
         libraries = libraries)])
