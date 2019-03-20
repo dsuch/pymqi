@@ -160,6 +160,8 @@ if bindings_mode:
 else:
     print("Building PyMQI client mode %sbits" % bits)
 
+print('Using library_dirs:`%s`, include:`%s`, libraries:`%s`')
+
 setup(name = 'pymqi',
     version = version,
     description = 'Python IBM MQI Extension for IBM MQ (formerly WebSphere MQ and MQSeries).',
