@@ -160,7 +160,7 @@ if bindings_mode:
 else:
     print("Building PyMQI client mode %sbits" % bits)
 
-print('Using library_dirs:`%s`, include:`%s`, libraries:`%s`')
+print('Using library_dirs:`%s`, include:`%s`, libraries:`%s`' % (library_dirs, include_dirs, libraries))
 
 setup(name = 'pymqi',
     version = version,
