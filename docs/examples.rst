@@ -1194,6 +1194,40 @@ Notes:
   *DIS QMODEL(SYSTEM.\*)*.
 
 =======================================
+How to use query filters
+=======================================
+
+Code::
+
+    import logging
+
+    import pymqi
+
+    logging.basicConfig(level=logging.INFO)
+
+    qmgr = pymqi.connect(queue_manager, channel, conn_info)
+    pcf = pymqi.PCFExecute(qmgr)
+
+    attrs = {
+      CMQC.MQCA_Q_NAME :'*',
+      CMQC.MQIA_Q_TYPE : CMQC.MQQT_LOCAL,
+      CMQCFC.MQIACF_Q_ATTRS : CMQC.MQCA_Q_NAME
+    }
+
+    filter1 = pymqi.Filter(CMQC.MQCA_Q_DESC).like('IBM MQ *')
+    filter2 = pymqi.Filter(CMQC.MQIA_CURRENT_Q_DEPTH).greater(2)
+
+    result = pcf.MQCMD_INQUIRE_Q(attrs, [f1, f2])
+
+    logging.info('Result is %s', result)
+
+Notes:
+
+* String and integer filters can be applied when looking up MQ objects
+* Filters are AND-joined
+* In the example above, only queues whose description starts with 'IBM MQ' and whose depth is greater than 2 will be returned
+
+=======================================
 How to ping the queue manager
 =======================================
 
