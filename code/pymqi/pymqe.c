@@ -105,6 +105,8 @@ it is set to 'server'.\
 #include <cmqbc.h>
 #endif
 
+#define PY_SSIZE_T_CLEAN 1
+
 #include "Python.h"
 static PyObject *ErrorObj;
 
@@ -247,7 +249,7 @@ static char* Py23BytesOrText_AsString(PyObject *txtObj) {
 /* ----------------------------------------------------- */
 
 
-static int checkArgSize(size_t given, size_t expected, const char *name) {
+static int checkArgSize(Py_ssize_t given, Py_ssize_t expected, const char *name) {
   if (given != expected) {
     PyErr_Format(ErrorObj, "%s wrong size. Given: %lu, expected %lu", name, (unsigned long)given, (unsigned long)expected);
     return 1;
@@ -315,7 +317,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   MQHCONN handle;
   MQLONG comp_code, comp_reason;
   char* mqcd = NULL;
-  int mqcd_buf_len = 0;
+  Py_ssize_t mqcd_buf_len = 0;
   MQCNO cno = {MQCNO_DEFAULT};
   PyObject* user_password = NULL;
 
@@ -328,7 +330,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
 
 #ifdef PYMQI_FEATURE_SSL
   char *sco = NULL;
-  int sco_len = 0;
+  Py_ssize_t sco_len = 0;
 #if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "sls#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #else
@@ -441,7 +443,7 @@ static PyObject *pymqe_MQOPEN(PyObject *self, PyObject *args) {
 
   MQOD *qDescP;
   char *qDescBuffer;
-  int qDescBufferLength;
+  Py_ssize_t qDescBufferLength = 0;
   MQHOBJ qHandle;
   MQLONG compCode, compReason;
 
@@ -510,15 +512,15 @@ static PyObject * pymqe_MQCLOSE(PyObject *self, PyObject *args) {
 static PyObject *mqputN(int put1Flag, PyObject *self, PyObject *args) {
   MQLONG compCode, compReason;
   char *mDescBuffer;
-  int mDescBufferLength;
+  Py_ssize_t mDescBufferLength = 0;
   MQMD *mDescP;
   char *putOptsBuffer;
-  int putOptsBufferLength;
+  Py_ssize_t putOptsBufferLength = 0;
   MQPMO *pmoP;
   char *msgBuffer;
-  int msgBufferLength;
+  Py_ssize_t msgBufferLength = 0;
   char *qDescBuffer;
-  int qDescBufferLength;
+  Py_ssize_t qDescBufferLength = 0;
   MQOD *qDescP = NULL;
 
   long lQmgrHandle, lqHandle;
@@ -655,10 +657,10 @@ If mDesc or getOpts are the wrong size, an exception is raised. \
 static PyObject *pymqe_MQGET(PyObject *self, PyObject *args) {
   MQLONG compCode, compReason;
   char *mDescBuffer;
-  int mDescBufferLength;
+  Py_ssize_t mDescBufferLength = 0;
   MQMD *mDescP;
   char *getOptsBuffer;
-  int getOptsBufferLength;
+  Py_ssize_t getOptsBufferLength = 0;
   MQGMO *gmoP;
   long maxLength, returnLength;
   MQLONG actualLength;
@@ -915,7 +917,7 @@ static PyObject * pymqe_MQSUB(PyObject *self, PyObject *args) {
   PyObject *rv;
 
   char *subDescBuffer;
-  int subDescBufferLength;
+  Py_ssize_t subDescBufferLength = 0;
 
 
   long lQmgrHandle;
@@ -969,7 +971,7 @@ static PyObject* pymqe_MQCRTMH(PyObject *self, PyObject *args) {
   long conn_handle;
 
   char *cmho_buffer;
-  long cmho_buffer_length;
+  Py_ssize_t cmho_buffer_length = 0;
 
   MQCMHO *cmho;
   MQHMSG msg_handle = MQHM_UNUSABLE_HMSG;
@@ -1011,17 +1013,17 @@ static PyObject* pymqe_MQSETMP(PyObject *self, PyObject *args) {
   long conn_handle, msg_handle;
 
   char *smpo_buffer;
-  long smpo_buffer_length;
+  Py_ssize_t smpo_buffer_length = 0;
 
   char *pd_buffer;
-  long pd_buffer_length;
+  Py_ssize_t pd_buffer_length = 0;
 
   MQSMPO *smpo;
   MQPD *pd;
 
   MQCHARV name = {MQCHARV_DEFAULT};
   char *property_name;
-  long property_name_length = 0;
+  Py_ssize_t property_name_length = 0;
 
   long property_type;
 
@@ -1080,7 +1082,7 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
 
   MQCHARV name = {MQCHARV_DEFAULT};
   char *property_name;
-  long property_name_length = 0;
+  Py_ssize_t property_name_length = 0;
 
   MQLONG property_type;
   MQLONG actual_value_length;
