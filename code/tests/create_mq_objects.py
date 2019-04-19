@@ -21,9 +21,9 @@ DEFINE CHL(%(channel)s) CHLTYPE(SVRCONN)
 DEFINE LISTENER(TCP.LISTENER.1) TRPTYPE(TCP) PORT(%(port)s) CONTROL(QMGR) REPLACE
 START LISTENER(TCP.LISTENER.1)
 """ % {
-    'channel': config.MQ.QM.CHANNEL.encode('ascii'),
-    'port': config.MQ.QM.PORT.encode('ascii'),
-    } + '\n'.join(["DEFINE QL(%s) REPLACE" % qname.encode('ascii')
+    'channel': config.MQ.QM.CHANNEL,
+    'port': config.MQ.QM.PORT,
+    } + '\n'.join(["DEFINE QL(%s) REPLACE" % qname
                    for qname in config.MQ.QUEUE.QUEUE_NAMES.values()])
 
 
