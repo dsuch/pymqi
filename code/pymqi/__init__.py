@@ -1264,7 +1264,7 @@ class Error(Exception):
 
 class MQMIError(Error):
     """Exception class for MQI low level errors."""
-    errStringDicts = (_MQConst2String(CMQC, "MQRC_"), _MQConst2String(CMQC, "MQRCCF_"),)
+    errStringDicts = (_MQConst2String(CMQC, "MQRC_"), _MQConst2String(CMQCFC, "MQRCCF_"),)
 
     def __init__(self, comp, reason):
         """MQMIError(comp, reason)
