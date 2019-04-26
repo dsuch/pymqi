@@ -7,7 +7,8 @@
 # stdlib
 import os
 import sys
-from distutils.core import setup, Extension
+from setuptools import setup
+from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
