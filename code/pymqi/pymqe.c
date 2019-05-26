@@ -1568,7 +1568,22 @@ static PyObject *pymqe_mqaiExecute(PyObject *self, PyObject *args) {
                    else if (Py23Bytes_Check(value)) {
                        strArg = Py23Bytes_AsString(value);
                        mqAddString(adminBag, paramType, MQBL_NULL_TERMINATED, strArg, &compCode, &compReason);
-                  } else {
+                  }
+                  /*
+                   * If value is a list than suppose that it is MQIACF_Q_ATTRS key
+                   */
+                  else if (PyList_Check(value)){
+                    Py_ssize_t valuesCount = PyList_Size(value);
+                    Py_ssize_t valueIdx;
+                    PyObject *itemValue;
+                    for (valueIdx = 0; valueIdx < valuesCount; valueIdx++){
+                      itemValue = PyList_GetItem(value, valueIdx);
+                      if (PyLong_Check(itemValue)){
+                        mqAddInquiry(adminBag, (MQLONG)PyLong_AsLong(itemValue), &compCode, &compReason);
+                      }
+                    }
+                  }
+                  else {
                       isByteString = PyObject_HasAttrString(value, "pymqi_byte_string");
                       if(1 == isByteString) {
                         /* value is a ByteString.  have to use its "value" attribute */
