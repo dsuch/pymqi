@@ -1425,9 +1425,9 @@ class QueueManager(object):
         if 'cd' in kw:
             ocd = kw['cd']
         if 'sco' in kw:
-            rv = pymqe.MQCONNX(name, options, ocd.pack(), user_password, kw['sco'].pack())
+            rv = pymqe.MQCONNX(name, options, ocd.pack() if ocd else None, user_password, kw['sco'].pack())
         else:
-            rv = pymqe.MQCONNX(name, options, ocd.pack(), user_password, osco.pack())
+            rv = pymqe.MQCONNX(name, options, ocd.pack() if ocd else None, user_password, osco.pack())
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
         self.__handle = rv[0]

@@ -332,7 +332,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   char *sco = NULL;
   Py_ssize_t sco_len = 0;
 #if PY_MAJOR_VERSION==2
-  if (!PyArg_ParseTuple(args, "sls#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
+  if (!PyArg_ParseTuple(args, "slz#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #else
   if (!PyArg_ParseTuple(args, "yly#O|y#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #endif
@@ -351,7 +351,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   }
 #endif
 
-  if (checkArgSize(mqcd_buf_len, PYMQI_MQCD_SIZEOF, "MQCD")) {
+  if (mqcd && checkArgSize(mqcd_buf_len, PYMQI_MQCD_SIZEOF, "MQCD")) {
     return NULL;
   }
 
@@ -384,7 +384,9 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
     }
   }
 
-  cno.ClientConnPtr = (MQCD *)mqcd;
+  if(mqcd) {
+    cno.ClientConnPtr = (MQCD *)mqcd;
+  }
   cno.Options = (MQLONG)options;
 
   Py_BEGIN_ALLOW_THREADS
