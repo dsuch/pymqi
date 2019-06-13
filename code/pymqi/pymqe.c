@@ -583,7 +583,7 @@ static PyObject *mqputN(int put1Flag, PyObject *self, PyObject *args) {
   }
 
 #if PY_MAJOR_VERSION==2
-  rv = Py_BuildValue("(s#s#ll)", 
+  rv = Py_BuildValue("(s#s#ll)",
 #else
   rv = Py_BuildValue("(y#y#ll)",
 #endif
@@ -1045,9 +1045,9 @@ static PyObject* pymqe_MQSETMP(PyObject *self, PyObject *args) {
   PyObject *property_value_object;
 
 #if PY_MAJOR_VERSION==2
-  if (!PyArg_ParseTuple(args, "lls#s#s#lOl", 
+  if (!PyArg_ParseTuple(args, "lls#s#s#lOl",
 #else
-  if (!PyArg_ParseTuple(args, "lLy#y#y#lOl",  
+  if (!PyArg_ParseTuple(args, "lLy#y#y#lOl",
 #endif
                               &conn_handle, &msg_handle,
                               &smpo_buffer, &smpo_buffer_length,
@@ -1188,12 +1188,12 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
 #if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "llls#lll",
 #else
-  if (!PyArg_ParseTuple(args, "lLly#lll", 
+  if (!PyArg_ParseTuple(args, "lLly#lll",
 #endif
                         &conn_handle, &msg_handle,
-                        &impo_options, 
+                        &impo_options,
                         &property_name, &property_name_length,
-                        &pd_options, 
+                        &pd_options,
                         &property_type, &value_length)) {
     return NULL;
   }
@@ -1234,7 +1234,7 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
       rv = Py_BuildValue("(s#lll)",
     #else
       rv = Py_BuildValue("(y#lll)",
-    #endif    
+    #endif
             (PMQBYTE)value, (Py_ssize_t)return_length,
             (long)data_length,
             (long)comp_code, (long)comp_reason);
@@ -1299,7 +1299,7 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
             (long)data_length,
             (long)comp_code, (long)comp_reason);
       break;
-    
+
     /* NULL value */
     case MQTYPE_NULL:
       rv = Py_BuildValue("(slll)",
