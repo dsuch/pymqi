@@ -1266,13 +1266,16 @@ class MQMIError(Error):
     """Exception class for MQI low level errors."""
     errStringDicts = (_MQConst2String(CMQC, "MQRC_"), _MQConst2String(CMQCFC, "MQRCCF_"),)
 
-    def __init__(self, comp, reason):
+    def __init__(self, comp, reason, **kw):
         """MQMIError(comp, reason)
 
         Construct the error object with MQI completion code 'comp' and
         reason code 'reason'."""
 
         self.comp, self.reason = comp, reason
+
+        for key in kw:
+            setattr(self, key, kw[key])
 
     def __str__(self):
         """__str__()
@@ -2350,12 +2353,12 @@ class MessageHandle(object):
             if not max_value_length:
                 max_value_length = MessageHandle.default_value_length
 
-            comp_code, comp_reason, value = pymqe.MQINQMP(self.conn_handle,
-                                                          self.msg_handle, impo_options, name, impo_options,
+            value, dataLength, comp_code, comp_reason  = pymqe.MQINQMP(self.conn_handle,
+                                                          self.msg_handle, impo_options, name, pd,
                                                           property_type, max_value_length)
 
             if comp_code != CMQC.MQCC_OK:
-                raise MQMIError(comp_code, comp_reason)
+                raise MQMIError(comp_code, comp_reason, value=value, dataLength=dataLength)
 
             return value
 
@@ -2369,8 +2372,8 @@ class MessageHandle(object):
             passing in MQPD and MQSMPO structures.
             """
 
-            name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
-            check_not_py3str(value)  # Python 3 only bytes allowed
+            #name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
+            #check_not_py3str(value)  # Python 3 only bytes allowed
 
             pd = pd if pd else PD()
             smpo = smpo if smpo else SMPO()
@@ -2386,7 +2389,7 @@ class MessageHandle(object):
         self.conn_handle = qmgr.get_handle() if qmgr else CMQC.MQHO_NONE
         cmho = cmho if cmho else CMHO()
 
-        comp_code, comp_reason, self.msg_handle = pymqe.MQCRTMH(self.conn_handle,
+        self.msg_handle, comp_code, comp_reason = pymqe.MQCRTMH(self.conn_handle,
                                                                 cmho.pack())
 
         if comp_code != CMQC.MQCC_OK:
