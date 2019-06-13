@@ -9,6 +9,7 @@ docs/_build/
 *.egg-info*
 *.pyc
 *.pyo
+*.so
 *.swp
 *.*~
 ~
