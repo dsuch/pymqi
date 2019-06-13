@@ -334,7 +334,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
 #if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "slz#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #else
-  if (!PyArg_ParseTuple(args, "yly#O|y#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
+  if (!PyArg_ParseTuple(args, "ylz#O|y#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #endif
     return 0;
   }
