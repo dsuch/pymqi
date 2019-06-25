@@ -1300,7 +1300,7 @@ class MQMIError(Error):
         for d in MQMIError.errStringDicts:
             if self.reason in d:
                 return pfx + d[self.reason]
-        return pfx + 'WTF? Error code ' + str(self.reason) + ' not defined'
+        return pfx + 'Error code ' + str(self.reason) + ' not defined'
 
 
 class PYIFError(Error):
