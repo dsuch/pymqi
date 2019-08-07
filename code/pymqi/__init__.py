@@ -271,6 +271,11 @@ class MQOpts(object):
 
         check_not_py3str(buff)  # Python 3 bytes check
 
+        # Increase buff length to the current MQOpts structure size
+        diff_length = self.get_length() - len(buff)
+        if diff_length > 0:
+            buff += b'\x00' * diff_length
+
         # Unpack returns a tuple of the unpacked data, in the same
         # order (I hope!) as in the ctor's list arg.
         r = struct.unpack(self.__format, buff)
