@@ -1216,6 +1216,20 @@ class IMPO(MQOpts):
 
         super(IMPO, self).__init__(tuple(opts), **kw)
 
+class XQH(MQOpts):
+    """XQH(**kw)
+
+    Construct a MQXQH Structure with default values as per MQI. The
+    default values may be overridden by the optional keyword arguments
+    'kw'."""
+
+    def __init__(self, **kw):
+        opts = [['StrucId', CMQC.MQXQH_STRUC_ID, '4s'],
+                ['Version', CMQC.MQXQH_VERSION_1, MQLONG_TYPE],
+                ['RemoteQName', b'', '48s'],
+                ['RemoteQMgrName', b'', '48s'], ]
+
+        super(XQH, self).__init__(tuple(opts), **kw)
 
 #
 # A utility to convert a MQ constant to its string mnemonic by groping
