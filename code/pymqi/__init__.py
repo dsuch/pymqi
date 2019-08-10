@@ -890,8 +890,8 @@ class CD(MQOpts):
         opts += [
             ['ChannelName', b'', '20s'],
             ['Version', self._mqcd_version, MQLONG_TYPE],
-            ['ChannelType', CMQC.MQCHT_SENDER, MQLONG_TYPE],
-            ['TransportType', CMQC.MQXPT_LU62, MQLONG_TYPE],
+            ['ChannelType', CMQC.MQCHT_CLNTCONN, MQLONG_TYPE],
+            ['TransportType', CMQC.MQXPT_TCP, MQLONG_TYPE],
             ['Desc', b'', '64s'],
             ['QMgrName', b'', '48s'],
             ['XmitQName', b'', '48s'],
