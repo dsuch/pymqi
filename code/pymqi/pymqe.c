@@ -351,10 +351,6 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   }
 #endif
 
-  if (mqcd && checkArgSize(mqcd_buf_len, PYMQI_MQCD_SIZEOF, "MQCD")) {
-    return NULL;
-  }
-
   /*
    * Setup client connection fields appropriate to the version of MQ
    * we've been built with.
