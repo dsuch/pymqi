@@ -333,7 +333,7 @@ Code::
     host = '127.0.0.1'
     port = '1414'
     queue_name = 'TEST.1'
-    message = 'Here's a reply'
+    message = 'Here''s a reply'
     conn_info = '%s(%s)' % (host, port)
 
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
@@ -356,6 +356,54 @@ Notes:
   responsible for storing information about where the responding side should
   send the messages to. The attribute's value is filled in by IBM MQ.
 
+===================================
+How to set and get message property
+===================================
+
+Code::
+
+    import pymqi
+
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    property_name = b'Property Name'  # Property name should be a byte string
+    property_value = 'Property Value'
+    conn_info = '%s(%s)' % (host, port)
+
+    qmgr = pymqi.connect(queue_manager, channel, conn_info)
+
+    # set property
+    messageHandle_put = pymqi.MessageHandle(qmgr)
+    messageHandle_put.properties.set(property_name, property_value)
+
+    pmo = pymqi.PMO(Version=pymqi.CMQC.MQPMO_VERSION_3)  # Version 3 required (minimal)
+    pmo.OriginalMsgHandle = messageHandle_put.msg_handle
+
+    queue = pymqi.Queue(qmgr, queue_name, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_INPUT_AS_Q_DEF)
+    queue.put(b'', None, pmo)
+
+    # get property
+    gmo = pymqi.GMO(Version=pymqi.CMQC.MQGMO_VERSION_4)  # Version 4 required (minimal)
+    gmo.Options = pymqi.CMQC.MQGMO_NO_WAIT | pymqi.CMQC.MQGMO_PROPERTIES_IN_HANDLE
+
+    messageHandle_get = pymqi.MessageHandle(qmgr)
+    gmo.MsgHandle = messageHandle_get.msg_handle
+
+    queue.get(None, None, gmo)
+
+    value = messageHandle_get.properties.get(property_name)
+    print(value)
+
+    queue.close()
+    qmgr.disconnect()
+
+ Notes:
+
+* MQPMO Version should be 3 or higher
+* MQGMO Version should be 4 or higher
 
 ==========================================
 How to publish messages on topics
