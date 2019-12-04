@@ -1,6 +1,15 @@
 PyMQI changelog
 ---------------
 
+* **1.9.3** (2019-12-04)
+
+  * Many thanks to @SeyfSV contributing the features below
+  * Updated MQCD for MQ v9.1.3
+  * Changed default values for MQCD.ChannelType and MQCD.TransportType
+  * Added MQOpts class for MQXQH header
+  * Improvements to the handling of list attributes in MQAI
+  * Various changes to string vs. unicode handling in MQ calls
+
 * **1.9.2** (2019-03-12)
 
   * Added [.get_no_jms](https://dsuch.github.io/pymqi/examples.html#how-to-get-a-message-without-jms-mqrfh2-headers) to return queue messages without JMS/MQRFH2 headers

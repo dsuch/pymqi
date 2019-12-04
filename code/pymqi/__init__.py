@@ -113,7 +113,7 @@ except ImportError:
 from pymqi import CMQCFC
 from pymqi import CMQC, CMQXC, CMQZC
 
-__version__ = "1.9.2"
+__version__ = "1.9.3"
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 
