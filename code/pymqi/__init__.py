@@ -854,42 +854,12 @@ class CD(MQOpts):
     default values may be overridden by the optional keyword arguments
     'kw'."""
 
-    # The MQCD_VERSION & MQCD_LENGTH_* we're going to use depend on the WMQ
-    # version we had been compiled with but it is not known on Python side
-    # until runtime so set it once here when first importing pymqi
-    # (originally written by Brent S. Elmer, Ph.D. (mailto:webe3vt@aim.com)).
-
-    if '8.0.0' in pymqe.__mqlevels__:
-        _mqcd_version = CMQXC.MQCD_VERSION_11
-        _mqcd_current_length = CMQXC.MQCD_LENGTH_11
-
-    if '7.5' in pymqe.__mqlevels__:
-        _mqcd_version = CMQXC.MQCD_VERSION_10
-        _mqcd_current_length = CMQXC.MQCD_LENGTH_10
-
-    elif '7.0' in pymqe.__mqlevels__:
-        _mqcd_version = CMQXC.MQCD_VERSION_9
-        _mqcd_current_length = CMQXC.MQCD_LENGTH_9
-
-    elif '6.0' in pymqe.__mqlevels__:
-        _mqcd_version = CMQXC.MQCD_VERSION_8
-        _mqcd_current_length = CMQXC.MQCD_LENGTH_8
-
-    elif '5.3' in pymqe.__mqlevels__:
-        _mqcd_version = CMQXC.MQCD_VERSION_7
-        _mqcd_current_length = CMQXC.MQCD_LENGTH_7
-
-    else:
-        # The default version in MQCD_DEFAULT in cmqxc.h is MQCD_VERSION_6
-        _mqcd_version = CMQXC.MQCD_VERSION_6
-        _mqcd_current_length = CMQXC.MQCD_LENGTH_6
-
     def __init__(self, **kw):
         """__init__(**kw)"""
         opts = []
         opts += [
             ['ChannelName', b'', '20s'],
-            ['Version', self._mqcd_version, MQLONG_TYPE],
+            ['Version', CMQXC.MQCD_VERSION_6, MQLONG_TYPE],
             ['ChannelType', CMQC.MQCHT_CLNTCONN, MQLONG_TYPE],
             ['TransportType', CMQC.MQXPT_TCP, MQLONG_TYPE],
             ['Desc', b'', '64s'],
@@ -917,6 +887,7 @@ class CD(MQOpts):
             ['MsgUserData', b'', '32s'],
             ['SendUserData', b'', '32s'],
             ['ReceiveUserData', b'', '32s'],
+            # Version 1
             ['UserIdentifier', b'', '12s'],
             ['Password', b'', '12s'],
             ['MCAUserIdentifier', b'', '12s'],
@@ -924,14 +895,16 @@ class CD(MQOpts):
             ['ConnectionName', b'', '264s'],
             ['RemoteUserIdentifier', b'', '12s'],
             ['RemotePassword', b'', '12s'],
+            # Version 2
             ['MsgRetryExit', b'', '128s'],
             ['MsgRetryUserData', b'', '32s'],
             ['MsgRetryCount', py23long(10), MQLONG_TYPE],
             ['MsgRetryInterval', py23long(1000), MQLONG_TYPE],
+            # Version 3
             ['HeartbeatInterval', py23long(300), MQLONG_TYPE],
             ['BatchInterval', py23long(0), MQLONG_TYPE],
             ['NonPersistentMsgSpeed', CMQC.MQNPMS_FAST, MQLONG_TYPE],
-            ['StrucLength', self._mqcd_current_length, MQLONG_TYPE],
+            ['StrucLength', CMQXC.MQCD_CURRENT_LENGTH, MQLONG_TYPE],
             ['ExitNameLength', CMQC.MQ_EXIT_NAME_LENGTH, MQLONG_TYPE],
             ['ExitDataLength', CMQC.MQ_EXIT_DATA_LENGTH, MQLONG_TYPE],
             ['MsgExitsDefined', py23long(0), MQLONG_TYPE],
@@ -943,54 +916,50 @@ class CD(MQOpts):
             ['SendUserDataPtr', 0, 'P'],
             ['ReceiveExitPtr', 0, 'P'],
             ['ReceiveUserDataPtr', 0, 'P'],
+            # Version 4
             ['ClusterPtr', 0, 'P'],
             ['ClustersDefined', py23long(0), MQLONG_TYPE],
             ['NetworkPriority', py23long(0), MQLONG_TYPE],
             ['LongMCAUserIdLength', py23long(0), MQLONG_TYPE],
             ['LongRemoteUserIdLength', py23long(0), MQLONG_TYPE],
+            # Version 5
             ['LongMCAUserIdPtr', 0, 'P'],
             ['LongRemoteUserIdPtr', 0, 'P'],
             ['MCASecurityId', b'', '40s'],
-            ['RemoteSecurityId', b'', '40s']]
-
-        # If SSL is supported, append the options. SSL support is
-        # implied by 5.3.
-        if "5.3" in pymqe.__mqlevels__:
-            opts += [['SSLCipherSpec', b'', '32s'],
-                     ['SSLPeerNamePtr', 0, 'P'],
-                     ['SSLPeerNameLength', py23long(0), MQLONG_TYPE],
-                     ['SSLClientAuth', py23long(0), MQLONG_TYPE],
-                     ['KeepAliveInterval', -1, MQLONG_TYPE],
-                     ['LocalAddress', b'', '48s'],
-                     ['BatchHeartbeat', py23long(0), MQLONG_TYPE]]
-        else:
-            # No mqaiExecute means no 5.3, so redefine the struct version
-            opts[1] = ['Version', CMQC.MQCD_VERSION_6, MQLONG_TYPE]
-
-        if "6.0" in pymqe.__mqlevels__:
-            opts += [['HdrCompList', [py23long(0), py23long(-1)], '2' + MQLONG_TYPE],
-                     ['MsgCompList', [0] + 15 * [py23long(-1)], '16' + MQLONG_TYPE],
-                     ['CLWLChannelRank', py23long(0), MQLONG_TYPE],
-                     ['CLWLChannelPriority', py23long(0), MQLONG_TYPE],
-                     ['CLWLChannelWeight', py23long(50), MQLONG_TYPE],
-                     ['ChannelMonitoring', py23long(0), MQLONG_TYPE],
-                     ['ChannelStatistics', py23long(0), MQLONG_TYPE]]
-
-        if "7.0" in pymqe.__mqlevels__:
-            opts += [['SharingConversations', 10, MQLONG_TYPE],
-                     ['PropertyControl', 0, MQLONG_TYPE],      # 0 = MQPROP_COMPATIBILITY
-                     ['MaxInstances', 999999999, MQLONG_TYPE],
-                     ['MaxInstancesPerClient', 999999999, MQLONG_TYPE],
-                     ['ClientChannelWeight', 0, MQLONG_TYPE],
-                     ['ConnectionAffinity', 1, MQLONG_TYPE]]  # 1 = MQCAFTY_PREFERRED
-
-        if '7.1' in pymqe.__mqlevels__:
-            opts += [['BatchDataLimit', 5000, MQLONG_TYPE],
-                     ['UseDLQ', 2, MQLONG_TYPE],
-                     ['DefReconnect', 0, MQLONG_TYPE]]
-
-        if '8.0.0' in pymqe.__mqlevels__:
-            opts += [['CertificateLabel', b'', '64s']]
+            ['RemoteSecurityId', b'', '40s'],
+            # Version 6
+            ['SSLCipherSpec', b'', '32s'],
+            ['SSLPeerNamePtr', 0, 'P'],
+            ['SSLPeerNameLength', py23long(0), MQLONG_TYPE],
+            ['SSLClientAuth', py23long(0), MQLONG_TYPE],
+            ['KeepAliveInterval', -1, MQLONG_TYPE],
+            ['LocalAddress', b'', '48s'],
+            ['BatchHeartbeat', py23long(0), MQLONG_TYPE],
+            # Version 7
+            ['HdrCompList', [py23long(0), py23long(-1)], '2' + MQLONG_TYPE],
+            ['MsgCompList', [0] + 15 * [py23long(-1)], '16' + MQLONG_TYPE],
+            ['CLWLChannelRank', py23long(0), MQLONG_TYPE],
+            ['CLWLChannelPriority', py23long(0), MQLONG_TYPE],
+            ['CLWLChannelWeight', py23long(50), MQLONG_TYPE],
+            ['ChannelMonitoring', py23long(0), MQLONG_TYPE],
+            ['ChannelStatistics', py23long(0), MQLONG_TYPE],
+            # Version 8
+            ['SharingConversations', 10, MQLONG_TYPE],
+            ['PropertyControl', 0, MQLONG_TYPE],      # 0 = MQPROP_COMPATIBILITY
+            ['MaxInstances', 999999999, MQLONG_TYPE],
+            ['MaxInstancesPerClient', 999999999, MQLONG_TYPE],
+            ['ClientChannelWeight', 0, MQLONG_TYPE],
+            ['ConnectionAffinity', 1, MQLONG_TYPE],  # 1 = MQCAFTY_PREFERRED
+            # Version 9
+            ['BatchDataLimit', 5000, MQLONG_TYPE],
+            ['UseDLQ', 2, MQLONG_TYPE],
+            ['DefReconnect', 0, MQLONG_TYPE],
+            # Version 10
+            ['CertificateLabel', b'', '64s'],
+            # Version 11
+            ['SPLProtection', 0, MQLONG_TYPE]
+            # Version 12
+        ]
 
         # In theory, the pad should've been placed right before the 'MsgExitPtr'
         # attribute, however setting it there makes no effect and that's why
