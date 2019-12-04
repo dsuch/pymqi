@@ -3,7 +3,7 @@ PyMQI changelog
 
 * **1.9.3** (2019-12-04)
 
-  * Many thanks to @SeyfSV contributing the features below
+  * Many thanks to [@SeyfSV](https://github.com/SeyfSV) contributing the features below
   * Updated MQCD for MQ v9.1.3
   * Changed default values for MQCD.ChannelType and MQCD.TransportType
   * Added MQOpts class for MQXQH header
