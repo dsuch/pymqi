@@ -1408,19 +1408,15 @@ class QueueManager(object):
             user_password['user'] = py3str2bytes(user, 'utf-8')
             user_password['password'] = py3str2bytes(password, 'utf-8')
 
-        options = CMQC.MQCNO_NONE
-        ocd = CD()
-        osco = SCO()
-        if 'opts' in kw:
-            options = kw['opts']
-        if 'cd' in kw:
-            ocd = kw['cd']
-        if 'sco' in kw:
-            rv = pymqe.MQCONNX(name, options, ocd.pack() if ocd else None, user_password, kw['sco'].pack())
-        else:
-            rv = pymqe.MQCONNX(name, options, ocd.pack() if ocd else None, user_password, osco.pack())
+        options = kw['opts'] if 'opts' in kw else CMQC.MQCNO_NONE
+        cd      = kw['cd']   if 'cd'   in kw else CD()
+        sco     = kw['sco']  if 'sco'  in kw else SCO()
+
+        rv = pymqe.MQCONNX(name, options, cd.pack() if cd else None, user_password, sco.pack())
+
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
+
         self.__handle = rv[0]
         self.__name = name
 
