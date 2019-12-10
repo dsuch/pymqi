@@ -1412,6 +1412,12 @@ class QueueManager(object):
         cd      = kw['cd']   if 'cd'   in kw else CD()
         sco     = kw['sco']  if 'sco'  in kw else SCO()
 
+        # TLS encryption requires MQCD of version at least 7.
+        # Thus, if someone uses TLS and the version is lower than that,
+        # we can just increase it ourselves.
+        if cd.SSLCipherSpec and cd.Version < CMQC.MQCD_VERSION_7:
+            cd.Version = CMQC.MQCD_VERSION_7
+
         rv = pymqe.MQCONNX(name, options, cd.pack() if cd else None, user_password, sco.pack())
 
         if rv[1]:
