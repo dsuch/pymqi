@@ -1415,7 +1415,7 @@ class QueueManager(object):
         # TLS encryption requires MQCD of version at least 7.
         # Thus, if someone uses TLS and the version is lower than that,
         # we can just increase it ourselves.
-        if cd.SSLCipherSpec and cd.Version < CMQC.MQCD_VERSION_7:
+        if cd and cd.SSLCipherSpec and cd.Version < CMQC.MQCD_VERSION_7:
             cd.Version = CMQC.MQCD_VERSION_7
 
         rv = pymqe.MQCONNX(name, options, cd, user_password, sco)
