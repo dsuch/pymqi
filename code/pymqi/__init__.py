@@ -222,9 +222,7 @@ class MQOpts(object):
     """
 
     def __init__(self, memlist, **kw):
-        """ MQOpts(memberList [,**kw])
-
-        Initialise the option structure. 'list' is a list of structure
+        """ Initialise the option structure. 'list' is a list of structure
     member names, default values and pack/unpack formats. 'kw' is an
     optional keyword dictionary that may be used to override default
     values set by MQOpts sub-classes.
@@ -246,9 +244,7 @@ class MQOpts(object):
         self.set(**kw)
 
     def pack(self):
-        """ pack()
-
-        Pack the attributes into a 'C' structure to be passed to MQI
+        """ Pack the attributes into a 'C' structure to be passed to MQI
         calls. The pack order is as defined to the MQOpts
         ctor. Returns the structure as a string buffer.
         """
@@ -271,9 +267,7 @@ class MQOpts(object):
         return struct.pack(*args)
 
     def unpack(self, buff):
-        """ unpack(buff)
-
-        Unpack a 'C' structure 'buff' into self.
+        """ Unpack a 'C' structure 'buff' into self.
         """
         check_not_unicode(buff)  # Python 3 bytes check
 
@@ -292,11 +286,8 @@ class MQOpts(object):
             x = x + 1
 
     def set(self, **kw):
-        """ set(**kw)
-
-        Set a structure member using the keyword dictionary 'kw'. An
-        AttributeError exception is raised for invalid member
-        names.
+        """ Set a structure member using the keyword dictionary 'kw'.
+        An AttributeError exception is raised for invalid member names.
         """
 
         for i in kw.keys():
@@ -307,12 +298,8 @@ class MQOpts(object):
             setattr(self, str(i), kw[i])
 
     def __setitem__(self, key, value):
-        """ __setitem__(key, value)
-
-        Set the structure member attribute 'key' to 'value', as in
-        obj['Flop'] = 42.
+        """ Set the structure member attribute 'key' to 'value', as in obj['Attr'] = 42.
         """
-
         # Only set if the attribute already exists. getattr raises an
         # exception if it doesn't.
         getattr(self, key)
@@ -320,10 +307,7 @@ class MQOpts(object):
         setattr(self, key, value)
 
     def get(self):
-        """ get()
-
-        Return a dictionary of the current structure member
-        values. The dictionary is keyed by a 'C' member name.
+        """ Return a dictionary of the current structure member values. The dictionary is keyed by a 'C' member name.
         """
 
         d = {}
@@ -332,10 +316,7 @@ class MQOpts(object):
         return d
 
     def __getitem__(self, key):
-        """__getitem__(key)
-
-        Return the member value associated with key, as in print
-        obj['Flop'].
+        """Return the member value associated with key, as in print obj['Attr'].
         """
         return getattr(self, key)
 
@@ -398,7 +379,8 @@ class MQOpts(object):
         self[vs_name_vsbuffsize] = vs_buffer_size
         self[vs_name_vslength] = len(vs_value)
         self[vs_name_vsccsid] = vs_ccsid
-        # store c_char array object so memory location does not get overwritten
+
+        # Store c_char array object so memory location does not get overwritten
         self.__vs_ctype_store[vs_name] = c_vs_value
 
     def get_vs(self, vs_name):
@@ -422,9 +404,8 @@ class MQOpts(object):
 #
 
 class GMO(MQOpts):
-    """ Construct an MQGMO Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQGMO Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
 
     def __init__(self, **kw):
@@ -454,9 +435,8 @@ class GMO(MQOpts):
 gmo = GMO
 
 class PMO(MQOpts):
-    """ Construct an MQPMO Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQPMO Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [
@@ -490,9 +470,8 @@ class PMO(MQOpts):
 pmo = PMO
 
 class OD(MQOpts):
-    """ Construct an MQOD Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQOD Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQOD_STRUC_ID, '4s'],
@@ -551,9 +530,8 @@ class OD(MQOpts):
 od = OD
 
 class MD(MQOpts):
-    """ Construct an MQMD Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQMD Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         super(MD, self).__init__(tuple([
@@ -592,9 +570,8 @@ md = MD
 
 # RFH2 Header parsing/creation Support - Hannes Wagener - 2010.
 class RFH2(MQOpts):
-    """ Construct a RFH2 Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.  Attempt to parse the RFH2 when unpack is called.
+    """ Construct a RFH2 Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     initial_opts = [['StrucId', CMQC.MQRFH_STRUC_ID, '4s'],
                     ['Version', CMQC.MQRFH_VERSION_2, MQLONG_TYPE],
@@ -609,22 +586,26 @@ class RFH2(MQOpts):
                             CMQC.MQENC_DECIMAL_NORMAL,
                             CMQC.MQENC_FLOAT_IEEE_NORMAL,
                             CMQC.MQENC_FLOAT_S390,
+
                             # 17
                             CMQC.MQENC_INTEGER_NORMAL +
                             CMQC.MQENC_DECIMAL_NORMAL,
+
                             # 257
                             CMQC.MQENC_INTEGER_NORMAL +
                             CMQC.MQENC_FLOAT_IEEE_NORMAL,
+
                             # 272
                             CMQC.MQENC_DECIMAL_NORMAL +
                             CMQC.MQENC_FLOAT_IEEE_NORMAL,
+
                             # 273
                             CMQC.MQENC_INTEGER_NORMAL +
                             CMQC.MQENC_DECIMAL_NORMAL +
                             CMQC.MQENC_FLOAT_IEEE_NORMAL]
 
     def __init__(self, **kw):
-        # take a copy of private initial_opts
+        # Take a copy of private initial_opts
         self.opts = [list(x) for x in self.initial_opts]
         super(RFH2, self).__init__(tuple(self.opts), **kw)
 
@@ -691,7 +672,7 @@ class RFH2(MQOpts):
         Encoding meant to come from the MQMD.
         """
 
-        check_not_unicode(buff)  # Python 3 bytes check
+        check_not_unicode(buff) # Python 3 bytes check
 
         if buff[0:4] != CMQC.MQRFH_STRUC_ID:
             raise PYIFError('RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s' %
@@ -777,10 +758,9 @@ class RFH2(MQOpts):
         # unpack the buffer? - should get same result?
         # super(RFH2, self).unpack(buff[0:self['StrucLength']])
 
-
 class TM(MQOpts):
-    """ Construct an MQTM Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments 'kw'.
+    """ Construct an MQTM Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         super(TM, self).__init__(tuple([
@@ -795,8 +775,8 @@ class TM(MQOpts):
             ['UserData', b'', '128s']]), **kw)
 
 class TMC2(MQOpts):
-    """ Construct an MQTMC2 Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments 'kw'.
+    """ Construct an MQTMC2 Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         super(TMC2, self).__init__(tuple([
@@ -815,9 +795,8 @@ class TMC2(MQOpts):
 # SSL additions courtesy of Brian Vicente (mailto:sailbv@netscape.net)
 
 class CD(MQOpts):
-    """ Construct an MQCD Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQCD Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         """__init__(**kw)"""
@@ -940,9 +919,8 @@ cd = CD
 
 # SCO Class for SSL Support courtesy of Brian Vicente (mailto:sailbv@netscape.net)
 class SCO(MQOpts):
-    """ Construct an MQSCO Structure with default values as per MQI. The
-    default values maybe overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQSCO Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
 
@@ -994,9 +972,8 @@ class SCO(MQOpts):
 sco = SCO
 
 class SD(MQOpts):
-    """ Construct an MQSD Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQSD Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQSD_STRUC_ID, '4s'],
@@ -1052,9 +1029,8 @@ class SD(MQOpts):
         super(SD, self).__init__(tuple(opts), **kw)
 
 class SRO(MQOpts):
-    """ Construct an MQSRO Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQSRO Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQSRO_STRUC_ID, '4s'],
@@ -1065,9 +1041,8 @@ class SRO(MQOpts):
         super(SRO, self).__init__(tuple(opts), **kw)
 
 class CMHO(MQOpts):
-    """ Construct an MQCMHO Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQCMHO Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQCMHO_STRUC_ID, '4s'],
@@ -1077,9 +1052,8 @@ class CMHO(MQOpts):
         super(CMHO, self).__init__(tuple(opts), **kw)
 
 class PD(MQOpts):
-    """ Construct an MQPD Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQPD Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQPD_STRUC_ID, '4s'],
@@ -1092,9 +1066,8 @@ class PD(MQOpts):
         super(PD, self).__init__(tuple(opts), **kw)
 
 class SMPO(MQOpts):
-    """ Construct an MQSMPO Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQSMPO Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQSMPO_STRUC_ID, '4s'],
@@ -1106,9 +1079,8 @@ class SMPO(MQOpts):
         super(SMPO, self).__init__(tuple(opts), **kw)
 
 class IMPO(MQOpts):
-    """ Construct an MQIMPO Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQIMPO Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQIMPO_STRUC_ID, '4s'],
@@ -1132,9 +1104,8 @@ class IMPO(MQOpts):
         super(IMPO, self).__init__(tuple(opts), **kw)
 
 class XQH(MQOpts):
-    """ Construct an MQXQH Structure with default values as per MQI. The
-    default values may be overridden by the optional keyword arguments
-    'kw'.
+    """ Construct an MQXQH Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQXQH_STRUC_ID, '4s'],
@@ -1225,7 +1196,6 @@ class MQMIError(Error):
                 return pfx + d[self.reason]
         return pfx + 'Error code ' + str(self.reason) + ' not defined'
 
-
 class PYIFError(Error):
     """ Exception class for errors generated by pymqi.
     """
@@ -1265,7 +1235,6 @@ class QueueManager(object):
     def __del__(self):
         """ Disconnect from the queue Manager, if connected.
         """
-
         if self.__handle:
             if self.__qmobj:
                 try:
@@ -1289,7 +1258,6 @@ class QueueManager(object):
             raise MQMIError(rv[1], rv[2])
         self.__handle = rv[0]
         self.__name = name
-
 
 # MQCONNX code courtesy of John OSullivan (mailto:jos@onebox.com)
 # SSL additions courtesy of Brian Vicente (mailto:sailbv@netscape.net)
@@ -1705,7 +1673,7 @@ class Queue:
                          m_desc.pack(), get_opts.pack(), length)
 
         if not rv[-2]:
-            # Everything A OK
+            # Everything is OK
             m_desc.unpack(rv[1])
             get_opts.unpack(rv[2])
             return rv[0]
@@ -1896,12 +1864,8 @@ class Topic:
 
     @staticmethod
     def __create_topic_desc(topic_name, topic_string):
-        """__create_topic(topic_name, topic_string)
-
-        Creates a topic object descriptor from a given topic_name/topic_string.
-
+        """ Creates a topic object descriptor from a given topic_name/topic_string.
         """
-
         topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
         topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
@@ -1934,7 +1898,6 @@ class Topic:
         open_opts is not passed, the Topic open is deferred until a
         subsequent pub() call.
         """
-
         topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
         topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
@@ -1997,7 +1960,6 @@ class Topic:
         by pasing a Queue object or a string at which case the queue will
         be opened with default options.
         """
-
         sub_desc = None
         if len(opts) > 0:
             sub_desc = opts[0]
@@ -2014,7 +1976,6 @@ class Topic:
     def close(self, options=CMQC.MQCO_NONE):
         """ Close the topic, using options.
         """
-
         if not self.__topic_handle:
             raise PYIFError('Topic not open.')
 
@@ -2066,9 +2027,7 @@ class Subscription:
         Executes the MQSUB call with parameters.
         The subscription queue can be either passed as a Queue object or a
         Queue object handle.
-
         """
-
         sub_queue = ensure_bytes(sub_queue)  # Python 3 strings to be converted to bytes
         sub_name = ensure_bytes(sub_name)  # Python 3 strings to be converted to bytes
         topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
@@ -2146,7 +2105,6 @@ class Subscription:
 class MessageHandle(object):
     """ A higher-level wrapper around the MQI's native MQCMHO structure.
     """
-
     # When accessing message properties, this will be the maximum number
     # of characters a value will be able to hold. If it's not enough
     # an exception will be raised and its 'actual_value_length' will be
