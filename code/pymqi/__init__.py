@@ -1209,10 +1209,11 @@ class QueueManager(object):
     default, the Queue Manager is implicitly connected. If required,
     the connection may be deferred until a call to connect().
     """
-    def __init__(self, name='', disconnect_on_exit=True):
-        """ Connect to the Queue Manager 'name' (default value ''). If
-        'name' is None, don't connect now, but defer the connection
-        until connect() is called.
+    def __init__(self, name='', disconnect_on_exit=True, bytes_encoding='utf8'):
+        """ Connect to the Queue Manager 'name' (default value '').
+        If 'name' is None, don't connect now, but defer the connection until connect() is called.
+        Input 'bytes_encoding' is the encoding that will be used in PCF calls
+        using this MQ connection in case Unicode objects should be given on input.
         """
         name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
 
@@ -1220,6 +1221,7 @@ class QueueManager(object):
         self.__name = name
         self.__disconnect_on_exit = disconnect_on_exit
         self.__qmobj = None
+        self.bytes_encoding = bytes_encoding
 
         if name is not None:
             self.connect(name)
@@ -2280,13 +2282,32 @@ class _Method:
         if self.__name[0:7] == 'CMQCFC.':
             self.__name = self.__name[7:]
         if self.__pcf.qm:
+            bytes_encoding = self.__pcf.bytes_encoding
             qm_handle = self.__pcf.qm.getHandle()
         else:
+            bytes_encoding = 'utf8'
             qm_handle = self.__pcf.getHandle()
-        if len(args) > 0:
-            rv = pymqe.mqaiExecute(qm_handle, CMQCFC.__dict__[self.__name], *args)
+
+        len_args = len(args)
+
+        if len_args == 2:
+            args_dict, filters = args
+
+        elif len_args == 1:
+            args_dict, filters = args[0], []
+
         else:
-            rv = pymqe.mqaiExecute(qm_handle, CMQCFC.__dict__[self.__name], {}, [])
+            args_dict, filters = {}, []
+
+        # Assuming that a given PCF call requires any arguments, There will be a dictionary at args[0]
+        # On the lower lever, pymqe expects that values of this dictionary will be bytes objects.
+        # Hence we need to iterate over this dictionary and convert any Unicode objects to bytes.
+        if args_dict:
+            for key, value in args_dict.items():
+                if is_unicode(value):
+                    args_dict[key] = value.encode(bytes_encoding)
+
+        rv = pymqe.mqaiExecute(qm_handle, CMQCFC.__dict__[self.__name], args_dict, filters)
         if rv[1]:
             raise MQMIError(rv[-2], rv[-1])
         return rv[0]
