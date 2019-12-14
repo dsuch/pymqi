@@ -7,10 +7,10 @@ import pymqi
 
 logging.basicConfig(level=logging.INFO)
 
-queue_manager = 'QM01'
+queue_manager = 'QM1'
 channel = 'SSL.SVRCONN.1'
-host = '192.168.1.135'
-port = '1434'
+host = '127.0.0.1'
+port = '1414'
 queue_name = 'TEST.1'
 conn_info = '%s(%s)' % (host, port)
 ssl_cipher_spec = 'TLS_RSA_WITH_AES_256_CBC_SHA'

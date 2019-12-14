@@ -5,10 +5,10 @@ import logging
 
 import pymqi
 
-queue_manager = 'QM01'
-channel = 'SVRCONN.1'
+queue_manager = 'QM1'
+channel = 'DEV.APP.SVRCONN'
 host = 'localhost.invalid' # Note the invalid hostname here
-port = '1434'
+port = '1414'
 conn_info = '%s(%s)' % (host, port)
 
 try:

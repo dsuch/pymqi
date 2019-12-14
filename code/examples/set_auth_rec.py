@@ -7,10 +7,10 @@ import pymqi
 
 logging.basicConfig(level=logging.INFO)
 
-queue_manager = 'QM01'
+queue_manager = 'QM1'
 channel = 'CHANNEL.1'
 host = '127.0.0.1'
-port = '1434'
+port = '1414'
 conn_info = '%s(%s)' % (host, port)
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)

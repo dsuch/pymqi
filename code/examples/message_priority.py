@@ -7,10 +7,10 @@ import pymqi
 
 logging.basicConfig(level=logging.INFO)
 
-queue_manager = 'QM01'
-channel = 'SVRCONN.1'
-host = '192.168.1.135'
-port = '1434'
+queue_manager = 'QM1'
+channel = 'DEV.APP.SVRCONN'
+host = '127.0.0.1'
+port = '1414'
 queue_name = 'TEST.1'
 message = 'Hello from Python!'
 conn_info = '%s(%s)' % (host, port)

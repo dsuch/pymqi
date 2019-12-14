@@ -3,7 +3,7 @@
 
 import pymqi
 
-queue_manager = 'QM01'
+queue_manager = 'QM1'
 qmgr = pymqi.connect(queue_manager)
 
 qmgr.disconnect()

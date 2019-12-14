@@ -16,7 +16,7 @@ qm_name = 'QM01'
 listener = '192.168.1.135(1434)'
 
 # Channel to transfer data through
-channel = 'SVRCONN.1'
+channel = 'DEV.APP.SVRCONN'
 
 # Request Queue
 request_queue_name = 'REQUEST.QUEUE.1'
