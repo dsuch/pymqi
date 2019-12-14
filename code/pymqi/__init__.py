@@ -1368,7 +1368,7 @@ class QueueManager(object):
 # SSL additions courtesy of Brian Vicente (mailto:sailbv@netscape.net)
 # Connect options suggested by Jaco Smuts (mailto:JSmuts@clover.co.za)
 
-    def connect_with_options(self, name, *bwopts, **kw):
+    def connect_with_options(self, name, *args, **kwargs):
         """connect_with_options(name [, opts=cnoopts][ ,cd=mqcd][ ,sco=mqsco])
            connect_with_options(name, cd, [sco])
 
@@ -1384,18 +1384,18 @@ class QueueManager(object):
         name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
 
         # Deal with old style args
-        bwopts_len = len(bwopts)
-        if bwopts_len:
-            if bwopts_len > 2:
-                raise TypeError('Invalid options: %s' % bwopts)
-            if bwopts_len >= 1:
-                kw['cd'] = bwopts[0]
-            if bwopts_len == 2:
-                kw['sco'] = bwopts[1]
+        len_args = len(args)
+        if len_args:
+            if len_args > 2:
+                raise TypeError('Invalid options: %s' % args)
+            if len_args >= 1:
+                kwargs['cd'] = args[0]
+            if len_args == 2:
+                kwargs['sco'] = args[1]
 
         user_password = {}
-        user = kw.get('user')
-        password = kw.get('password')
+        user = kwargs.get('user')
+        password = kwargs.get('password')
 
         if user:
             # We check for None because password can be an empty string
@@ -1408,17 +1408,23 @@ class QueueManager(object):
             user_password['user'] = py3str2bytes(user, 'utf-8')
             user_password['password'] = py3str2bytes(password, 'utf-8')
 
-        options = kw['opts']       if 'opts' in kw else CMQC.MQCNO_NONE
-        cd      = kw['cd'].pack()  if 'cd'   in kw else None
-        sco     = kw['sco'].pack() if 'sco'  in kw else None
+        if 'cd' in kwargs:
+            has_cd_in_kwargs = True
+            cd = kwargs['cd']
+        else:
+            has_cd_in_kwargs = False
+            cd = CD()
+
+        options = kwargs['opts'] if 'opts' in kwargs else CMQC.MQCNO_NONE
+        sco     = kwargs['sco']  if 'sco'  in kwargs else SCO()
 
         # TLS encryption requires MQCD of version at least 7.
         # Thus, if someone uses TLS and the version is lower than that,
         # we can just increase it ourselves.
-        if cd and cd.SSLCipherSpec and cd.Version < CMQC.MQCD_VERSION_7:
+        if has_cd_in_kwargs and cd.SSLCipherSpec and cd.Version < CMQC.MQCD_VERSION_7:
             cd.Version = CMQC.MQCD_VERSION_7
 
-        rv = pymqe.MQCONNX(name, options, cd, user_password, sco)
+        rv = pymqe.MQCONNX(name, options, cd.pack(), user_password, sco.pack())
 
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
@@ -1435,12 +1441,20 @@ class QueueManager(object):
         TCP connection string 'conn_name'. All other connection
         optons come from 'cd'.
         """
+        # type: (str, CD, str, str, str, str)
 
-        cd.set(**{'ChannelName': py3str2bytes(channel),
-                  'ConnectionName': py3str2bytes(conn_name),
-                  'ChannelType': CMQC.MQCHT_CLNTCONN,
-                  'TransportType': CMQC.MQXPT_TCP})
-        self.connect_with_options(name, cd, user=user, password=password)
+        cd.ChannelName = py3str2bytes(channel)
+        cd.ConnectionName = py3str2bytes(conn_name)
+        cd.ChannelType = CMQC.MQCHT_CLNTCONN
+        cd.TransportType = CMQC.MQXPT_TCP
+
+        kwargs = {
+            'user': user,
+            'password': password,
+            'cd': cd
+        }
+
+        self.connect_with_options(name, **kwargs)
 
     # Backward compatibility
     connectTCPClient = connect_tcp_client
