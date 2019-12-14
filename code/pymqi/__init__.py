@@ -119,37 +119,34 @@ __mqbuild__ = pymqe.__mqbuild__
 
 
 #
-# Python 3 compatibility
+# Python 2/3 compatibility
 #
 
 def py23long(x):
-    """convert:
+    """ Convert:
        py2 int -> py2 long
        py3 int -> py3 int (it's already a 'long')
     """
     return x + 0 * 0xffffffffffffffff  # multiplying by large enough number will force py2 to use long.
 
-
-def ispy3str(s):
-    """returns True if input arg is a python3 string. False otherwise.
+def is_unicode(s):
+    """ Returns True if input arg is a Python 3 string (aka Python 2 unicode). False otherwise.
     """
     if isinstance(s, str) and not isinstance(s, bytes):
         return True
     else:
         return False
 
+def check_not_unicode(value):
+    if is_unicode(value):
+        msg = 'Python 3 style string (unicode) found but not allowed here: `{0}`. Convert to bytes.'
+        raise TypeError(msg.format(value))
 
-def check_not_py3str(var):
-    if ispy3str(var):
-        raise TypeError("Python 3 style string found but not allowed here: '{0}'. Convert to bytes.".format(var))
-
-
-def py3str2bytes(s, encoding='ascii'):
-    if ispy3str(s):
+def ensure_bytes(s, encoding='ascii'):
+    if is_unicode(s):
         return s.encode(encoding)
     else:
         return s
-
 
 #
 # 64bit suppport courtesy of Brent S. Elmer, Ph.D. (mailto:webe3vt@aim.com)
@@ -256,10 +253,10 @@ class MQOpts(object):
             # Flatten attribs that are arrays
             if isinstance(v, list):
                 for x in v:
-                    check_not_py3str(x)  # Python 3 bytes check
+                    check_not_unicode(x)  # Python 3 bytes check
                     args.append(x)
             else:
-                check_not_py3str(v)  # Python 3 bytes check
+                check_not_unicode(v)  # Python 3 bytes check
                 args.append(v)
 
         return struct.pack(*args)
@@ -269,7 +266,7 @@ class MQOpts(object):
 
         Unpack a 'C' structure 'buff' into self."""
 
-        check_not_py3str(buff)  # Python 3 bytes check
+        check_not_unicode(buff)  # Python 3 bytes check
 
         # Increase buff length to the current MQOpts structure size
         diff_length = self.get_length() - len(buff)
@@ -281,7 +278,7 @@ class MQOpts(object):
         r = struct.unpack(self.__format, buff)
         x = 0
         for i in self.__list:
-            check_not_py3str(r[x])  # Python 3 bytes check
+            check_not_unicode(r[x])  # Python 3 bytes check
             setattr(self, i[0], r[x])
             x = x + 1
 
@@ -296,7 +293,7 @@ class MQOpts(object):
             # Only set if the attribute already exists. getattr raises
             # an exception if it doesn't.
             getattr(self, str(i))
-            check_not_py3str(kw[i])  # Python 3 bytes check
+            check_not_unicode(kw[i])  # Python 3 bytes check
             setattr(self, str(i), kw[i])
 
     def __setitem__(self, key, value):
@@ -309,7 +306,7 @@ class MQOpts(object):
         # Only set if the attribute already exists. getattr raises an
         # exception if it doesn't.
         getattr(self, key)
-        check_not_py3str(value)  # Python 3 bytes check
+        check_not_unicode(value)  # Python 3 bytes check
         setattr(self, key, value)
 
     def get(self):
@@ -375,9 +372,9 @@ class MQOpts(object):
 
         if vs_name in ['SubName',  # subject name
                        'ObjectString']:  # topic name
-            vs_value = py3str2bytes(vs_value)  # allow known args be a string in Py3
+            vs_value = ensure_bytes(vs_value)  # allow known args be a string in Py3
         else:
-            check_not_py3str(vs_value)  # Python 3 bytes check
+            check_not_unicode(vs_value)  # Python 3 bytes check
 
         # if the VSPtr name is passed - remove VSPtr to be left with name.
         if vs_name.endswith("VSPtr"):
@@ -664,7 +661,7 @@ class RFH2(MQOpts):
 
         """
 
-        check_not_py3str(folder_data)  # Python 3 bytes check
+        check_not_unicode(folder_data)  # Python 3 bytes check
 
         # check that the folder is valid xml and get the root tag name.
         if use_minidom:
@@ -723,7 +720,7 @@ class RFH2(MQOpts):
 
         """
 
-        check_not_py3str(buff)  # Python 3 bytes check
+        check_not_unicode(buff)  # Python 3 bytes check
 
         if buff[0:4] != CMQC.MQRFH_STRUC_ID:
             raise PYIFError("RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s" %
@@ -1325,7 +1322,7 @@ class QueueManager(object):
         'name' is None, don't connect now, but defer the connection
         until connect() is called."""
 
-        name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
+        name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
 
         self.__handle = None
         self.__name = name
@@ -1381,7 +1378,7 @@ class QueueManager(object):
         the Queue Manager 'name', using the MQCD connection descriptor
         cd and the optional MQSCO SSL options sco."""
 
-        name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
+        name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
 
         # Deal with old style args
         len_args = len(args)
@@ -1405,8 +1402,8 @@ class QueueManager(object):
             if not (isinstance(user, (str, bytes)) and isinstance(password, (str, bytes))):
                 raise ValueError('Both user and password must be instances of str or bytes')
 
-            user_password['user'] = py3str2bytes(user, 'utf-8')
-            user_password['password'] = py3str2bytes(password, 'utf-8')
+            user_password['user'] = ensure_bytes(user, 'utf-8')
+            user_password['password'] = ensure_bytes(password, 'utf-8')
 
         if 'cd' in kwargs:
             has_cd_in_kwargs = True
@@ -1443,8 +1440,8 @@ class QueueManager(object):
         """
         # type: (str, CD, str, str, str, str)
 
-        cd.ChannelName = py3str2bytes(channel)
-        cd.ConnectionName = py3str2bytes(conn_name)
+        cd.ChannelName = ensure_bytes(channel)
+        cd.ConnectionName = ensure_bytes(conn_name)
         cd.ChannelType = CMQC.MQCHT_CLNTCONN
         cd.TransportType = CMQC.MQXPT_TCP
 
@@ -1534,7 +1531,7 @@ class QueueManager(object):
         If mDesc and/or putOpts arguments were supplied, they may be
         updated by the put1 operation."""
 
-        check_not_py3str(msg)  # Python 3 bytes check
+        check_not_unicode(msg)  # Python 3 bytes check
 
         m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
@@ -1554,7 +1551,7 @@ class QueueManager(object):
         Inquire on queue manager 'attribute'. Returns either the
         integer or string value for the attribute."""
 
-        attribute = py3str2bytes(attribute)  # Python 3 strings to be converted to bytes
+        attribute = ensure_bytes(attribute)  # Python 3 strings to be converted to bytes
 
         if self.__qmobj is None:
             # Make an od for the queue manager, open the qmgr & cache result
@@ -1590,7 +1587,7 @@ class QueueManager(object):
 def make_q_desc(qDescOrString):
     """Maybe make MQOD from string. Module Private"""
     if isinstance(qDescOrString, (str, bytes)):
-        return OD(ObjectName=py3str2bytes(qDescOrString))  # Python 3 strings to be converted to bytes
+        return OD(ObjectName=ensure_bytes(qDescOrString))  # Python 3 strings to be converted to bytes
     else:
         return qDescOrString
 
@@ -1664,7 +1661,7 @@ class Queue:
              Y       Y       Immediately
         """
 
-        self.__qMgr = py3str2bytes(qMgr)  # Python 3 strings to be converted to bytes
+        self.__qMgr = ensure_bytes(qMgr)  # Python 3 strings to be converted to bytes
         self.__qHandle = self.__qDesc = self.__openOpts = None
         ln = len(opts)
         if ln > 2:
@@ -1723,7 +1720,7 @@ class Queue:
         If m_desc and/or put_opts arguments were supplied, they may be
         updated by the put operation."""
 
-        check_not_py3str(msg)  # Python 3 bytes check
+        check_not_unicode(msg)  # Python 3 bytes check
 
         m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
@@ -1748,7 +1745,7 @@ class Queue:
 
         """
 
-        check_not_py3str(msg)  # Python 3 bytes check
+        check_not_unicode(msg)  # Python 3 bytes check
 
         rfh2_buff = b""
         if len(opts) >= 3:
@@ -1904,7 +1901,7 @@ class Queue:
         open, it is opened for Inquire. Returns either the integer or
         string value for the attribute."""
 
-        attribute = py3str2bytes(attribute)  # Python 3 strings to be converted to bytes
+        attribute = ensure_bytes(attribute)  # Python 3 strings to be converted to bytes
 
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_INQUIRE
@@ -1919,8 +1916,8 @@ class Queue:
 
         Sets the Queue attribute to arg."""
 
-        attribute = py3str2bytes(attribute)  # Python 3 strings to be converted to bytes
-        check_not_py3str(arg)  # Python 3 bytes check
+        attribute = ensure_bytes(attribute)  # Python 3 strings to be converted to bytes
+        check_not_unicode(arg)  # Python 3 bytes check
 
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_SET
@@ -2007,9 +2004,9 @@ class Topic:
              Y       Y       Immediately
         """
 
-        queue_manager = py3str2bytes(queue_manager)  # Python 3 strings to be converted to bytes
-        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
-        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
+        queue_manager = ensure_bytes(queue_manager)  # Python 3 strings to be converted to bytes
+        topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         self.__queue_manager = queue_manager
         self.__topic_handle = None
@@ -2038,8 +2035,8 @@ class Topic:
 
         """
 
-        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
-        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
+        topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         topic_desc = OD()
         topic_desc["ObjectType"] = CMQC.MQOT_TOPIC
@@ -2075,8 +2072,8 @@ class Topic:
 
         """
 
-        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
-        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
+        topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         if self.__topic_handle:
             raise PYIFError('The Topic is already open.')
@@ -2115,7 +2112,7 @@ class Topic:
 
         """
 
-        check_not_py3str(msg)  # Python 3 bytes check
+        check_not_unicode(msg)  # Python 3 bytes check
 
         msg_desc, put_opts = common_q_args(*opts)
 
@@ -2151,7 +2148,7 @@ class Topic:
 
         sub_queue = None
         if len(opts) > 1:
-            sub_queue = py3str2bytes(opts[1])  # Python 3 strings to be converted to bytes
+            sub_queue = ensure_bytes(opts[1])  # Python 3 strings to be converted to bytes
 
         sub = Subscription(self.__queue_manager)
         sub.sub(sub_desc=sub_desc, sub_queue=sub_queue, topic_name=self.topic_name, topic_string=self.topic_string)
@@ -2187,10 +2184,10 @@ class Subscription:
     def __init__(self, queue_manager, sub_desc=None, sub_name=None,
                  sub_queue=None, sub_opts=None, topic_name=None, topic_string=None):
 
-        queue_manager = py3str2bytes(queue_manager)  # Python 3 strings to be converted to bytes
-        sub_name = py3str2bytes(sub_name)  # Python 3 strings to be converted to bytes
-        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
-        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
+        queue_manager = ensure_bytes(queue_manager)  # Python 3 strings to be converted to bytes
+        sub_name = ensure_bytes(sub_name)  # Python 3 strings to be converted to bytes
+        topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         self.__queue_manager = queue_manager
         self.sub_queue = sub_queue
@@ -2233,10 +2230,10 @@ class Subscription:
 
         """
 
-        sub_queue = py3str2bytes(sub_queue)  # Python 3 strings to be converted to bytes
-        sub_name = py3str2bytes(sub_name)  # Python 3 strings to be converted to bytes
-        topic_name = py3str2bytes(topic_name)  # Python 3 strings to be converted to bytes
-        topic_string = py3str2bytes(topic_string)  # Python 3 strings to be converted to bytes
+        sub_queue = ensure_bytes(sub_queue)  # Python 3 strings to be converted to bytes
+        sub_name = ensure_bytes(sub_name)  # Python 3 strings to be converted to bytes
+        topic_name = ensure_bytes(topic_name)  # Python 3 strings to be converted to bytes
+        topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         if topic_name:
             self.topic_name = topic_name
@@ -2376,8 +2373,8 @@ class MessageHandle(object):
             passing in MQPD and MQSMPO structures.
             """
 
-            #name = py3str2bytes(name)  # Python 3 strings to be converted to bytes
-            #check_not_py3str(value)  # Python 3 only bytes allowed
+            #name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
+            #check_not_unicode(value)  # Python 3 only bytes allowed
 
             pd = pd if pd else PD()
             smpo = smpo if smpo else SMPO()
@@ -2411,7 +2408,7 @@ class _Filter(object):
 
     def __init__(self, selector, value, operator):
         self.selector = selector  # this is int
-        self.value = py3str2bytes(value)  # Python 3 strings to be converted to bytes
+        self.value = ensure_bytes(value)  # Python 3 strings to be converted to bytes
         self.operator = operator  # this is int
 
     def __repr__(self):
@@ -2456,7 +2453,7 @@ class FilterOperator(object):
 
     def __call__(self, value):
 
-        check_not_py3str(value)  # Python 3 bytes accepted here
+        check_not_unicode(value)  # Python 3 bytes accepted here
 
         # Do we support the given attribute filter?
         if CMQC.MQIA_FIRST <= self.pub_filter.selector <= CMQC.MQIA_LAST:
