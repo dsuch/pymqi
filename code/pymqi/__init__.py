@@ -8,7 +8,7 @@
 # You are free to use this code in any way you like, subject to the
 # Python & IBM disclaimers & copyrights. I make no representations
 # about the suitability of this software for any purpose. It is
-# provided "AS-IS" without warranty of any kind, either express or
+# provided 'AS-IS' without warranty of any kind, either express or
 # implied. So there.
 #
 """
@@ -113,7 +113,7 @@ except ImportError:
 from pymqi import CMQCFC
 from pymqi import CMQC, CMQXC, CMQZC
 
-__version__ = "1.9.3"
+__version__ = '1.9.3'
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 
@@ -162,7 +162,7 @@ def ensure_bytes(s, encoding='ascii'):
 #
 
 # Are we running 64 bit?
-if struct.calcsize("P") == 8:
+if struct.calcsize('P') == 8:
     MQLONG_TYPE = 'i'  # 64 bit
 else:
     MQLONG_TYPE = 'l'  # 32 bit
@@ -373,15 +373,15 @@ class MQOpts(object):
             check_not_unicode(vs_value)  # Python 3 bytes check
 
         # if the VSPtr name is passed - remove VSPtr to be left with name.
-        if vs_name.endswith("VSPtr"):
+        if vs_name.endswith('VSPtr'):
             vs_name_vsptr = vs_name
         else:
-            vs_name_vsptr = vs_name + "VSPtr"
+            vs_name_vsptr = vs_name + 'VSPtr'
 
-        vs_name_vsoffset = vs_name + "VSOffset"
-        vs_name_vsbuffsize = vs_name + "VSBufSize"
-        vs_name_vslength = vs_name + "VSLength"
-        vs_name_vsccsid = vs_name + "VSCCSID"
+        vs_name_vsoffset = vs_name + 'VSOffset'
+        vs_name_vsbuffsize = vs_name + 'VSBufSize'
+        vs_name_vslength = vs_name + 'VSLength'
+        vs_name_vsccsid = vs_name + 'VSCCSID'
 
         c_vs_value = None
         c_vs_value_p = 0
@@ -402,10 +402,10 @@ class MQOpts(object):
         """ This method returns the string to which the VSPtr pointer points to.
         """
         # if the VSPtr name is passed - remove VSPtr to be left with name.
-        if vs_name.endswith("VSPtr"):
+        if vs_name.endswith('VSPtr'):
             vs_name_vsptr = vs_name
         else:
-            vs_name_vsptr = vs_name + "VSPtr"
+            vs_name_vsptr = vs_name + 'VSPtr'
 
         c_vs_value = None
         c_vs_value_p = self[vs_name_vsptr]
@@ -440,7 +440,7 @@ class GMO(MQOpts):
                 ['MsgToken', b'', '16s'],
                 ['ReturnedLength', CMQC.MQRL_UNDEFINED, MQLONG_TYPE], ]
 
-        if "7.0" in pymqe.__mqlevels__:
+        if '7.0' in pymqe.__mqlevels__:
             opts += [
                 ['Reserved2', py23long(0), MQLONG_TYPE],
                 ['MsgHandle', py23long(0), 'q']]
@@ -474,7 +474,7 @@ class PMO(MQOpts):
             ['PutMsgRecPtr', 0, 'P'],
             ['ResponseRecPtr', 0, 'P']]
 
-        if "7.0" in pymqe.__mqlevels__:
+        if '7.0' in pymqe.__mqlevels__:
             opts += [
                 ['OriginalMsgHandle', py23long(0), 'q'],
                 ['NewMsgHandle', py23long(0), 'q'],
@@ -511,7 +511,7 @@ class OD(MQOpts):
                 ['ResolvedQName', b'', '48s'],
                 ['ResolvedQMgrName', b'', '48s'], ]
 
-        if "7.0" in pymqe.__mqlevels__:
+        if '7.0' in pymqe.__mqlevels__:
             opts += [
 
                 # ObjectString
@@ -638,22 +638,22 @@ class RFH2(MQOpts):
                 folder_name = parseString(folder_data). \
                                             documentElement.tagName
             except Exception as e:
-                raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
+                raise PYIFError('RFH2 - XML Folder not well formed. Exception: %s' % str(e))
         else:
             try:
                 folder_name = lxml.etree.fromstring(folder_data).tag
             except Exception as e:
-                raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
+                raise PYIFError('RFH2 - XML Folder not well formed. Exception: %s' % str(e))
         # Make sure folder length divides by 4 - else add spaces
         folder_length = len(folder_data)
         remainder = folder_length % 4
         if remainder != 0:
             num_spaces = 4 - remainder
-            folder_data = folder_data + b" " * num_spaces
+            folder_data = folder_data + b' ' * num_spaces
             folder_length = len(folder_data)
 
-        self.opts.append([folder_name + "Length", py23long(folder_length), MQLONG_TYPE])
-        self.opts.append([folder_name, folder_data, "%is" % folder_length])
+        self.opts.append([folder_name + 'Length', py23long(folder_length), MQLONG_TYPE])
+        self.opts.append([folder_name, folder_data, '%is' % folder_length])
 
         # Save the current values
         saved_values = self.get()
@@ -665,14 +665,14 @@ class RFH2(MQOpts):
         self.set(**saved_values)
 
         # Calculate the correct StrucLength
-        self["StrucLength"] = self.get_length()
+        self['StrucLength'] = self.get_length()
 
     def pack(self, encoding=None):
         """ Override pack in order to set correct numeric encoding in the format.
         """
         if encoding is not None:
             if encoding in self.big_endian_encodings:
-                self.opts[0][2] = ">" + self.initial_opts[0][2]
+                self.opts[0][2] = '>' + self.initial_opts[0][2]
                 saved_values = self.get()
 
                 # Apply the new opts
@@ -691,11 +691,11 @@ class RFH2(MQOpts):
         check_not_unicode(buff)  # Python 3 bytes check
 
         if buff[0:4] != CMQC.MQRFH_STRUC_ID:
-            raise PYIFError("RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s" %
+            raise PYIFError('RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s' %
                             buff[0:4])
 
         if len(buff) < 36:
-            raise PYIFError("RFH2 - Buffer too short. Should be 36 bytes or longer.  Buffer Length: %s" %
+            raise PYIFError('RFH2 - Buffer too short. Should be 36 bytes or longer.  Buffer Length: %s' %
                             str(len(buff)))
         # Take a copy of initial_opts and the lists inside
         self.opts = [list(x) for x in self.initial_opts]
@@ -706,23 +706,23 @@ class RFH2(MQOpts):
                 big_endian = True
         else:
             # If small endian first byte of version should be > 'x\00'
-            if buff[4:5] == b"\x00":
+            if buff[4:5] == b'\x00':
                 big_endian = True
 
         # Indicate bigendian in format
         if big_endian:
-            self.opts[0][2] = ">" + self.opts[0][2]
+            self.opts[0][2] = '>' + self.opts[0][2]
 
         # Apply and parse the default header
         super(RFH2, self).__init__(tuple(self.opts))
         super(RFH2, self).unpack(buff[0:36])
 
         if self['StrucLength'] < 0:
-            raise PYIFError("RFH2 - 'StrucLength' is negative. Check numeric encoding.")
+            raise PYIFError('RFH2 - "StrucLength" is negative. Check numeric encoding.')
 
         if len(buff) > 36:
             if self['StrucLength'] > len(buff):
-                raise PYIFError("RFH2 - Buffer too short. Expected: %s Buffer Length: %s"
+                raise PYIFError('RFH2 - Buffer too short. Expected: %s Buffer Length: %s'
                                 % (self['StrucLength'], len(buff)))
 
         # Extract only the string containing the xml folders and loop
@@ -732,9 +732,9 @@ class RFH2(MQOpts):
             # First 4 bytes is the folder length. supposed to divide by 4.
             len_bytes = s[0:4]
             if big_endian:
-                folder_length = struct.unpack(">l", len_bytes)[0]
+                folder_length = struct.unpack('>l', len_bytes)[0]
             else:
-                folder_length = struct.unpack("<l", len_bytes)[0]
+                folder_length = struct.unpack('<l', len_bytes)[0]
 
             # Move on past four byte length
             s = s[4:]
@@ -747,17 +747,17 @@ class RFH2(MQOpts):
                 try:
                     folder_name = parseString(folder_data).documentElement.tagName
                 except Exception as e:
-                    raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
+                    raise PYIFError('RFH2 - XML Folder not well formed. Exception: %s' % str(e))
             else:
                 try:
                     folder_name = lxml.etree.fromstring(folder_data).tag
                 except Exception as e:
-                    raise PYIFError("RFH2 - XML Folder not well formed. Exception: %s" % str(e))
+                    raise PYIFError('RFH2 - XML Folder not well formed. Exception: %s' % str(e))
 
             # Append folder length and folder string to self.opts types
-            self.opts.append([folder_name + "Length", py23long(folder_length),
+            self.opts.append([folder_name + 'Length', py23long(folder_length),
                               MQLONG_TYPE])
-            self.opts.append([folder_name, folder_data, "%is" %
+            self.opts.append([folder_name, folder_data, '%is' %
                               folder_length])
             # Move on past the folder
             s = s[folder_length:]
@@ -772,7 +772,7 @@ class RFH2(MQOpts):
         self.set(**saved_values)
 
         # unpack the buffer? - should get same result?
-        # super(RFH2, self).unpack(buff[0:self["StrucLength"]])
+        # super(RFH2, self).unpack(buff[0:self['StrucLength']])
 
 
 class TM(MQOpts):
@@ -969,20 +969,20 @@ class SCO(MQOpts):
 
         # Add new SSL fields defined in 6.0 and update version to 2
 
-        if "6.0" in pymqe.__mqlevels__:
+        if '6.0' in pymqe.__mqlevels__:
             opts += [['KeyResetCount', py23long(0), MQLONG_TYPE],
                      ['FipsRequired', py23long(0), MQLONG_TYPE]]
 
-        if "7.0" in pymqe.__mqlevels__:
+        if '7.0' in pymqe.__mqlevels__:
             opts += [['EncryptionPolicySuiteB', [0, 0, 0, 0], '4' + MQLONG_TYPE]]
 
-        if "7.1" in pymqe.__mqlevels__:
+        if '7.1' in pymqe.__mqlevels__:
             opts += [['CertificateValPolicy', py23long(0), MQLONG_TYPE]]
 
             if MQLONG_TYPE == 'i':
                 opts += [['pad', b'', '4s']]
 
-        if "8.0.0" in pymqe.__mqlevels__:
+        if '8.0.0' in pymqe.__mqlevels__:
             opts += [['CertificateLabel', b'', '64s']]
 
         super(SCO, self).__init__(tuple(opts), **kw)
@@ -1176,7 +1176,7 @@ class _MQConst2String(object):
         return key in self.__stringDict
 
     def has_key(self, key):
-        """"Deprecated. Use 'in' operator instead."""
+        """'Deprecated. Use 'in' operator instead."""
         return key in self
 
 
@@ -1194,7 +1194,7 @@ class Error(Exception):
 class MQMIError(Error):
     """ Exception class for MQI low level errors.
     """
-    errStringDicts = (_MQConst2String(CMQC, "MQRC_"), _MQConst2String(CMQCFC, "MQRCCF_"),)
+    errStringDicts = (_MQConst2String(CMQC, 'MQRC_'), _MQConst2String(CMQCFC, 'MQRCCF_'),)
 
     def __init__(self, comp, reason, **kw):
         """ Construct the error object with MQI completion code 'comp' and reason code 'reason'.
@@ -1640,20 +1640,20 @@ class Queue:
         """
         check_not_unicode(msg)  # Python 3 bytes check
 
-        rfh2_buff = b""
+        rfh2_buff = b''
         if len(opts) >= 3:
             if opts[2] is not None:
                 if not isinstance(opts[2], list):
-                    raise TypeError("Third item of opts should be a list.")
+                    raise TypeError('Third item of opts should be a list.')
                 encoding = CMQC.MQENC_NATIVE
                 if opts[0] is not None:
                     mqmd = opts[0]
-                    encoding = mqmd["Encoding"]
+                    encoding = mqmd['Encoding']
 
                 for rfh2_header in opts[2]:
                     if rfh2_header is not None:
                         rfh2_buff = rfh2_buff + rfh2_header.pack(encoding)
-                        encoding = rfh2_header["Encoding"]
+                        encoding = rfh2_header['Encoding']
 
                 msg = rfh2_buff + msg
             self.put(msg, *opts[0:2])
@@ -1750,19 +1750,19 @@ class Queue:
         if len(opts) >= 3:
             if opts[2] is not None:
                 if not isinstance(opts[2], list):
-                    raise TypeError("Third item of opts should be a list.")
+                    raise TypeError('Third item of opts should be a list.')
 
                 msg = self.get(max_length, *opts[0:2])
                 mqmd = opts[0]
                 rfh2_headers = []
                 # If format is not CMQC.MQFMT_RF_HEADER_2 then do not parse.
-                frmt = mqmd["Format"]
+                frmt = mqmd['Format']
                 while frmt == CMQC.MQFMT_RF_HEADER_2:
                     rfh2_header = RFH2()
                     rfh2_header.unpack(msg)
                     rfh2_headers.append(rfh2_header)
-                    msg = msg[rfh2_header["StrucLength"]:]
-                    frmt = rfh2_header["Format"]
+                    msg = msg[rfh2_header['StrucLength']:]
+                    frmt = rfh2_header['Format']
                 opts[2].extend(rfh2_headers)
             else:
                 raise AttributeError('get_opts cannot be None if passed.')
@@ -1830,7 +1830,7 @@ class Topic:
     The Topic to open is identified either by a topic name and/or a topic
     string (in which case a default MQOD structure is created using
     those names), or by passing a ready constructed MQOD class.
-    Refer to the "Using topic strings" section in the MQ7 Information Center
+    Refer to the 'Using topic strings' section in the MQ7 Information Center
     for an explanation of how the topic name and topic string is combined
     to identify a particular topic.
     """
@@ -1881,9 +1881,9 @@ class Topic:
         self.topic_string = topic_string
 
         if self.__topic_desc:
-            if self.__topic_desc["ObjectType"] is not CMQC.MQOT_TOPIC:
+            if self.__topic_desc['ObjectType'] is not CMQC.MQOT_TOPIC:
                 raise PYIFError('The Topic Descriptor ObjectType is not MQOT_TOPIC.')
-            if self.__topic_desc["Version"] is not CMQC.MQOD_VERSION_4:
+            if self.__topic_desc['Version'] is not CMQC.MQOD_VERSION_4:
                 raise PYIFError('The Topic Descriptor Version is not MQOD_VERSION_4.')
         else:
             self.__topic_desc = self.__create_topic_desc(topic_name, topic_string)
@@ -1903,14 +1903,14 @@ class Topic:
         topic_string = ensure_bytes(topic_string)  # Python 3 strings to be converted to bytes
 
         topic_desc = OD()
-        topic_desc["ObjectType"] = CMQC.MQOT_TOPIC
-        topic_desc["Version"] = CMQC.MQOD_VERSION_4
+        topic_desc['ObjectType'] = CMQC.MQOT_TOPIC
+        topic_desc['Version'] = CMQC.MQOD_VERSION_4
 
         if topic_name:
-            topic_desc["ObjectName"] = topic_name
+            topic_desc['ObjectName'] = topic_name
 
         if topic_string:
-            topic_desc.set_vs("ObjectString", topic_string, 0, 0, 0)
+            topic_desc.set_vs('ObjectString', topic_string, 0, 0, 0)
 
         return topic_desc
 
@@ -2080,21 +2080,21 @@ class Subscription:
 
         if sub_desc:
             if not isinstance(sub_desc, SD):
-                raise TypeError("sub_desc must be a SD(sub descriptor) object.")
+                raise TypeError('sub_desc must be a SD(sub descriptor) object.')
         else:
             sub_desc = SD()
             if sub_opts:
-                sub_desc["Options"] = sub_opts
+                sub_desc['Options'] = sub_opts
             else:
-                sub_desc["Options"] = CMQC.MQSO_CREATE + \
+                sub_desc['Options'] = CMQC.MQSO_CREATE + \
                                       CMQC.MQSO_NON_DURABLE + \
                                       CMQC.MQSO_MANAGED
             if self.sub_name:
-                sub_desc.set_vs("SubName", self.sub_name)
+                sub_desc.set_vs('SubName', self.sub_name)
             if self.topic_name:
-                sub_desc["ObjectName"] = self.topic_name
+                sub_desc['ObjectName'] = self.topic_name
             if self.topic_string:
-                sub_desc.set_vs("ObjectString", self.topic_string)
+                sub_desc.set_vs('ObjectString', self.topic_string)
         self.__sub_desc = sub_desc
 
         sub_queue_handle = CMQC.MQHO_NONE
@@ -2333,7 +2333,7 @@ class _Method:
         self.__name = name
 
     def __getattr__(self, name):
-        return _Method(self.__pcf, "%s.%s" % (self.__name, name))
+        return _Method(self.__pcf, '%s.%s' % (self.__name, name))
 
     def __call__(self, *args):
         if self.__name[0:7] == 'CMQCFC.':
@@ -2362,8 +2362,8 @@ class PCFExecute(QueueManager):
     its used. PCF commands are executed by calling a CMQC defined
     MQCMD_* method on the object.  """
 
-    iaStringDict = _MQConst2String(CMQC, "MQIA_")
-    caStringDict = _MQConst2String(CMQC, "MQCA_")
+    iaStringDict = _MQConst2String(CMQC, 'MQIA_')
+    caStringDict = _MQConst2String(CMQC, 'MQCA_')
 
     def __init__(self, name=''):
         """PCFExecute(name = '')
@@ -2413,7 +2413,7 @@ class PCFExecute(QueueManager):
             if isinstance(rawDict[k], bytes):
                 d = PCFExecute.caStringDict
             elif isinstance(rawDict[k], str):
-                raise TypeError("In Python 3 use bytes, not str (found '{0}':'{1}')".format(k, rawDict[k]))
+                raise TypeError('In Python 3 use bytes, not str (found "{0}":"{1}")'.format(k, rawDict[k]))
             else:
                 d = PCFExecute.iaStringDict
             try:
