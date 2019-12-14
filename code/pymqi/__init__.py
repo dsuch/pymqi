@@ -1298,22 +1298,22 @@ class QueueManager(object):
             user_password['password'] = ensure_bytes(password, 'utf-8')
 
         if 'cd' in kwargs:
-            has_cd_in_kwargs = True
             cd = kwargs['cd']
+
+            # TLS encryption requires MQCD of version at least 7.
+            # Thus, if someone uses TLS and the version is lower than that,
+            # we can just increase it ourselves.
+            if cd.SSLCipherSpec and cd.Version < CMQC.MQCD_VERSION_7:
+                cd.Version = CMQC.MQCD_VERSION_7
+
+            cd = cd.pack()
         else:
-            has_cd_in_kwargs = False
-            cd = CD()
+            cd = None
 
         options = kwargs['opts'] if 'opts' in kwargs else CMQC.MQCNO_NONE
         sco     = kwargs['sco']  if 'sco'  in kwargs else SCO()
 
-        # TLS encryption requires MQCD of version at least 7.
-        # Thus, if someone uses TLS and the version is lower than that,
-        # we can just increase it ourselves.
-        if has_cd_in_kwargs and cd.SSLCipherSpec and cd.Version < CMQC.MQCD_VERSION_7:
-            cd.Version = CMQC.MQCD_VERSION_7
-
-        rv = pymqe.MQCONNX(name, options, cd.pack(), user_password, sco.pack())
+        rv = pymqe.MQCONNX(name, options, cd, user_password, sco.pack())
 
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
