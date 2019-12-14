@@ -309,7 +309,6 @@ class MQOpts(object):
     def get(self):
         """ Return a dictionary of the current structure member values. The dictionary is keyed by a 'C' member name.
         """
-
         d = {}
         for i in self.__list:
             d[i[0]] = getattr(self, i[0])
@@ -407,7 +406,6 @@ class GMO(MQOpts):
     """ Construct an MQGMO Structure with default values as per MQI.
     The default values may be overridden by the optional keyword arguments 'kw'.
     """
-
     def __init__(self, **kw):
         opts = [['StrucId', CMQC.MQGMO_STRUC_ID, '4s'],
                 ['Version', CMQC.MQGMO_VERSION_1, MQLONG_TYPE],
@@ -619,8 +617,7 @@ class RFH2(MQOpts):
         # Check that the folder is valid xml and get the root tag name.
         if use_minidom:
             try:
-                folder_name = parseString(folder_data). \
-                                            documentElement.tagName
+                folder_name = parseString(folder_data). documentElement.tagName
             except Exception as e:
                 raise PYIFError('RFH2 - XML Folder not well formed. Exception: %s' % str(e))
         else:
@@ -628,6 +625,7 @@ class RFH2(MQOpts):
                 folder_name = lxml.etree.fromstring(folder_data).tag
             except Exception as e:
                 raise PYIFError('RFH2 - XML Folder not well formed. Exception: %s' % str(e))
+
         # Make sure folder length divides by 4 - else add spaces
         folder_length = len(folder_data)
         remainder = folder_length % 4
@@ -675,12 +673,10 @@ class RFH2(MQOpts):
         check_not_unicode(buff) # Python 3 bytes check
 
         if buff[0:4] != CMQC.MQRFH_STRUC_ID:
-            raise PYIFError('RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s' %
-                            buff[0:4])
+            raise PYIFError('RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s' % buff[0:4])
 
         if len(buff) < 36:
-            raise PYIFError('RFH2 - Buffer too short. Should be 36 bytes or longer.  Buffer Length: %s' %
-                            str(len(buff)))
+            raise PYIFError('RFH2 - Buffer too short. Should be 36+ bytes instead of %s' % len(buff))
         # Take a copy of initial_opts and the lists inside
         self.opts = [list(x) for x in self.initial_opts]
 
@@ -739,10 +735,8 @@ class RFH2(MQOpts):
                     raise PYIFError('RFH2 - XML Folder not well formed. Exception: %s' % str(e))
 
             # Append folder length and folder string to self.opts types
-            self.opts.append([folder_name + 'Length', py23long(folder_length),
-                              MQLONG_TYPE])
-            self.opts.append([folder_name, folder_data, '%is' %
-                              folder_length])
+            self.opts.append([folder_name + 'Length', py23long(folder_length), MQLONG_TYPE])
+            self.opts.append([folder_name, folder_data, '%is' % folder_length])
             # Move on past the folder
             s = s[folder_length:]
 
@@ -1164,7 +1158,6 @@ class Error(Exception):
     """ Base class for all PyMQI exceptions.
     """
 
-
 class MQMIError(Error):
     """ Exception class for MQI low level errors.
     """
@@ -1216,7 +1209,6 @@ class QueueManager(object):
     default, the Queue Manager is implicitly connected. If required,
     the connection may be deferred until a call to connect().
     """
-
     def __init__(self, name='', disconnect_on_exit=True):
         """ Connect to the Queue Manager 'name' (default value ''). If
         'name' is None, don't connect now, but defer the connection
@@ -1276,7 +1268,6 @@ class QueueManager(object):
         the Queue Manager 'name', using the MQCD connection descriptor
         cd and the optional MQSCO SSL options sco.
         """
-
         name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
 
         # Deal with old style args
@@ -1507,8 +1498,7 @@ class Queue:
         """Really open the queue."""
         if self.__qDesc is None:
             raise PYIFError('The Queue Descriptor has not been set.')
-        rv = pymqe.MQOPEN(self.__qMgr.getHandle(),
-                          self.__qDesc.pack(), self.__openOpts)
+        rv = pymqe.MQOPEN(self.__qMgr.getHandle(), self.__qDesc.pack(), self.__openOpts)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
         self.__qHandle = rv[0]
@@ -1599,8 +1589,7 @@ class Queue:
             self.__openOpts = CMQC.MQOO_OUTPUT
             self.__realOpen()
         # Now send the message
-        rv = pymqe.MQPUT(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(),
-                         put_opts.pack(), msg)
+        rv = pymqe.MQPUT(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), put_opts.pack(), msg)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
         m_desc.unpack(rv[0])
@@ -1669,8 +1658,7 @@ class Queue:
         else:
             length = maxLength
 
-        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle,
-                         m_desc.pack(), get_opts.pack(), length)
+        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), get_opts.pack(), length)
 
         if not rv[-2]:
             # Everything is OK
@@ -1693,8 +1681,7 @@ class Queue:
         # to retrieve it from the queue.
         m_desc.unpack(rv[1])  # save the message id
         length = rv[-3]
-        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle,
-                         m_desc.pack(), get_opts.pack(), length)
+        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), get_opts.pack(), length)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
         m_desc.unpack(rv[1])
@@ -1946,8 +1933,7 @@ class Topic:
             self.__open_opts = CMQC.MQOO_OUTPUT
             self.__real_open()
         # Now send the message
-        rv = pymqe.MQPUT(self.__queue_manager.getHandle(), self.__topic_handle, msg_desc.pack(),
-                         put_opts.pack(), msg)
+        rv = pymqe.MQPUT(self.__queue_manager.getHandle(), self.__topic_handle, msg_desc.pack(), put_opts.pack(), msg)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
 
@@ -2048,9 +2034,7 @@ class Subscription:
             if sub_opts:
                 sub_desc['Options'] = sub_opts
             else:
-                sub_desc['Options'] = CMQC.MQSO_CREATE + \
-                                      CMQC.MQSO_NON_DURABLE + \
-                                      CMQC.MQSO_MANAGED
+                sub_desc['Options'] = CMQC.MQSO_CREATE + CMQC.MQSO_NON_DURABLE + CMQC.MQSO_MANAGED
             if self.sub_name:
                 sub_desc.set_vs('SubName', self.sub_name)
             if self.topic_name:
@@ -2149,9 +2133,8 @@ class MessageHandle(object):
             if not max_value_length:
                 max_value_length = MessageHandle.default_value_length
 
-            value, dataLength, comp_code, comp_reason  = pymqe.MQINQMP(self.conn_handle,
-                                                          self.msg_handle, impo_options, name, pd,
-                                                          property_type, max_value_length)
+            value, dataLength, comp_code, comp_reason  = pymqe.MQINQMP(
+                self.conn_handle, self.msg_handle, impo_options, name, pd, property_type, max_value_length)
 
             if comp_code != CMQC.MQCC_OK:
                 raise MQMIError(comp_code, comp_reason, value=value, dataLength=dataLength)
@@ -2174,9 +2157,8 @@ class MessageHandle(object):
             pd = pd if pd else PD()
             smpo = smpo if smpo else SMPO()
 
-            comp_code, comp_reason = pymqe.MQSETMP(self.conn_handle,
-                                                   self.msg_handle, smpo.pack(), name, pd.pack(),
-                                                   property_type, value, value_length)
+            comp_code, comp_reason = pymqe.MQSETMP(
+                self.conn_handle, self.msg_handle, smpo.pack(), name, pd.pack(), property_type, value, value_length)
 
             if comp_code != CMQC.MQCC_OK:
                 raise MQMIError(comp_code, comp_reason)
@@ -2185,8 +2167,7 @@ class MessageHandle(object):
         self.conn_handle = qmgr.get_handle() if qmgr else CMQC.MQHO_NONE
         cmho = cmho if cmho else CMHO()
 
-        self.msg_handle, comp_code, comp_reason = pymqe.MQCRTMH(self.conn_handle,
-                                                                cmho.pack())
+        self.msg_handle, comp_code, comp_reason = pymqe.MQCRTMH(self.conn_handle, cmho.pack())
 
         if comp_code != CMQC.MQCC_OK:
             raise MQMIError(comp_code, comp_reason)
@@ -2208,8 +2189,7 @@ class _Filter(object):
 
     def __repr__(self):
         msg = '<%s at %s %s:%s:%s>'
-        return msg % (self.__class__.__name__, hex(id(self)), self.selector,
-                      self.value, self.operator)
+        return msg % (self.__class__.__name__, hex(id(self)), self.selector, self.value, self.operator)
 
 class StringFilter(_Filter):
     """ A subclass of pymqi._Filter suitable for passing MQAI string filters around.
