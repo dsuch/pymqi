@@ -247,7 +247,7 @@ Code::
             md.CorrelId = pymqi.CMQC.MQCI_NONE
             md.GroupId = pymqi.CMQC.MQGI_NONE
 
-        except pymqi.MQMIError, e:
+        except pymqi.MQMIError as e:
             if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
                 # No messages, that's OK, we can ignore it.
                 pass
@@ -650,7 +650,7 @@ Code::
 
     try:
         qmgr = pymqi.connect(queue_manager, channel, conn_info)
-    except pymqi.MQMIError, e:
+    except pymqi.MQMIError as e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_HOST_NOT_AVAILABLE:
             logging.error('Such a host [%s] does not exist.' % host)
 
@@ -907,7 +907,7 @@ Code::
                     request_md.CorrelId = pymqi.CMQC.MQCI_NONE
                     request_md.GroupId = pymqi.CMQC.MQGI_NONE
 
-                except pymqi.MQMIError, e:
+                except pymqi.MQMIError as e:
                     if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
                         # No messages, that's OK, we can ignore it.
                         pass
@@ -994,7 +994,7 @@ Code::
 
     try:
         qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
-    except pymqi.MQMIError, e:
+    except pymqi.MQMIError as e:
         if e.comp == pymqi.CMQC.MQCC_WARNING and e.reason == pymqi.CMQC.MQRC_ALREADY_CONNECTED:
             # Move along, nothing to see here..
             pass
@@ -1122,7 +1122,7 @@ Code::
 
     try:
         response = pcf.MQCMD_INQUIRE_CHANNEL(args)
-    except pymqi.MQMIError, e:
+    except pymqi.MQMIError as e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
             logging.info('No channels matched prefix [%s]' % prefix)
         else:
@@ -1173,7 +1173,7 @@ Code::
 
     try:
         response = pcf.MQCMD_INQUIRE_Q(args)
-    except pymqi.MQMIError, e:
+    except pymqi.MQMIError as e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
             logging.info('No queues matched given arguments.')
         else:

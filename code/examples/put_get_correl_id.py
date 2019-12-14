@@ -142,7 +142,7 @@ class ResponseProducer(Producer):
                 request_md.CorrelId = pymqi.CMQC.MQCI_NONE
                 request_md.GroupId = pymqi.CMQC.MQGI_NONE
 
-            except pymqi.MQMIError, e:
+            except pymqi.MQMIError as e:
                 if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
                     # No messages, that's OK, we can ignore it.
                     pass

@@ -13,6 +13,6 @@ conn_info = "%s(%s)" % (host, port)
 
 try:
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
-except pymqi.MQMIError, e:
+except pymqi.MQMIError as e:
     if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_HOST_NOT_AVAILABLE:
         logging.error("Such a host [%s] does not exist." % host)
