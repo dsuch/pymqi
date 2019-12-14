@@ -91,11 +91,11 @@ their MQI counterparts.
 
 """
 
-# Stdlib
+# stdlib
 import struct
 import threading
 import ctypes
-import inspect
+
 # import xml parser.  lxml/etree only available since python 2.5
 use_minidom = False
 try:
@@ -112,6 +112,9 @@ except ImportError:
     import pymqe  # Backward compatibility
 from pymqi import CMQCFC
 from pymqi import CMQC, CMQXC, CMQZC
+
+# For pyflakes
+CMQZC = CMQZC
 
 __version__ = '1.9.3'
 __mqlevels__ = pymqe.__mqlevels__
