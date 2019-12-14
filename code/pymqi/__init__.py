@@ -140,7 +140,7 @@ def is_unicode(s):
     else:
         return False
 
-def check_not_unicode(value):
+def ensure_not_unicode(value):
     if is_unicode(value):
         msg = 'Python 3 style string (unicode) found but not allowed here: `{0}`. Convert to bytes.'
         raise TypeError(msg.format(value))
@@ -258,10 +258,10 @@ class MQOpts(object):
             # Flatten attribs that are arrays
             if isinstance(v, list):
                 for x in v:
-                    check_not_unicode(x)  # Python 3 bytes check
+                    ensure_not_unicode(x)  # Python 3 bytes check
                     args.append(x)
             else:
-                check_not_unicode(v)  # Python 3 bytes check
+                ensure_not_unicode(v)  # Python 3 bytes check
                 args.append(v)
 
         return struct.pack(*args)
@@ -269,7 +269,7 @@ class MQOpts(object):
     def unpack(self, buff):
         """ Unpack a 'C' structure 'buff' into self.
         """
-        check_not_unicode(buff)  # Python 3 bytes check
+        ensure_not_unicode(buff)  # Python 3 bytes check
 
         # Increase buff length to the current MQOpts structure size
         diff_length = self.get_length() - len(buff)
@@ -281,7 +281,7 @@ class MQOpts(object):
         r = struct.unpack(self.__format, buff)
         x = 0
         for i in self.__list:
-            check_not_unicode(r[x])  # Python 3 bytes check
+            ensure_not_unicode(r[x])  # Python 3 bytes check
             setattr(self, i[0], r[x])
             x = x + 1
 
@@ -294,7 +294,7 @@ class MQOpts(object):
             # Only set if the attribute already exists. getattr raises
             # an exception if it doesn't.
             getattr(self, str(i))
-            check_not_unicode(kw[i])  # Python 3 bytes check
+            ensure_not_unicode(kw[i])  # Python 3 bytes check
             setattr(self, str(i), kw[i])
 
     def __setitem__(self, key, value):
@@ -303,7 +303,7 @@ class MQOpts(object):
         # Only set if the attribute already exists. getattr raises an
         # exception if it doesn't.
         getattr(self, key)
-        check_not_unicode(value)  # Python 3 bytes check
+        ensure_not_unicode(value)  # Python 3 bytes check
         setattr(self, key, value)
 
     def get(self):
@@ -353,7 +353,7 @@ class MQOpts(object):
                        'ObjectString']:  # topic name
             vs_value = ensure_bytes(vs_value)  # allow known args be a string in Py3
         else:
-            check_not_unicode(vs_value)  # Python 3 bytes check
+            ensure_not_unicode(vs_value)  # Python 3 bytes check
 
         # if the VSPtr name is passed - remove VSPtr to be left with name.
         if vs_name.endswith('VSPtr'):
@@ -612,7 +612,7 @@ class RFH2(MQOpts):
         Checks if the XML is well formed and updates self.StrucLength.
         """
 
-        check_not_unicode(folder_data)  # Python 3 bytes check
+        ensure_not_unicode(folder_data)  # Python 3 bytes check
 
         # Check that the folder is valid xml and get the root tag name.
         if use_minidom:
@@ -670,7 +670,7 @@ class RFH2(MQOpts):
         Encoding meant to come from the MQMD.
         """
 
-        check_not_unicode(buff) # Python 3 bytes check
+        ensure_not_unicode(buff) # Python 3 bytes check
 
         if buff[0:4] != CMQC.MQRFH_STRUC_ID:
             raise PYIFError('RFH2 - StrucId not MQRFH_STRUC_ID. Value: %s' % buff[0:4])
@@ -1409,7 +1409,7 @@ class QueueManager(object):
         updated by the put1 operation.
         """
 
-        check_not_unicode(msg)  # Python 3 bytes check
+        ensure_not_unicode(msg)  # Python 3 bytes check
 
         m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
@@ -1581,7 +1581,7 @@ class Queue:
         If m_desc and/or put_opts arguments were supplied, they may be
         updated by the put operation.
         """
-        check_not_unicode(msg)  # Python 3 bytes check
+        ensure_not_unicode(msg)  # Python 3 bytes check
 
         m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
@@ -1600,7 +1600,7 @@ class Queue:
     def put_rfh2(self, msg, *opts):
         """ Put a RFH2 message. opts[2] is a list of RFH2 headers. MQMD and RFH2's must be correct.
         """
-        check_not_unicode(msg)  # Python 3 bytes check
+        ensure_not_unicode(msg)  # Python 3 bytes check
 
         rfh2_buff = b''
         if len(opts) >= 3:
@@ -1760,7 +1760,7 @@ class Queue:
         """ Sets the Queue attribute to arg.
         """
         attribute = ensure_bytes(attribute)  # Python 3 strings to be converted to bytes
-        check_not_unicode(arg)  # Python 3 bytes check
+        ensure_not_unicode(arg)  # Python 3 bytes check
 
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_SET
@@ -1923,7 +1923,7 @@ class Topic:
         If msg_desc and/or put_opts arguments were supplied, they may be
         updated by the put operation.
         """
-        check_not_unicode(msg)  # Python 3 bytes check
+        ensure_not_unicode(msg)  # Python 3 bytes check
 
         msg_desc, put_opts = common_q_args(*opts)
 
@@ -2154,7 +2154,7 @@ class MessageHandle(object):
             """
 
             #name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
-            #check_not_unicode(value)  # Python 3 only bytes allowed
+            #ensure_not_unicode(value)  # Python 3 only bytes allowed
 
             pd = pd if pd else PD()
             smpo = smpo if smpo else SMPO()
@@ -2227,7 +2227,7 @@ class FilterOperator(object):
 
     def __call__(self, value):
 
-        check_not_unicode(value)  # Python 3 bytes accepted here
+        ensure_not_unicode(value)  # Python 3 bytes accepted here
 
         # Do we support the given attribute filter?
         if CMQC.MQIA_FIRST <= self.pub_filter.selector <= CMQC.MQIA_LAST:
