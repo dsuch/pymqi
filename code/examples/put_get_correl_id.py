@@ -10,25 +10,25 @@ import pymqi
 logging.basicConfig(level=logging.INFO)
 
 # Queue manager name
-qm_name = "QM01"
+qm_name = 'QM01'
 
 # Listener host and port
-listener = "192.168.1.135(1434)"
+listener = '192.168.1.135(1434)'
 
 # Channel to transfer data through
-channel = "SVRCONN.1"
+channel = 'SVRCONN.1'
 
 # Request Queue
-request_queue_name = "REQUEST.QUEUE.1"
+request_queue_name = 'REQUEST.QUEUE.1'
 
 # ReplyTo Queue
-replyto_queue_name = "REPLYTO.QUEUE.1"
+replyto_queue_name = 'REPLYTO.QUEUE.1'
 
-message_prefix = "Test Data. "
+message_prefix = 'Test Data. '
 
 class Producer(threading.Thread):
-    """ A base class for any producer used in this example.
-    """
+    ''' A base class for any producer used in this example.
+    '''
     def __init__(self):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -47,9 +47,9 @@ class Producer(threading.Thread):
 
 
 class RequestProducer(Producer):
-    """ Instances of this class produce an infinite stream of request messages
+    ''' Instances of this class produce an infinite stream of request messages
     and wait for appropriate responses on reply-to queues.
-    """
+    '''
 
     def run(self):
 
@@ -58,13 +58,13 @@ class RequestProducer(Producer):
             put_mqmd = pymqi.MD()
 
             # Set the MsgType to request.
-            put_mqmd["MsgType"] = pymqi.CMQC.MQMT_REQUEST
+            put_mqmd['MsgType'] = pymqi.CMQC.MQMT_REQUEST
 
             # Set up the ReplyTo QUeue/Queue Manager (Queue Manager is automatically
             # set by MQ).
 
-            put_mqmd["ReplyToQ"] = replyto_queue_name
-            put_mqmd["ReplyToQMgr"] = qm_name
+            put_mqmd['ReplyToQ'] = replyto_queue_name
+            put_mqmd['ReplyToQMgr'] = qm_name
 
             # Set up the put options - must do with NO_SYNCPOINT so that the request
             # message is committed immediately.
@@ -74,39 +74,38 @@ class RequestProducer(Producer):
             message = message_prefix + uuid.uuid4().hex
 
             self.req_queue.put(message, put_mqmd, put_opts)
-            logging.info("Put request message.  Message: [%s]" % message)
+            logging.info('Put request message.  Message: [%s]' % message)
 
             # Set up message descriptor for get.
             get_mqmd = pymqi.MD()
 
             # Set the get CorrelId to the put MsgId (which was set by MQ on the put1).
-            get_mqmd["CorrelId"] = put_mqmd["MsgId"]
+            get_mqmd['CorrelId'] = put_mqmd['MsgId']
 
             # Set up the get options.
-            get_opts = pymqi.GMO(Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT +
-                                         pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING +
-                                         pymqi.CMQC.MQGMO_WAIT)
+            get_opts = pymqi.GMO(
+                Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING + pymqi.CMQC.MQGMO_WAIT)
 
             # Version must be set to 2 to correlate.
-            get_opts["Version"] = pymqi.CMQC.MQGMO_VERSION_2
+            get_opts['Version'] = pymqi.CMQC.MQGMO_VERSION_2
 
             # Tell MQ that we are matching on CorrelId.
-            get_opts["MatchOptions"] = pymqi.CMQC.MQMO_MATCH_CORREL_ID
+            get_opts['MatchOptions'] = pymqi.CMQC.MQMO_MATCH_CORREL_ID
 
             # Set the wait timeout of half a second.
-            get_opts["WaitInterval"] = 500
+            get_opts['WaitInterval'] = 500
 
             # Open the replyto queue and get response message,
             replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED)
             response_message = replyto_queue.get(None, get_mqmd, get_opts)
 
-            logging.info("Got response message [%s]" % response_message)
+            logging.info('Got response message `%s`' % response_message)
 
             time.sleep(1)
 
 class ResponseProducer(Producer):
-    """ Instances of this class wait for request messages and produce responses.
-    """
+    ''' Instances of this class wait for request messages and produce responses.
+    '''
 
     def run(self):
 
@@ -133,7 +132,7 @@ class ResponseProducer(Producer):
                 response_md = pymqi.MD()
                 response_md.CorrelId = request_md.MsgId
 
-                response_message = "Response to message %s" % request_message
+                response_message = 'Response to message %s' % request_message
                 self.replyto_queue.put(response_message, response_md)
 
                 # Reset the MsgId, CorrelId & GroupId so that we can reuse

@@ -3,11 +3,11 @@
 
 import pymqi
 
-queue_manager = "QM01"
-channel = "SVRCONN.1"
-host = "192.168.1.135"
-port = "1434"
-conn_info = "%s(%s)" % (host, port)
+queue_manager = 'QM01'
+channel = 'SVRCONN.1'
+host = '192.168.1.135'
+port = '1434'
+conn_info = '%s(%s)' % (host, port)
 
 user = 'myuser'
 password = 'mypassword'

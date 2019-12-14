@@ -3,13 +3,13 @@
 
 import pymqi
 
-queue_manager = "QM01"
-channel = "SVRCONN.1"
-host = "192.168.1.135"
-port = "1434"
-conn_info = "%s(%s)" % (host, port)
+queue_manager = 'QM01'
+channel = 'SVRCONN.1'
+host = '192.168.1.135'
+port = '1434'
+conn_info = '%s(%s)' % (host, port)
 
-queue_name = "MYQUEUE.1"
+queue_name = 'MYQUEUE.1'
 queue_type = pymqi.CMQC.MQQT_LOCAL
 max_depth = 123456
 

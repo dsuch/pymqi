@@ -5,14 +5,14 @@ import logging
 
 import pymqi
 
-queue_manager = "QM01"
-channel = "SVRCONN.1"
-host = "foo.bar" # Note the made up host name
-port = "1434"
-conn_info = "%s(%s)" % (host, port)
+queue_manager = 'QM01'
+channel = 'SVRCONN.1'
+host = 'localhost.invalid' # Note the invalid hostname here
+port = '1434'
+conn_info = '%s(%s)' % (host, port)
 
 try:
     qmgr = pymqi.connect(queue_manager, channel, conn_info)
 except pymqi.MQMIError as e:
     if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_HOST_NOT_AVAILABLE:
-        logging.error("Such a host [%s] does not exist." % host)
+        logging.error('Such a host `%s` does not exist.' % host)

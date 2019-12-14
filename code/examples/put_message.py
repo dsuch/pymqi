@@ -4,12 +4,12 @@
 import pymqi
 
 queue_manager = "QM01"
-channel = "SVRCONN.1"
-host = "192.168.1.135"
-port = "1434"
-queue_name = "TEST.1"
-message = "Hello from Python!"
-conn_info = "%s(%s)" % (host, port)
+channel = 'SVRCONN.1'
+host = '192.168.1.135'
+port = '1434'
+queue_name = 'TEST.1'
+message = 'Hello from Python!'
+conn_info = '%s(%s)' % (host, port)
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 

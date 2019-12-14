@@ -249,7 +249,7 @@ Code::
 
         except pymqi.MQMIError as e:
             if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
-                # No messages, that's OK, we can ignore it.
+                # No messages, that is OK, we can ignore it.
                 pass
             else:
                 # Some other error condition.
@@ -499,7 +499,7 @@ Code::
     put_queue.put(message)
 
     get_queue = pymqi.Queue(qmgr, queue_name)
-    logging.info('Here's the message again: [%s]' % get_queue.get())
+    logging.info('Here is the message again: [%s]' % get_queue.get())
 
     put_queue.close()
     get_queue.close()
@@ -585,7 +585,7 @@ Code::
     get_queue = pymqi.Queue(qmgr, queue_name)
     message_body = get_queue.get(None, get_md)
 
-    logging.info('Received a message, priority [%s].' % get_md.Priority)
+    logging.info('Received a message, priority `%s`.' % get_md.Priority)
 
     put_queue.close()
     get_queue.close()
@@ -644,7 +644,7 @@ Code::
 
     queue_manager = 'QM1'
     channel = 'DEV.APP.SVRCONN'
-    host = 'foo.bar' # Note the made up host name
+    host = 'localhost.invalid' # Note the invalid hostname here
     port = '1414'
     conn_info = '%s(%s)' % (host, port)
 
@@ -652,7 +652,7 @@ Code::
         qmgr = pymqi.connect(queue_manager, channel, conn_info)
     except pymqi.MQMIError as e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_HOST_NOT_AVAILABLE:
-            logging.error('Such a host [%s] does not exist.' % host)
+            logging.error('Such a host `%s` does not exist.' % host)
 
 Notes:
 
@@ -683,7 +683,7 @@ Code::
     else:
         for header in mi:
             version = header['version']
-            msg = 'Found package [%s], version [%s].' % (package_name, version)
+            msg = 'Found package `%s`, version `%s`.' % (package_name, version)
             logging.info(msg)
 
 Notes:
@@ -713,7 +713,7 @@ Code::
         logging.info('Could not find IBM MQ-related information in Windows registry.')
     else:
         version = _winreg.QueryValueEx(key, 'VRMF')[0]
-        logging.info('IBM MQ version is [%s].' % version)
+        logging.info('IBM MQ version is `%s`.' % version)
 
 
 * Versions of IBM MQ packages installed under Windows can be extracted
@@ -1124,13 +1124,13 @@ Code::
         response = pcf.MQCMD_INQUIRE_CHANNEL(args)
     except pymqi.MQMIError as e:
         if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_UNKNOWN_OBJECT_NAME:
-            logging.info('No channels matched prefix [%s]' % prefix)
+            logging.info('No channels matched prefix `%s`' % prefix)
         else:
             raise
     else:
         for channel_info in response:
             channel_name = channel_info[CMQCFC.MQCACH_CHANNEL_NAME]
-            logging.info('Found channel [%s]' % channel_name)
+            logging.info('Found channel `%s`' % channel_name)
 
     qmgr.disconnect()
 
@@ -1181,7 +1181,7 @@ Code::
     else:
         for queue_info in response:
             queue_name = queue_info[pymqi.CMQC.MQCA_Q_NAME]
-            logging.info('Found queue [%s]' % queue_name)
+            logging.info('Found queue `%s`' % queue_name)
 
     qmgr.disconnect()
 

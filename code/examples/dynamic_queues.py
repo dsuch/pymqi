@@ -3,20 +3,20 @@
 
 import pymqi
 
-queue_manager = "QM01"
-channel = "SVRCONN.1"
-host = "192.168.1.135"
-port = "1434"
-conn_info = "%s(%s)" % (host, port)
-message = "Please reply to a dynamic queue, thanks."
-dynamic_queue_prefix = "MY.REPLIES.*"
-request_queue = "TEST.1"
+queue_manager = 'QM01'
+channel = 'SVRCONN.1'
+host = '192.168.1.135'
+port = '1434'
+conn_info = '%s(%s)' % (host, port)
+message = 'Please reply to a dynamic queue, thanks.'
+dynamic_queue_prefix = 'MY.REPLIES.*'
+request_queue = 'TEST.1'
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
 # Dynamic queue's object descriptor.
 dyn_od = pymqi.OD()
-dyn_od.ObjectName = "SYSTEM.DEFAULT.MODEL.QUEUE"
+dyn_od.ObjectName = 'SYSTEM.DEFAULT.MODEL.QUEUE'
 dyn_od.DynamicQName = dynamic_queue_prefix
 
 # Open the dynamic queue.

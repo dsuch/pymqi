@@ -3,12 +3,12 @@
 
 import pymqi
 
-queue_manager = "QM01"
-channel = "SVRCONN.1"
-host = "192.168.1.135"
-port = "1434"
-queue_name = "TEST.1"
-conn_info = "%s(%s)" % (host, port)
+queue_manager = 'QM01'
+channel = 'SVRCONN.1'
+host = '192.168.1.135'
+port = '1434'
+queue_name = 'TEST.1'
+conn_info = '%s(%s)' % (host, port)
 
 # Message Descriptor
 md = pymqi.MD()

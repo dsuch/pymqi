@@ -7,14 +7,14 @@ import pymqi
 
 logging.basicConfig(level=logging.INFO)
 
-queue_manager = "QM01"
-channel = "SVRCONN.1"
-host = "192.168.1.135"
-port = "1434"
-conn_info = "%s(%s)" % (host, port)
+queue_manager = 'QM01'
+channel = 'SVRCONN.1'
+host = '192.168.1.135'
+port = '1434'
+conn_info = '%s(%s)' % (host, port)
 
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 
-logging.info("qmgr.is_connected=[%s]" % qmgr.is_connected)
+logging.info('qmgr.is_connected=`%s`' % qmgr.is_connected)
 
 qmgr.disconnect()

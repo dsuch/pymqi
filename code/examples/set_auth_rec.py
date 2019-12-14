@@ -16,13 +16,13 @@ conn_info = '%s(%s)' % (host, port)
 qmgr = pymqi.connect(queue_manager, channel, conn_info)
 pcf = pymqi.PCFExecute(qmgr)
 
-groupEntity ={128L: ['swww02']}
-authEntity = {128L: [pymqi.CMQCFC.MQAUTH_BROWSE]}
+group_entity ={128L: ['swww02']}
+auth_entity = {128L: [pymqi.CMQCFC.MQAUTH_BROWSE]}
 
 args = {pymqi.CMQCFC.MQCACF_AUTH_PROFILE_NAME: 'Q1',
         pymqi.CMQCFC.MQIACF_OBJECT_TYPE: pymqi.CMQC.MQOT_Q,
-        pymqi.CMQCFC.MQIACF_AUTH_ADD_AUTHS: authEntity,
-        pymqi.CMQCFC.MQCACF_GROUP_ENTITY_NAMES: groupEntity}
+        pymqi.CMQCFC.MQIACF_AUTH_ADD_AUTHS: auth_entity,
+        pymqi.CMQCFC.MQCACF_GROUP_ENTITY_NAMES: group_entity}
 
 
 result = pcf.MQCMD_SET_AUTH_REC(args)
