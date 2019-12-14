@@ -13,7 +13,7 @@ host = '127.0.0.1'
 port = '1414'
 conn_info = '%s(%s)' % (host, port)
 user = 'app'
-password = 'abcd1234'
+password = 'password'
 
 prefix = 'SYSTEM.*'
 queue_type = pymqi.CMQC.MQQT_MODEL
