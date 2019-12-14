@@ -13,15 +13,17 @@ host = '127.0.0.1'
 port = '1414'
 queue_name = 'TEST.1'
 message = 'Hello from Python!'
-property_name = 'Propertie_1'
+property_name = 'Property_1'
 conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info)
+qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 
 put_msg_h = pymqi.MessageHandle(qmgr)
 put_msg_h.properties.set(property_name, message) # Default type is CMQC.MQTYPE_STRING
 
-pmo = pymqi.PMO(Version=pymqi.CMQC.MQPMO_VERSION_3) # PMO v3 is required propeties
+pmo = pymqi.PMO(Version=pymqi.CMQC.MQPMO_VERSION_3) # PMO v3 is required properties
 pmo.OriginalMsgHandle = put_msg_h.msg_handle
 
 put_md = pymqi.MD(Version=pymqi.CMQC.MQMD_CURRENT_VERSION)

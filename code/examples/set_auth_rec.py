@@ -12,8 +12,10 @@ channel = 'CHANNEL.1'
 host = '127.0.0.1'
 port = '1414'
 conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info)
+qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 pcf = pymqi.PCFExecute(qmgr)
 
 group_entity ={128L: ['swww02']}

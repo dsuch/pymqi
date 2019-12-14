@@ -10,8 +10,10 @@ port = '1414'
 queue_name = 'TEST.1'
 message = 'Here is the reply'
 conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info)
+qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 
 md = pymqi.MD()
 

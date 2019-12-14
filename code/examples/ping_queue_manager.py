@@ -8,8 +8,10 @@ channel = 'DEV.APP.SVRCONN'
 host = '127.0.0.1'
 port = '1414'
 conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info)
+qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 
 pcf = pymqi.PCFExecute(qmgr)
 pcf.MQCMD_PING_Q_MGR()

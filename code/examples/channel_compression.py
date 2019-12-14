@@ -10,11 +10,13 @@ port = '1414'
 queue_name = 'TEST.1'
 message = 'Hello from Python!' * 10000
 conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 
 cd = pymqi.CD()
 cd.MsgCompList[1] = pymqi.CMQXC.MQCOMPRESS_ZLIBHIGH
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info)
+qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 
 queue = pymqi.Queue(qmgr, queue_name)
 queue.put(message)

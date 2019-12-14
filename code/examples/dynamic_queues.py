@@ -8,11 +8,13 @@ channel = 'DEV.APP.SVRCONN'
 host = '127.0.0.1'
 port = '1414'
 conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 message = 'Please reply to a dynamic queue, thanks.'
 dynamic_queue_prefix = 'MY.REPLIES.*'
 request_queue = 'TEST.1'
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info)
+qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 
 # Dynamic queue's object descriptor.
 dyn_od = pymqi.OD()

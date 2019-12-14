@@ -27,8 +27,8 @@ replyto_queue_name = 'REPLYTO.QUEUE.1'
 message_prefix = 'Test Data. '
 
 class Producer(threading.Thread):
-    ''' A base class for any producer used in this example.
-    '''
+    """ A base class for any producer used in this example.
+    """
     def __init__(self):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -47,9 +47,9 @@ class Producer(threading.Thread):
 
 
 class RequestProducer(Producer):
-    ''' Instances of this class produce an infinite stream of request messages
+    """ Instances of this class produce an infinite stream of request messages
     and wait for appropriate responses on reply-to queues.
-    '''
+    """
 
     def run(self):
 
@@ -104,8 +104,8 @@ class RequestProducer(Producer):
             time.sleep(1)
 
 class ResponseProducer(Producer):
-    ''' Instances of this class wait for request messages and produce responses.
-    '''
+    """ Instances of this class wait for request messages and produce responses.
+    """
 
     def run(self):
 

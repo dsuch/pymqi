@@ -10,6 +10,8 @@ port = '1414'
 queue_name = 'TEST.1'
 message = 'Hello from Python!'
 conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 
 cd = pymqi.CD()
 

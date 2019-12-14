@@ -13,13 +13,15 @@ host = '127.0.0.1'
 port = '1414'
 queue_name = 'TEST.1'
 message = 'Hello from Python!'
-conn_info = '%s(%s)' % (host, port)
 priority = 2
+conn_info = '%s(%s)' % (host, port)
+user = 'app'
+password = 'password'
 
 put_md = pymqi.MD()
 put_md.Priority = priority
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info)
+qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 
 put_queue = pymqi.Queue(qmgr, queue_name)
 put_queue.put(message, put_md)
