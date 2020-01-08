@@ -140,7 +140,10 @@ class TestMP(unittest.TestCase):
 
         return messageHandle_get
 
-    def get_property_value(self, messageHandle_get, property_type, value_length = None, property_modify = False):
+    def get_property_value(self, messageHandle_get,
+                           property_type=pymqi.CMQC.MQTYPE_AS_SET,
+                           value_length=None,
+                           property_modify=False):
         if not value_length:
             value_length = self.get_value_length(property_type)
         if property_modify:
@@ -148,7 +151,9 @@ class TestMP(unittest.TestCase):
         else:
             property_name = self.msg_prop_name
 
-        return messageHandle_get.properties.get(property_name, property_type = property_type, max_value_length = value_length)
+        return messageHandle_get.properties.get(property_name,
+                                                property_type=property_type,
+                                                max_value_length=value_length)
 
 
 
@@ -183,57 +188,57 @@ class TestMP(unittest.TestCase):
 
     def test_message_properties_bool(self):
         messageHandle_get = self.work_with_property(self.msg_prop_value_bool, pymqi.CMQC.MQTYPE_BOOLEAN)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_BOOLEAN)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(self.msg_prop_value_bool, value)
 
     def test_message_properties_int8(self):
         messageHandle_get = self.work_with_property(self.msg_prop_value_int8, pymqi.CMQC.MQTYPE_INT8)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_INT8)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(self.msg_prop_value_int8, value)
 
     def test_message_properties_int16(self):
         messageHandle_get = self.work_with_property(self.msg_prop_value_int16, pymqi.CMQC.MQTYPE_INT16)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_INT16)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(self.msg_prop_value_int16, value)
 
     def test_message_properties_int32(self):
         messageHandle_get = self.work_with_property(self.msg_prop_value_int32, pymqi.CMQC.MQTYPE_INT32)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_INT32)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(self.msg_prop_value_int32, value)
 
 
     def test_message_properties_int64(self):
         messageHandle_get = self.work_with_property(self.msg_prop_value_int64, pymqi.CMQC.MQTYPE_INT64)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_INT64)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(self.msg_prop_value_int64, value)
 
     def test_message_properties_float32(self):
         messageHandle_get = self.work_with_property(self.msg_prop_value_float32, pymqi.CMQC.MQTYPE_FLOAT32)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_FLOAT32)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(self.msg_prop_value_float32, value)
 
     def test_message_properties_float64(self):
         messageHandle_get = self.work_with_property(self.msg_prop_value_float64, pymqi.CMQC.MQTYPE_FLOAT64)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_FLOAT64)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(self.msg_prop_value_float64, value)
 
     def test_message_properties_null(self):
         messageHandle_get = self.work_with_property(None, pymqi.CMQC.MQTYPE_NULL)
-        value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_NULL)
+        value = self.get_property_value(messageHandle_get)
 
         self.assertEqual(None, value)
 
     def test_message_properties_nonexist(self):
         messageHandle_get = self.work_with_property(None, pymqi.CMQC.MQTYPE_NULL)
         try:
-            value = self.get_property_value(messageHandle_get, pymqi.CMQC.MQTYPE_NULL, property_modify = True)
+            value = self.get_property_value(messageHandle_get, property_modify=True)
 
         except pymqi.MQMIError as e:
             self.assertEqual(e.reason, pymqi.CMQC.MQRC_PROPERTY_NOT_AVAILABLE, e)

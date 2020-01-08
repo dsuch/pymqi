@@ -1305,7 +1305,10 @@ static PyObject* pymqe_MQINQMP(PyObject *self, PyObject *args) {
       break;
 
     default:
-      rv = NULL;
+      rv = Py_BuildValue("(slll)",
+            NULL,
+            (long)data_length,
+            (long)comp_code, (long)comp_reason);
       break;
   }
 
