@@ -1662,6 +1662,7 @@ class Queue:
         If m_desc and/or get_opts arguments were supplied, they may be
         updated by the get operation.
         """
+
         m_desc, get_opts = common_q_args(*opts)
         if get_opts is None:
             get_opts = gmo()
@@ -1671,9 +1672,11 @@ class Queue:
             self.__openOpts = CMQC.MQOO_INPUT_AS_Q_DEF
             self.__realOpen()
 
-        # Truncated message fix thanks to Maas-Maarten Zeeman
         if maxLength is None:
-            length = 4096
+            if get_opts.Options & CMQC.MQGMO_ACCEPT_TRUNCATED_MSG:
+                length = 0
+            else:
+                length = 4096 # Try to read short message in one call
         else:
             length = maxLength
 
@@ -1685,26 +1688,19 @@ class Queue:
             get_opts.unpack(rv[2])
             return rv[0]
 
-        # Some error. If caller supplied buffer, maybe it wasn't big
-        # enough, so just return the error/warning.
-        # CAVEAT: If message truncated, this exception loses the
-        # partially filled buffer.
-        if maxLength is not None and maxLength >= 0:
-            raise MQMIError(rv[-2], rv[-1])
-
-        # Default buffer used, if not truncated, give up
-        if rv[-1] != CMQC.MQRC_TRUNCATED_MSG_FAILED:
-            raise MQMIError(rv[-2], rv[-1])
+        # Accept truncated message
+        if ((rv[-1] == CMQC.MQRC_TRUNCATED_MSG_ACCEPTED) or
+            # Do not reread message with original length
+            (rv[-1] == CMQC.MQRC_TRUNCATED_MSG_FAILED and maxLength is not None) or
+            # Other errors
+            (rv[-1] != CMQC.MQRC_TRUNCATED_MSG_FAILED)):
+            raise MQMIError(rv[-2], rv[-1], message=rv[0], original_length=rv[-3])
 
         # Message truncated, but we know its size. Do another MQGET
         # to retrieve it from the queue.
-        m_desc.unpack(rv[1])  # save the message id
-        length = rv[-3]
-        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), get_opts.pack(), length)
+        rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), get_opts.pack(), rv[-3])
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
-        m_desc.unpack(rv[1])
-        get_opts.unpack(rv[2])
 
         return rv[0]
 
