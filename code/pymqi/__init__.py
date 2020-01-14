@@ -105,6 +105,23 @@ except ImportError:
     from xml.dom.minidom import parseString
     use_minidom = True
 
+# Python 3.8+ DLL loading
+try:
+    from os import add_dll_directory
+    from os import environ
+    from os.path import join
+    from os.path import exists
+
+    mq_home_path = environ.get('MQ_FILE_PATH')
+
+    if mq_home_path:
+        for dir in ['bin', 'bin64']:
+            mq_dll_directory = join(mq_home_path, dir)
+            if exists(mq_dll_directory):
+                add_dll_directory(mq_dll_directory)
+except:
+    pass
+
 # PyMQI
 try:
     from . import pymqe
