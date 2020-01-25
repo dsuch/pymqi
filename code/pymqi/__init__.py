@@ -1426,7 +1426,7 @@ class QueueManager(object):
         updated by the put1 operation.
         """
 
-        ensure_not_unicode(msg)  # Python 3 bytes check
+        msg = ensure_bytes(msg, self.bytes_encoding)
 
         m_desc, put_opts = common_q_args(*opts)
         if put_opts is None:
@@ -1598,9 +1598,23 @@ class Queue:
         If m_desc and/or put_opts arguments were supplied, they may be
         updated by the put operation.
         """
-        ensure_not_unicode(msg)  # Python 3 bytes check
+        import sys
 
         m_desc, put_opts = common_q_args(*opts)
+
+        if not isinstance(msg, bytes):
+            if (
+                (sys.version_info >= (3,) and isinstance(msg, str))  # Python 3 string is unicode
+                or
+                (sys.version_info < (3,) and isinstance(msg, unicode)) # Python 2.7 string can be unicode
+              ):  
+                msg = msg.encode('utf-8')
+                m_desc.CodedCharSetId = 1208
+                m_desc.Format = CMQC.MQFMT_STRING
+            else: 
+                error_message = 'Message type is {0}. Convert to bytes.'
+                raise TypeError(error_message.format(type(msg))) 
+
         if put_opts is None:
             put_opts = pmo()
         # If queue open was deferred, open it for put now
