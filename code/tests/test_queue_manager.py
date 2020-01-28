@@ -76,6 +76,16 @@ class TestQueueManager(unittest.TestCase):
         self.assertTrue(qmgr.is_connected)
         qmgr.disconnect()
 
+    def test_connect_tcp_client_conection_list(self):
+        qmgr = pymqi.QueueManager(None)
+        self.conn_info = '127.0.0.1(22),{0}'.format(self.conn_info)
+        #self.conn_info = '127.0.0.1(1314)'
+        qmgr.connect_tcp_client(
+            self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
+            password=self.password)
+        self.assertTrue(qmgr.is_connected)
+        qmgr.disconnect()        
+
     # This test overlaps with
     # test_mq80.test_successful_connect_without_optional_credentials,
     # but hey, why not
