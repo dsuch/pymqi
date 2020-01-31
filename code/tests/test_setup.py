@@ -42,13 +42,14 @@ class Tests(TestCase):
 
         cls.conn_info = '{0}({1})'.format(cls.host, cls.port)
 
-        cls.qmgr = pymqi.QueueManager(None)
-        try:
+        if pymqi.__mqbuild__ == 'server':
+            cls.qmgr = pymqi.QueueManager(cls.queue_manager)
+        else:
+            cls.qmgr = pymqi.QueueManager(None)
             cls.qmgr.connectTCPClient(cls.queue_manager, pymqi.CD(), cls.channel,
                                       cls.conn_info, cls.user, cls.password)
-        except pymqi.MQMIError as ex:
-            if ex.comp == pymqi.CMQC.MQCC_FAILED:
-                raise ex
+
+        cls.pcf = pymqi.PCFExecute(cls.qmgr, response_wait_interval=5000)
 
         cls.version = cls.inquire_qmgr_version().decode()
 
@@ -81,18 +82,16 @@ class Tests(TestCase):
             attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACF_REPLACE,
                                     Value=pymqi.CMQCFC.MQRP_YES))
 
-        pcf = pymqi.PCFExecute(self.qmgr)
-        pcf.MQCMD_CREATE_Q(attrs)
+        self.pcf.MQCMD_CREATE_Q(attrs)
 
     def delete_queue(self, queue_name):
         """Delete queue."""
-        pcf = pymqi.PCFExecute(self.qmgr)
         attrs = []
         attrs.append(pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_NAME,
                                 String=utils.py3str2bytes(queue_name)))
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACF_PURGE,
                                 Value=pymqi.CMQCFC.MQPO_YES))
-        pcf.MQCMD_DELETE_Q(attrs)
+        self.pcf.MQCMD_DELETE_Q(attrs)
 
     def create_channel(self, channel_name, attrs=None):
         """Create channle."""
@@ -104,29 +103,24 @@ class Tests(TestCase):
                                     Value=pymqi.CMQC.MQCHT_SVRCONN))
             attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACF_REPLACE,
                                     Value=pymqi.CMQCFC.MQRP_YES))
-        pcf = pymqi.PCFExecute(self.qmgr)
-        pcf.MQCMD_CREATE_CHANNEL(attrs)
+        self.pcf.MQCMD_CREATE_CHANNEL(attrs)
 
     def delete_channel(self, channel_name):
         """Delete channel."""
-        pcf = pymqi.PCFExecute(self.qmgr)
         attrs = []
         attrs.append(pymqi.CFST(Parameter=pymqi.CMQCFC.MQCACH_CHANNEL_NAME,
                                 String=utils.py3str2bytes(channel_name)))
-        pcf.MQCMD_DELETE_CHANNEL(attrs)
+        self.pcf.MQCMD_DELETE_CHANNEL(attrs)
 
     def create_auth_rec(self, attrs):
         """Create authentication recoed."""
-        pcf = pymqi.PCFExecute(self.qmgr)
-        pcf.MQCMD_SET_CHLAUTH_REC(attrs)
+        self.pcf.MQCMD_SET_CHLAUTH_REC(attrs)
 
     def delete_auth_rec(self, attrs):
         """Delete authentication recoed."""
-        pcf = pymqi.PCFExecute(self.qmgr)
-        pcf.MQCMD_SET_CHLAUTH_REC(attrs)
+        self.pcf.MQCMD_SET_CHLAUTH_REC(attrs)
 
     @classmethod
     def edit_qmgr(cls, attrs):
         """Edit connected Queue Manager."""
-        pcf = pymqi.PCFExecute(cls.qmgr)
-        pcf.MQCMD_CHANGE_Q_MGR(attrs)
+        cls.pcf.MQCMD_CHANGE_Q_MGR(attrs)

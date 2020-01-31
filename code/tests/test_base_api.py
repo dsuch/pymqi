@@ -323,5 +323,21 @@ class TestGet(Tests):
         self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
         self.assertEqual(md.Format, pymqi.CMQC.MQFMT_NONE)
 
+    def test_put1(self):
+        input_msg = b'Hello world!'
+        self.qmgr.put1(self.queue_name, input_msg)
+        # now get the message from the queue
+        queue = pymqi.Queue(self.qmgr, self.queue_name)
+        result_msg = queue.get()
+        self.assertEqual(input_msg, result_msg)
+
+    def test_inquire(self):
+        attribute = pymqi.CMQC.MQCA_Q_MGR_NAME
+        expected_value = utils.py3str2bytes(self.queue_manager)
+        attribute_value = self.qmgr.inquire(attribute)
+        self.assertEqual(len(attribute_value), pymqi.CMQC.MQ_Q_MGR_NAME_LENGTH)
+        self.assertEqual(attribute_value.strip(), expected_value)
+
+
 if __name__ == "__main__":
     unittest.main()

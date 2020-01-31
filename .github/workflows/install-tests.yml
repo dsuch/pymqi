@@ -1,0 +1,44 @@
+name: install-tests
+on: 
+  push:
+    branches:
+      - master
+      - gh159-actions-unit-testing
+  pull_request:
+
+jobs:
+  pymqi_test_job:
+    strategy:
+      matrix:
+        environment: ['macos-latest', 'windows-latest', 'ubuntu-latest']
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8]
+        mq-client-version: [9.1.4.0]
+        exclude:
+          - environment: windows-latest
+            python-version: 2.7
+          - environment: windows-latest
+            python-version: 3.5        
+    runs-on: ${{ matrix.environment}}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Cache MQ Client
+        uses: actions/cache@v1
+        with:
+          path: ${{ github.workspace }}/setup-mqclient
+          key: mqclient-${{ runner.os }}-${{ matrix.mq-client-version }}
+
+      - name: Install MQ Client
+        uses: SeyfSV/setup-mqclient@v0.1.1
+        with:
+          mq-client-version: ${{ matrix.mq-client-version }}
+
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install pymqi
+        run: |
+          python setup.py install --verbose

@@ -23,7 +23,6 @@ class TestPCF(Tests):
 
         # max length of queue names is 48 characters
         cls.queue_name = "{prefix}PCF.QUEUE".format(prefix=cls.prefix)
-        cls.pcf = pymqi.PCFExecute(cls.qmgr, response_wait_interval=600)
 
     @classmethod
     def tearDownClass(cls):
@@ -274,6 +273,7 @@ class TestPCF(Tests):
         self.assertEqual(item[pymqi.CMQC.MQCA_Q_NAME].strip(), b'SYSTEM.ADMIN.COMMAND.QUEUE')
         self.assertEqual(item[pymqi.CMQCFC.MQIAMO_PUTS], [14, 0])
 
+    @skip('Python pre 3.7 issues')
     def test_mqcfbs_old(self):
         """Test byte string MQCFBS with old style."""
         attrs = {

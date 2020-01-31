@@ -3,7 +3,6 @@
 import unittest
 
 import config
-import env
 import utils
 
 import pymqi
@@ -56,13 +55,13 @@ class TestMP(unittest.TestCase):
                 pymqi.CMQC.MQIA_Q_TYPE: queue_type,
                 pymqi.CMQC.MQIA_MAX_Q_DEPTH: max_depth,
                 pymqi.CMQCFC.MQIACF_REPLACE: pymqi.CMQCFC.MQRP_YES}
-        pcf = pymqi.PCFExecute(self.qmgr)
+        pcf = pymqi.PCFExecute(self.qmgr, response_wait_interval=120000)
         pcf.MQCMD_CREATE_Q(args)
         pcf.disconnect
 
     def delete_queue(self, queue_name):
 
-        pcf = pymqi.PCFExecute(self.qmgr)
+        pcf = pymqi.PCFExecute(self.qmgr, response_wait_interval=120000)
         args = {pymqi.CMQC.MQCA_Q_NAME: utils.py3str2bytes(queue_name),
                 pymqi.CMQCFC.MQIACF_PURGE: pymqi.CMQCFC.MQPO_YES}
         pcf.MQCMD_DELETE_Q(args)

@@ -147,11 +147,14 @@ class TestTLS(Tests):
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACF_ACTION,
                                 Value=pymqi.CMQCFC.MQACT_REPLACE))
         attrs.append(pymqi.CFST(Parameter=pymqi.CMQCFC.MQCACH_CLIENT_USER_ID,
-                                String=self.user))
+                                String=utils.py3str2bytes(self.user)))
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQC.MQIA_CHECK_CLIENT_BINDING,
                                 Value=pymqi.CMQCFC.MQCHK_REQUIRED_ADMIN))
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACH_USER_SOURCE,
-                                Value=pymqi.CMQC.MQUSRC_CHANNEL))
+                                Value=pymqi.CMQC.MQUSRC_MAP))
+        attrs.append(pymqi.CFST(Parameter=pymqi.CMQCFC.MQCACH_MCA_USER_ID,
+                                String=b'mqm'))
+
         self.create_auth_rec(attrs)
 
         attrs = []
@@ -160,7 +163,7 @@ class TestTLS(Tests):
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACF_CHLAUTH_TYPE,
                                 Value=pymqi.CMQCFC.MQCAUT_BLOCKUSER))
         attrs.append(pymqi.CFST(Parameter=pymqi.CMQCFC.MQCACH_MCA_USER_ID_LIST,
-                                String='nobody'))
+                                String=b'nobody'))
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACH_WARNING,
                                 Value=pymqi.CMQC.MQWARN_NO))
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACF_ACTION,
@@ -224,4 +227,4 @@ class TestTLS(Tests):
         self.assertTrue(is_connected)
 
 if __name__ == '__main__':
-    main(module='test_pcf')
+    main(module='test_tls')
