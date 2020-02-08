@@ -14,16 +14,13 @@ user = 'app'
 password = 'password'
 
 qmgr = pymqi.QueueManager(None)
-qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
-
-try:
-    qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
-except pymqi.MQMIError as e:
-    if e.comp == pymqi.CMQC.MQCC_WARNING and e.reason == pymqi.CMQC.MQRC_ALREADY_CONNECTED:
-        pass
-
-queue = pymqi.Queue(qmgr, queue_name)
-queue.put(message)
-queue.close()
-
-qmgr.disconnect()
+with qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info):
+    try:
+        qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info)
+    except pymqi.MQMIError as e:
+        if e.comp == pymqi.CMQC.MQCC_WARNING and e.reason == pymqi.CMQC.MQRC_ALREADY_CONNECTED:
+            pass
+    
+    queue = pymqi.Queue(qmgr, queue_name)
+    queue.put(message)
+    queue.close()

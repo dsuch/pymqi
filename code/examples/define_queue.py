@@ -21,9 +21,6 @@ args = {
     pymqi.CMQC.MQIA_MAX_Q_DEPTH: max_depth
 }
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
-
-pcf = pymqi.PCFExecute(qmgr)
-pcf.MQCMD_CREATE_Q(args)
-
-qmgr.disconnect()
+with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
+    pcf = pymqi.PCFExecute(qmgr)
+    pcf.MQCMD_CREATE_Q(args)

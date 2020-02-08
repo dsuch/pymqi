@@ -12,10 +12,8 @@ conn_info = '%s(%s)' % (host, port)
 user = 'app'
 password = 'password'
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
+with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
+    queue = pymqi.Queue(qmgr, queue_name)
+    message = queue.get()
+    queue.close()
 
-queue = pymqi.Queue(qmgr, queue_name)
-message = queue.get()
-queue.close()
-
-qmgr.disconnect()

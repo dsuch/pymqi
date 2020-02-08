@@ -14,7 +14,8 @@ user = 'app'
 password = 'password'
 
 try:
-    qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
+    with pymqi.connect(queue_manager, channel, conn_info, user, password):
+        pass
 except pymqi.MQMIError as e:
     if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_HOST_NOT_AVAILABLE:
         logging.error('Such a host `%s` does not exist.' % host)

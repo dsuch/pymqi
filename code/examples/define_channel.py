@@ -19,9 +19,6 @@ args = {
     pymqi.CMQCFC.MQIACH_CHANNEL_TYPE: channel_type
 }
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
-
-pcf = pymqi.PCFExecute(qmgr)
-pcf.MQCMD_CREATE_CHANNEL(args)
-
-qmgr.disconnect()
+with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
+    pcf = pymqi.PCFExecute(qmgr)
+    pcf.MQCMD_CREATE_CHANNEL(args)

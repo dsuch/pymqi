@@ -4,6 +4,5 @@
 import pymqi
 
 queue_manager = 'QM1'
-qmgr = pymqi.connect(queue_manager)
-
-qmgr.disconnect()
+with pymqi.connect(queue_manager) as qmgr:
+    pass

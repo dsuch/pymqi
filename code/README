@@ -23,13 +23,10 @@ on a queue and disconnects.
     message = 'Hello from Python!'
     conn_info = '%s(%s)' % (host, port)
 
-    qmgr = pymqi.connect(queue_manager, channel, conn_info)
-
-    queue = pymqi.Queue(qmgr, queue_name)
-    queue.put(message)
-    queue.close()
-
-    qmgr.disconnect()
+    with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
+	    queue = pymqi.Queue(qmgr, queue_name)
+	    queue.put(message)
+	    queue.close()
 ```
 
 Usage examples

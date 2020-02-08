@@ -20,10 +20,7 @@ gmo = pymqi.GMO()
 gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
 gmo.WaitInterval = 5000 # 5 seconds
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
-
-queue = pymqi.Queue(qmgr, queue_name)
-message = queue.get(None, md, gmo)
-queue.close()
-
-qmgr.disconnect()
+with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
+    queue = pymqi.Queue(qmgr, queue_name)
+    message = queue.get(None, md, gmo)
+    queue.close()

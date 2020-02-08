@@ -1524,16 +1524,49 @@ class QueueManager(object):
         if name is not None:
             self.connect(name)
 
+    def __enter__(self):
+        if self.__handle:
+            return self
+        else:
+            return self.connect(self.__name)
+    
+
+    def _close_qmhandle(self):
+        if self.__handle and self.__qmobj:
+            try:
+                pymqe.MQCLOSE(self.__handle, self.__qmobj, CMQC.MQCO_NONE)
+            finally:
+                self.__qmobj = None
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.__handle:
+            qmclose_ex = None
+            try:
+                self._close_qmhandle()
+            except Exception as ex:
+                qmclose_ex = ex
+            
+            try:
+                self.disconnect()
+            except Exception as ex:
+                if exc_value:
+                    raise exc_value
+                else:
+                    raise ex
+            
+            if qmclose_ex:
+                raise qmclose_ex
+            
+
     def __del__(self):
         # type: () -> None
         """ Disconnect from the queue Manager, if connected.
         """
         if self.__handle:
-            if self.__qmobj:
-                try:
-                    pymqe.MQCLOSE(self.__handle, self.__qmobj, CMQC.MQCO_NONE)
-                except Exception:
-                    pass
+            try:
+                self._close_qmhandle()
+            except Exception:
+                pass
 
             if self.__disconnect_on_exit:
                 try:
@@ -1552,6 +1585,7 @@ class QueueManager(object):
             raise MQMIError(rv[1], rv[2])
         self.__handle = rv[0]
         self.__name = name
+        return self
 
 # MQCONNX code courtesy of John OSullivan (mailto:jos@onebox.com)
 # SSL additions courtesy of Brian Vicente (mailto:sailbv@netscape.net)
@@ -1623,6 +1657,7 @@ class QueueManager(object):
         if rv[1]:
             raise MQMIError(rv[1], rv[2])
 
+        return self
 
     # Backward compatibility
     connectWithOptions = connect_with_options
@@ -1646,7 +1681,7 @@ class QueueManager(object):
             'cd': cd
         }
 
-        self.connect_with_options(name, **kwargs)
+        return self.connect_with_options(name, **kwargs)
 
     # Backward compatibility
     connectTCPClient = connect_tcp_client
@@ -1657,8 +1692,11 @@ class QueueManager(object):
         """
         if not self.__handle:
             raise PYIFError('not connected')
-        pymqe.MQDISC(self.__handle)
-        self.__handle = self.__qmobj = None
+        
+        try:
+            pymqe.MQDISC(self.__handle)
+        finally:
+            self.__handle = self.__qmobj = None
 
     def get_handle(self):
         # type: () -> None
@@ -3037,8 +3075,7 @@ def connect(queue_manager, channel=None, conn_info=None, user=None, password=Non
     """
     if channel and conn_info:
         qmgr = QueueManager(None, disconnect_on_exit, bytes_encoding=bytes_encoding, default_ccsid=default.ccsid)
-        qmgr.connect_tcp_client(queue_manager or '', CD(), channel, conn_info, user, password)
-        return qmgr
+        return qmgr.connect_tcp_client(queue_manager or '', CD(), channel, conn_info, user, password)
 
     elif queue_manager:
         qmgr = QueueManager(queue_manager, disconnect_on_exit,

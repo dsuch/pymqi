@@ -64,11 +64,11 @@ class TestMQ80(unittest.TestCase):
         # Modify original valid password to some bogus value
         bogus_password = self.password + '_Wr0nG_Pa$$w0rd'
         with self.assertRaises(pymqi.MQMIError) as errorcontext:
-            qmgr = pymqi.connect(self.name, self.channel, '{0}({1})'.format(
-                self.host, self.port), self.user + '_bogus_user', bogus_password)
-            exception = errorcontext.exception
-            self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
-            self.assertFalse(qmgr.is_connected)
+            with pymqi.connect(self.name, self.channel, '{0}({1})'.format(
+                self.host, self.port), self.user + '_bogus_user', bogus_password) as qmgr:
+                exception = errorcontext.exception
+                self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
+                self.assertFalse(qmgr.is_connected)
 
     # The following 2 tests test_connect_without_required_credentials and
     # test_connect_without_optional_credentials are mutually exclusive and
@@ -85,11 +85,11 @@ class TestMQ80(unittest.TestCase):
         """
 
         with self.assertRaises(pymqi.MQMIError) as errorcontext:
-            qmgr = pymqi.connect(self.name, self.channel, '{0}({1})'.format(
-                self.host, self.port))
-            exception = errorcontext.exception
-            self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
-            self.assertFalse(qmgr.is_connected)
+            with pymqi.connect(self.name, self.channel, '{0}({1})'.format(
+                self.host, self.port)) as qmgr:
+                exception = errorcontext.exception
+                self.assertEqual(exception.reason, CMQC.MQRC_NOT_AUTHORIZED)
+                self.assertFalse(qmgr.is_connected)
             
     @unittest.skipUnless(
         config.MQ.QM.CONN_AUTH.SUPPORTED != '1' or
@@ -99,10 +99,9 @@ class TestMQ80(unittest.TestCase):
         """Connecting without user credentials should succeed for a queue
         manager that has optional user/password connection authentication. 
         """
-        qmgr = pymqi.connect(self.name, self.channel, '{0}({1})'.format(
-                self.host, self.port))
-        self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()
+        with pymqi.connect(self.name, self.channel, '{0}({1})'.format(
+                self.host, self.port)) as qmgr:
+            self.assertTrue(qmgr.is_connected)
             
 
 if __name__ == "__main__":

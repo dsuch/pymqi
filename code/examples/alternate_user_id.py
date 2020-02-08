@@ -14,15 +14,13 @@ conn_info = '%s(%s)' % (host, port)
 user = 'app'
 password = 'password'
 
-qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
-
 od = pymqi.OD()
 od.ObjectName = queue_name
 od.AlternateUserId = alternate_user_id
 
-queue = pymqi.Queue(qmgr)
-queue.open(od, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
-queue.put(message)
-
-queue.close()
-qmgr.disconnect()
+with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
+    queue = pymqi.Queue(qmgr)
+    queue.open(od, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
+    queue.put(message)
+    
+    queue.close()
