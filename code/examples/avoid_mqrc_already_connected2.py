@@ -28,8 +28,7 @@ for x in range(10):
     qmgr.connect_with_options(queue_manager, cd=cd, opts=connect_options)
     qmgr.connect_with_options(queue_manager, cd=cd, opts=connect_options)
 
-queue = pymqi.Queue(qmgr, queue_name)
-queue.put(message)
-queue.close()
+with pymqi.Queue(qmgr, queue_name) as queue:
+    queue.put(message)
 
 qmgr.disconnect()

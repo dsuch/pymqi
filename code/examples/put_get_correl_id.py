@@ -95,10 +95,10 @@ class RequestProducer(Producer):
             get_opts['WaitInterval'] = 500
 
             # Open the replyto queue and get response message,
-            replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED)
-            response_message = replyto_queue.get(None, get_mqmd, get_opts)
+            with pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED) as replyto_queue:
+                response_message = replyto_queue.get(None, get_mqmd, get_opts)
 
-            logging.info('Got response message `%s`' % response_message)
+                logging.info('Got response message `%s`' % response_message)
 
             time.sleep(1)
 
@@ -117,36 +117,35 @@ class ResponseProducer(Producer):
         gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
         gmo.WaitInterval = 500 # Half a second
 
-        queue = pymqi.Queue(self.qm, request_queue_name)
-
-        keep_running = True
-
-        while keep_running:
-            try:
-                # Wait up to to gmo.WaitInterval for a new message.
-                request_message = queue.get(None, request_md, gmo)
-
-                # Create a response message descriptor with the CorrelId
-                # set to the value of MsgId of the original request message.
-                response_md = pymqi.MD()
-                response_md.CorrelId = request_md.MsgId
-
-                response_message = 'Response to message %s' % request_message
-                self.replyto_queue.put(response_message, response_md)
-
-                # Reset the MsgId, CorrelId & GroupId so that we can reuse
-                # the same 'md' object again.
-                request_md.MsgId = pymqi.CMQC.MQMI_NONE
-                request_md.CorrelId = pymqi.CMQC.MQCI_NONE
-                request_md.GroupId = pymqi.CMQC.MQGI_NONE
-
-            except pymqi.MQMIError as e:
-                if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
-                    # No messages, that's OK, we can ignore it.
-                    pass
-                else:
-                    # Some other error condition.
-                    raise
+        with pymqi.Queue(self.qm, request_queue_name) as queue:
+            keep_running = True
+    
+            while keep_running:
+                try:
+                    # Wait up to to gmo.WaitInterval for a new message.
+                    request_message = queue.get(None, request_md, gmo)
+    
+                    # Create a response message descriptor with the CorrelId
+                    # set to the value of MsgId of the original request message.
+                    response_md = pymqi.MD()
+                    response_md.CorrelId = request_md.MsgId
+    
+                    response_message = 'Response to message %s' % request_message
+                    self.replyto_queue.put(response_message, response_md)
+    
+                    # Reset the MsgId, CorrelId & GroupId so that we can reuse
+                    # the same 'md' object again.
+                    request_md.MsgId = pymqi.CMQC.MQMI_NONE
+                    request_md.CorrelId = pymqi.CMQC.MQCI_NONE
+                    request_md.GroupId = pymqi.CMQC.MQGI_NONE
+    
+                except pymqi.MQMIError as e:
+                    if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
+                        # No messages, that's OK, we can ignore it.
+                        pass
+                    else:
+                        # Some other error condition.
+                        raise
 
 req = RequestProducer()
 resp = ResponseProducer()

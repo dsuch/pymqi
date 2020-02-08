@@ -29,11 +29,8 @@ sco.KeyRepository = key_repo_location
 
 qmgr = pymqi.QueueManager(None)
 with qmgr.connect_with_options(queue_manager, cd, sco):
-    put_queue = pymqi.Queue(qmgr, queue_name)
-    put_queue.put(message)
+    with pymqi.Queue(qmgr, queue_name) as put_queue:
+        put_queue.put(message)
     
-    get_queue = pymqi.Queue(qmgr, queue_name)
-    logging.info('Here is the message again: [%s]' % get_queue.get())
-    
-    put_queue.close()
-    get_queue.close()
+    with pymqi.Queue(qmgr, queue_name) as get_queue:
+        logging.info('Here is the message again: [%s]' % get_queue.get())

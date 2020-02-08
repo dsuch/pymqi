@@ -24,9 +24,8 @@ on a queue and disconnects.
     conn_info = '%s(%s)' % (host, port)
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-	    queue = pymqi.Queue(qmgr, queue_name)
-	    queue.put(message)
-	    queue.close()
+	    with pymqi.Queue(qmgr, queue_name) as queue:
+	        queue.put(message)
 ```
 
 Usage examples

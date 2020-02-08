@@ -1,29 +1,11 @@
 import unittest
-from unittest.mock import patch, Mock, ANY
+from unittest.mock import patch, ANY
+
+from base_isolated_test import BaseIsolatedTest
 
 
+class TestQueueManager(BaseIsolatedTest):
 
-class TestQueueManager(unittest.TestCase):
-    
-    @classmethod
-    def setUpClass(cls):
-        super(TestQueueManager, cls).setUpClass()
-        
-        mqe_mock = Mock()
-        mqe_mock.__mqlevels__ = ('7.0')
-        mqe_mock.__mqbuild__ = None
-        
-        import sys
-        cls.original_mqe_module = sys.modules.get('pymqe') 
-        sys.modules['pymqe'] = mqe_mock
-
-    @classmethod
-    def tearDownClass(cls):
-        import sys
-        sys.modules['pymqe'] = cls.original_mqe_module
-        
-        super(TestQueueManager, cls).tearDownClass()
-    
     def setUp(self):
         from pymqi import CMQC
         

@@ -16,11 +16,10 @@ password = 'password'
 with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
     md = pymqi.MD()
     
-    queue = pymqi.Queue(qmgr, queue_name)
-    message = queue.get(None, md)
+    with pymqi.Queue(qmgr, queue_name) as queue:
+        message = queue.get(None, md)
     
-    reply_to_queue_name = md.ReplyToQ.strip()
-    reply_to_queue = pymqi.Queue(qmgr, reply_to_queue_name)
-    reply_to_queue.put(message)
+        reply_to_queue_name = md.ReplyToQ.strip()
     
-    queue.close()
+    with pymqi.Queue(qmgr, reply_to_queue_name) as reply_to_queue:
+        reply_to_queue.put(message)    

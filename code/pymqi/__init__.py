@@ -1891,14 +1891,22 @@ class Queue:
 
         self.__qMgr = qMgr # type: QueueManager
         self.__qHandle = self.__qDesc = self.__openOpts = None
-        ln = len(opts)
-        if ln > 2:
-            raise TypeError('Too many args')
-        if ln > 0:
-            self.__qDesc = make_q_desc(opts[0])
-        if ln == 2:
-            self.__openOpts = opts[1]
-            self.__realOpen()
+        if opts:
+            self.open(opts[0], *opts[1:])
+
+    def __enter__(self):
+        if not self.__qHandle:
+            return self.__realOpen()
+
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.__qHandle:
+            try:
+                self.close()
+            except Exception as e:
+                if not exc_value:
+                    raise
 
     def __del__(self):
         """ Close the queue, if it has been opened.
@@ -1926,6 +1934,8 @@ class Queue:
         if ln == 1:
             self.__openOpts = opts[0]
             self.__realOpen()
+            
+        return self
 
     def put(self, msg, *opts):
         """ Put the string buffer 'msg' on the queue. If the queue is not
@@ -2115,10 +2125,13 @@ class Queue:
         """
         if not self.__qHandle:
             raise PYIFError('not open')
-        rv = pymqe.MQCLOSE(self.__qMgr.getHandle(), self.__qHandle, options)
-        if rv[0]:
-            raise MQMIError(rv[-2], rv[-1])
-        self.__qHandle = self.__qDesc = self.__openOpts = None
+        
+        try:
+            rv = pymqe.MQCLOSE(self.__qMgr.getHandle(), self.__qHandle, options)
+            if rv[0]:
+                raise MQMIError(rv[-2], rv[-1])
+        finally:
+            self.__qHandle = self.__qDesc = self.__openOpts = None
 
     def inquire(self, attribute):
         """ Inquire on queue 'attribute'. If the queue is not already

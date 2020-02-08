@@ -179,19 +179,19 @@ class TestPCF(Tests):
         message = message + pymqi.CFIL(Parameter=1,
                                        Values=value).pack()
 
-        queue = pymqi.Queue(self.qmgr, self.queue_name,
-                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
+        with pymqi.Queue(self.qmgr, self.queue_name,
+                        pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT) as queue:
 
-        put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
-        queue.put(message, put_md)
+            put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
+            queue.put(message, put_md)
+    
+            get_opts = pymqi.GMO(
+                Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
+                Version=pymqi.CMQC.MQGMO_VERSION_2,
+                MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
+            get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
+            message = queue.get(None, get_md, get_opts)
 
-        get_opts = pymqi.GMO(
-            Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
-            Version=pymqi.CMQC.MQGMO_VERSION_2,
-            MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
-        get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
-        message = queue.get(None, get_md, get_opts)
-        queue.close()
         unpacked_message = pymqi.PCFExecute.unpack(message)
 
         self.assertTrue(isinstance(unpacked_message[0][1], list),
@@ -232,19 +232,18 @@ class TestPCF(Tests):
         message += pymqi.CFST(Parameter=pymqi.CMQCFC.MQCAMO_START_TIME,
                               String=b'10.41.58').pack()
 
-        queue = pymqi.Queue(self.qmgr, self.queue_name,
-                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
+        with pymqi.Queue(self.qmgr, self.queue_name,
+                         pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT) as queue:
+            put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
+            queue.put(message, put_md)
+    
+            get_opts = pymqi.GMO(
+                Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
+                Version=pymqi.CMQC.MQGMO_VERSION_2,
+                MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
+            get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
+            message = queue.get(None, get_md, get_opts)
 
-        put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
-        queue.put(message, put_md)
-
-        get_opts = pymqi.GMO(
-            Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
-            Version=pymqi.CMQC.MQGMO_VERSION_2,
-            MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
-        get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
-        message = queue.get(None, get_md, get_opts)
-        queue.close()
         message, _ = pymqi.PCFExecute.unpack(message)
 
         self.assertEqual({
@@ -273,19 +272,18 @@ class TestPCF(Tests):
         message += pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_MGR_NAME,
                               String=b'QM1').pack()
 
-        queue = pymqi.Queue(self.qmgr, self.queue_name,
-                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
+        with pymqi.Queue(self.qmgr, self.queue_name,
+                         pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT) as queue:
+            put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
+            queue.put(message, put_md)
+    
+            get_opts = pymqi.GMO(
+                Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
+                Version=pymqi.CMQC.MQGMO_VERSION_2,
+                MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
+            get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
+            message = queue.get(None, get_md, get_opts)
 
-        put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
-        queue.put(message, put_md)
-
-        get_opts = pymqi.GMO(
-            Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
-            Version=pymqi.CMQC.MQGMO_VERSION_2,
-            MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
-        get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
-        message = queue.get(None, get_md, get_opts)
-        queue.close()
         message, header = pymqi.PCFExecute.unpack(message)
 
         self.assertEqual(header.Command, pymqi.CMQCFC.MQCMD_STATISTICS_Q)  # pylint: disable=no-member

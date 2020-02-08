@@ -29,14 +29,12 @@ with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
     pcf.MQCMD_CREATE_Q({CMQC.MQCA_Q_NAME: queue_name_bytes, CMQC.MQIA_Q_TYPE: CMQC.MQQT_LOCAL})
     
     # .. put a message ..
-    queue = pymqi.Queue(qmgr, queue_name)
-    queue.put(message)
-    queue.close()
+    with pymqi.Queue(qmgr, queue_name) as queue:
+        queue.put(message)
     
     # .. get it back ..
-    queue = pymqi.Queue(qmgr, queue_name)
-    assert queue.get() == message
-    queue.close()
+    with pymqi.Queue(qmgr, queue_name) as queue:
+        assert queue.get() == message
     
     # .. drop the queue ..
     pcf.MQCMD_DELETE_Q({CMQC.MQCA_Q_NAME: queue_name_bytes, CMQC.MQIA_Q_TYPE: CMQC.MQQT_LOCAL})

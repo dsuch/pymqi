@@ -34,16 +34,16 @@ Here is some minimal code to put a message on a queue::
     import pymqi
 
     with pymqi.connect('QM.1', 'SVRCONN.CHANNEL.1', '192.168.1.121(1434)') as qmgr:
-        putq = pymqi.Queue(qmgr, 'TESTQ.1')
-        putq.put('Hello from Python!')
+        with pymqi.Queue(qmgr, 'TESTQ.1') as putq:
+            putq.put('Hello from Python!')
 
 And here's some more to get it again::
 
     import pymqi
 
     with pymqi.connect('QM.1', 'SVRCONN.CHANNEL.1', '192.168.1.121(1434)') as qmgr:
-        getq = pymqi.Queue(qmgr, 'TESTQ.1')
-        print('Here is the message:', getq.get())
+        with pymqi.Queue(qmgr, 'TESTQ.1') as getq:
+            print('Here is the message:', getq.get())
 
 Installation
 ============

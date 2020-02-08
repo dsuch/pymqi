@@ -27,8 +27,8 @@ with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
     
     put_md = pymqi.MD(Version=pymqi.CMQC.MQMD_CURRENT_VERSION)
     
-    put_queue = pymqi.Queue(qmgr, queue_name)
-    put_queue.put(b'', put_md, pmo)
+    with pymqi.Queue(qmgr, queue_name) as put_queue:
+        put_queue.put(b'', put_md, pmo)
     
     get_msg_h = pymqi.MessageHandle(qmgr)
     
@@ -37,11 +37,8 @@ with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
     gmo.MsgHandle = get_msg_h.msg_handle
     
     get_md = pymqi.MD()
-    get_queue = pymqi.Queue(qmgr, queue_name)
-    message_body = get_queue.get(None, get_md, gmo)
-    
-    property_value = get_msg_h.properties.get(property_name)
-    logging.info('Message received. Property name: `%s`, property value: `%s`' % (property_name, property_value))
-    
-    put_queue.close()
-    get_queue.close()
+    with pymqi.Queue(qmgr, queue_name) as get_queue:
+        message_body = get_queue.get(None, get_md, gmo)
+        
+        property_value = get_msg_h.properties.get(property_name)
+        logging.info('Message received. Property name: `%s`, property value: `%s`' % (property_name, property_value))

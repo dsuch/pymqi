@@ -92,50 +92,34 @@ class TestMP(unittest.TestCase):
         return value_length
 
     def work_with_property(self, property_value, property_type):
-        messageHandle_get = None
-        queue_get = None
-        queue_put = None
-        try:
+        value_length = self.get_value_length(property_type, property_value)
 
-            value_length = self.get_value_length(property_type, property_value)
+        cmho_put = pymqi.CMHO()
+        messageHandle_put = pymqi.MessageHandle(self.qmgr, cmho_put)
+        messageHandle_put.properties.set(self.msg_prop_name, property_value,
+                                        value_length=value_length,
+                                        property_type=property_type)
 
-            cmho_put = pymqi.CMHO()
-            messageHandle_put = pymqi.MessageHandle(self.qmgr, cmho_put)
-            messageHandle_put.properties.set(self.msg_prop_name, property_value,
-                                            value_length=value_length,
-                                            property_type=property_type)
+        pmo = pymqi.PMO(Version=pymqi.CMQC.MQPMO_CURRENT_VERSION)
+        pmo.OriginalMsgHandle = messageHandle_put.msg_handle
 
-            pmo = pymqi.PMO(Version=pymqi.CMQC.MQPMO_CURRENT_VERSION)
-            pmo.OriginalMsgHandle = messageHandle_put.msg_handle
+        md_put = pymqi.MD(Version=pymqi.CMQC.MQMD_CURRENT_VERSION)
 
-            md_put = pymqi.MD(Version=pymqi.CMQC.MQMD_CURRENT_VERSION)
-
-            queue_put = pymqi.Queue(self.qmgr, self.queue_name, pymqi.CMQC.MQOO_OUTPUT)
+        with pymqi.Queue(self.qmgr, self.queue_name, pymqi.CMQC.MQOO_OUTPUT) as queue_put:
             queue_put.put(b'', md_put, pmo)
 
-            queue_put.close()
+        gmo = pymqi.GMO(Version=pymqi.CMQC.MQGMO_CURRENT_VERSION)
+        gmo.Options = pymqi.CMQC.MQGMO_NO_WAIT | pymqi.CMQC.MQGMO_PROPERTIES_IN_HANDLE
+        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
 
+        cmho_get = pymqi.CMHO(Version=pymqi.CMQC.MQCMHO_CURRENT_VERSION)
+        messageHandle_get = pymqi.MessageHandle(self.qmgr, cmho_get)
+        gmo.MsgHandle = messageHandle_get.msg_handle
+        md_get = pymqi.MD()
+        md_get.MsgId = md_put.MsgId
 
-            gmo = pymqi.GMO(Version=pymqi.CMQC.MQGMO_CURRENT_VERSION)
-            gmo.Options = pymqi.CMQC.MQGMO_NO_WAIT | pymqi.CMQC.MQGMO_PROPERTIES_IN_HANDLE
-            gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
-
-            cmho_get = pymqi.CMHO(Version=pymqi.CMQC.MQCMHO_CURRENT_VERSION)
-            messageHandle_get = pymqi.MessageHandle(self.qmgr, cmho_get)
-            gmo.MsgHandle = messageHandle_get.msg_handle
-            md_get = pymqi.MD()
-            md_get.MsgId = md_put.MsgId
-
-            queue_get = pymqi.Queue(self.qmgr, self.queue_name, pymqi.CMQC.MQOO_INPUT_AS_Q_DEF)
+        with pymqi.Queue(self.qmgr, self.queue_name, pymqi.CMQC.MQOO_INPUT_AS_Q_DEF) as queue_get:
             queue_get.get(None, md_get, gmo)
-        finally:
-            if queue_put:
-                if queue_put.get_handle():
-                    queue_put.close()
-
-            if queue_get:
-                if queue_get.get_handle():
-                    queue_get.close()
 
         return messageHandle_get
 

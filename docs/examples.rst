@@ -86,10 +86,8 @@ Code::
     conn_info = '%s(%s)' % (host, port)
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-        queue = pymqi.Queue(qmgr, queue_name)
-        queue.put(message)
-        queue.close()
-
+        with pymqi.Queue(qmgr, queue_name) as queue:
+            queue.put(message)
 
 ====================================
 How to get the message off a queue
@@ -107,11 +105,8 @@ Code::
     conn_info = '%s(%s)' % (host, port)
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-
-        queue = pymqi.Queue(qmgr, queue_name)
-        message = queue.get()
-        queue.close()
-
+        with pymqi.Queue(qmgr, queue_name) as queue:
+           message = queue.get()
 
 Notes:
 
@@ -174,9 +169,8 @@ Code::
     default_ccsid = 819
 
     with pymqi.connect(queue_manager, channel, conn_info, bytes_encoding=bytes_encoding, default_ccsid=default_ccsid) as qmgr:
-        queue = pymqi.Queue(qmgr, queue_name)
-        queue.put(message)
-        queue.close()
+        with pymqi.Queue(qmgr, queue_name) as queue:
+            queue.put(message)
 
 =================================================
 How to get a message without JMS (MQRFH2) headers
@@ -194,16 +188,12 @@ Code::
     conn_info = '%s(%s)' % (host, port)
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-        queue = pymqi.Queue(qmgr, queue_name)
+        with pymqi.Queue(qmgr, queue_name) as queue:
+            # Get the message but discard any JMS headers
+            message = queue.get_no_jms()
 
-        # Get the message but discard any JMS headers
-        message = queue.get_no_jms()
-
-        # Works exactly as above: get_no_rfh2 is an alias to get_no_jms
-        message = queue.get_no_rfh2()
-
-        # Close queue and disconnect from queue manager
-        queue.close()
+            # Works exactly as above: get_no_rfh2 is an alias to get_no_jms
+            message = queue.get_no_rfh2()
 
 Notes:
 
@@ -239,10 +229,8 @@ Code::
     gmo.WaitInterval = 5000 # 5 seconds
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-        queue = pymqi.Queue(qmgr, queue_name)
-        message = queue.get(None, md, gmo)
-        queue.close()
-
+        with pymqi.Queue(qmgr, queue_name) as queue:
+            message = queue.get(None, md, gmo)
 
 Notes:
 
@@ -280,32 +268,29 @@ Code::
     gmo.WaitInterval = 5000 # 5 seconds
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-        queue = pymqi.Queue(qmgr, queue_name)
-
-        keep_running = True
-
-        while keep_running:
-            try:
-                # Wait up to to gmo.WaitInterval for a new message.
-                message = queue.get(None, md, gmo)
-
-                # Process the message here..
-
-                # Reset the MsgId, CorrelId & GroupId so that we can reuse
-                # the same 'md' object again.
-                md.MsgId = pymqi.CMQC.MQMI_NONE
-                md.CorrelId = pymqi.CMQC.MQCI_NONE
-                md.GroupId = pymqi.CMQC.MQGI_NONE
-
-            except pymqi.MQMIError as e:
-                if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
-                    # No messages, that is OK, we can ignore it.
-                    pass
-                else:
-                    # Some other error condition.
-                    raise
-
-        queue.close()
+        with pymqi.Queue(qmgr, queue_name) as queue:
+            keep_running = True
+        
+            while keep_running:
+                try:
+                    # Wait up to to gmo.WaitInterval for a new message.
+                    message = queue.get(None, md, gmo)
+        
+                    # Process the message here..
+        
+                    # Reset the MsgId, CorrelId & GroupId so that we can reuse
+                    # the same 'md' object again.
+                    md.MsgId = pymqi.CMQC.MQMI_NONE
+                    md.CorrelId = pymqi.CMQC.MQCI_NONE
+                    md.GroupId = pymqi.CMQC.MQGI_NONE
+        
+                except pymqi.MQMIError as e:
+                    if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
+                        # No messages, that is OK, we can ignore it.
+                        pass
+                    else:
+                        # Some other error condition.
+                        raise
 
 Notes:
 
@@ -340,21 +325,18 @@ Code::
 
         # Open the dynamic queue.
         dyn_input_open_options = pymqi.CMQC.MQOO_INPUT_EXCLUSIVE
-        dyn_queue = pymqi.Queue(qmgr, dyn_od, dyn_input_open_options)
-        dyn_queue_name = dyn_od.ObjectName.strip()
+        with pymqi.Queue(qmgr, dyn_od, dyn_input_open_options) as dyn_queue:
+            dyn_queue_name = dyn_od.ObjectName.strip()
 
-        # Prepare a Message Descriptor for the request message.
-        md = pymqi.MD()
-        md.ReplyToQ = dyn_queue_name
+            # Prepare a Message Descriptor for the request message.
+            md = pymqi.MD()
+            md.ReplyToQ = dyn_queue_name
 
-        # Send the message.
-        queue = pymqi.Queue(qmgr, request_queue)
-        queue.put(message, md)
+            # Send the message.
+        with pymqi.Queue(qmgr, request_queue) as queue:
+            queue.put(message, md)
 
         # Get and process the response here..
-
-        dyn_queue.close()
-        queue.close()
 
 
 Notes:
@@ -386,15 +368,12 @@ Code::
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
 
         md = pymqi.MD()
-
-        queue = pymqi.Queue(qmgr, queue_name)
-        message = queue.get(None, md)
-
+        with pymqi.Queue(qmgr, queue_name) as queue:
+            message = queue.get(None, md)
+    
         reply_to_queue_name = md.ReplyToQ.strip()
-        reply_to_queue = pymqi.Queue(qmgr, reply_to_queue_name)
-        reply_to_queue.put(message)
-
-        queue.close()
+        with pymqi.Queue(qmgr, reply_to_queue_name) as reply_to_queue:
+            reply_to_queue.put(message)
 
 Notes:
 
@@ -536,14 +515,11 @@ Code::
 
     qmgr = pymqi.QueueManager(None)
     with qmgr.connect_with_options(queue_manager, cd, sco):
-        put_queue = pymqi.Queue(qmgr, queue_name)
-        put_queue.put(message)
-
-        get_queue = pymqi.Queue(qmgr, queue_name)
-        logging.info('Here is the message again: [%s]' % get_queue.get())
-
-        put_queue.close()
-        get_queue.close()
+        with pymqi.Queue(qmgr, queue_name) as put_queue:
+            put_queue.put(message)
+    
+        with pymqi.Queue(qmgr, queue_name) as get_queue:
+            logging.info('Here is the message again: [%s]' % get_queue.get())
 
 
 Notes:
@@ -617,17 +593,14 @@ Code::
     put_md.Priority = priority
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-        put_queue = pymqi.Queue(qmgr, queue_name)
-        put_queue.put(message, put_md)
-
+        with pymqi.Queue(qmgr, queue_name) as put_queue:
+            put_queue.put(message, put_md)
+    
         get_md = pymqi.MD()
-        get_queue = pymqi.Queue(qmgr, queue_name)
-        message_body = get_queue.get(None, get_md)
-
+        with pymqi.Queue(qmgr, queue_name) as get_queue:
+            message_body = get_queue.get(None, get_md)
+    
         logging.info('Received a message, priority `%s`.' % get_md.Priority)
-
-        put_queue.close()
-        get_queue.close()
 
 
 Notes:
@@ -655,9 +628,8 @@ Code::
     cd.MsgCompList[1] = CMQXC.MQCOMPRESS_ZLIBHIGH
 
     with pymqi.connect(queue_manager, channel, conn_info) as qmgr:
-        queue = pymqi.Queue(qmgr, queue_name)
-        queue.put(message)
-        queue.close()
+        with pymqi.Queue(qmgr, queue_name) as queue:
+            queue.put(message)
 
 Notes:
 
@@ -779,12 +751,10 @@ Code::
         od = pymqi.OD()
         od.ObjectName = queue_name
         od.AlternateUserId = alternate_user_id
-
-        queue = pymqi.Queue(qmgr)
-        queue.open(od, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
-        queue.put(message)
-
-        queue.close()
+    
+        with pymqi.Queue(qmgr) as queue:
+            queue.open(od, pymqi.CMQC.MQOO_OUTPUT | pymqi.CMQC.MQOO_ALTERNATE_USER_AUTHORITY)
+            queue.put(message)
 
 Notes:
 
@@ -895,8 +865,8 @@ Code::
                 get_opts['WaitInterval'] = 500
 
                 # Open the replyto queue and get response message,
-                replyto_queue = pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED)
-                response_message = replyto_queue.get(None, get_mqmd, get_opts)
+                with pymqi.Queue(self.qm, replyto_queue_name, pymqi.CMQC.MQOO_INPUT_SHARED) as replyto_queue:
+                    response_message = replyto_queue.get(None, get_mqmd, get_opts)
 
                 logging.info('Got response message [%s]' % response_message)
 
@@ -917,36 +887,35 @@ Code::
             gmo.Options = pymqi.CMQC.MQGMO_WAIT | pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING
             gmo.WaitInterval = 500 # Half a second
 
-            queue = pymqi.Queue(self.qm, request_queue_name)
-
-            keep_running = True
-
-            while keep_running:
-                try:
-                    # Wait up to to gmo.WaitInterval for a new message.
-                    request_message = queue.get(None, request_md, gmo)
-
-                    # Create a response message descriptor with the CorrelId
-                    # set to the value of MsgId of the original request message.
-                    response_md = pymqi.MD()
-                    response_md.CorrelId = request_md.MsgId
-
-                    response_message = 'Response to message %s' % request_message
-                    self.replyto_queue.put(response_message, response_md)
-
-                    # Reset the MsgId, CorrelId & GroupId so that we can reuse
-                    # the same 'md' object again.
-                    request_md.MsgId = pymqi.CMQC.MQMI_NONE
-                    request_md.CorrelId = pymqi.CMQC.MQCI_NONE
-                    request_md.GroupId = pymqi.CMQC.MQGI_NONE
-
-                except pymqi.MQMIError as e:
-                    if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
-                        # No messages, that's OK, we can ignore it.
-                        pass
-                    else:
-                        # Some other error condition.
-                        raise
+            with pymqi.Queue(self.qm, request_queue_name) as queue:
+                keep_running = True
+    
+                while keep_running:
+                    try:
+                        # Wait up to to gmo.WaitInterval for a new message.
+                        request_message = queue.get(None, request_md, gmo)
+    
+                        # Create a response message descriptor with the CorrelId
+                        # set to the value of MsgId of the original request message.
+                        response_md = pymqi.MD()
+                        response_md.CorrelId = request_md.MsgId
+    
+                        response_message = 'Response to message %s' % request_message
+                        self.replyto_queue.put(response_message, response_md)
+    
+                        # Reset the MsgId, CorrelId & GroupId so that we can reuse
+                        # the same 'md' object again.
+                        request_md.MsgId = pymqi.CMQC.MQMI_NONE
+                        request_md.CorrelId = pymqi.CMQC.MQCI_NONE
+                        request_md.GroupId = pymqi.CMQC.MQGI_NONE
+    
+                    except pymqi.MQMIError as e:
+                        if e.comp == pymqi.CMQC.MQCC_FAILED and e.reason == pymqi.CMQC.MQRC_NO_MSG_AVAILABLE:
+                            # No messages, that's OK, we can ignore it.
+                            pass
+                        else:
+                            # Some other error condition.
+                            raise
 
     req = RequestProducer()
     resp = ResponseProducer()
@@ -1004,9 +973,8 @@ Code::
         qmgr.connect_with_options(queue_manager, cd=cd, opts=connect_options)
         qmgr.connect_with_options(queue_manager, cd=cd, opts=connect_options)
 
-    queue = pymqi.Queue(qmgr, queue_name)
-    queue.put(message)
-    queue.close()
+    with pymqi.Queue(qmgr, queue_name) as queue:
+        queue.put(message)
 
     qmgr.disconnect()
 
@@ -1032,9 +1000,8 @@ Code::
             # Move along, nothing to see here..
             pass
 
-    queue = pymqi.Queue(qmgr, queue_name)
-    queue.put(message)
-    queue.close()
+    with pymqi.Queue(qmgr, queue_name) as queue:
+        queue.put(message)
 
     qmgr.disconnect()
 

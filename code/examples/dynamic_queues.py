@@ -22,18 +22,15 @@ with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
     
     # Open the dynamic queue.
     dyn_input_open_options = pymqi.CMQC.MQOO_INPUT_EXCLUSIVE
-    dyn_queue = pymqi.Queue(qmgr, dyn_od, dyn_input_open_options)
-    dyn_queue_name = dyn_od.ObjectName.strip()
-    
-    # Prepare a Message Descriptor for the request message.
-    md = pymqi.MD()
-    md.ReplyToQ = dyn_queue_name
-    
-    # Send the message.
-    queue = pymqi.Queue(qmgr, request_queue)
-    queue.put(message, md)
-    
-    # Get and process the response here..
-    
-    dyn_queue.close()
-    queue.close()
+    with pymqi.Queue(qmgr, dyn_od, dyn_input_open_options) as dyn_queue:
+        dyn_queue_name = dyn_od.ObjectName.strip()
+        
+        # Prepare a Message Descriptor for the request message.
+        md = pymqi.MD()
+        md.ReplyToQ = dyn_queue_name
+        
+        # Send the message.
+        with pymqi.Queue(qmgr, request_queue) as queue:
+            queue.put(message, md)
+        
+        # Get and process the response here..

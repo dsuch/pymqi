@@ -17,6 +17,5 @@ cd = pymqi.CD()
 cd.MsgCompList[1] = pymqi.CMQXC.MQCOMPRESS_ZLIBHIGH
 
 with pymqi.connect(queue_manager, channel, conn_info, user, password) as qmgr:
-    queue = pymqi.Queue(qmgr, queue_name)
-    queue.put(message)
-    queue.close()
+    with pymqi.Queue(qmgr, queue_name) as queue:
+        queue.put(message)

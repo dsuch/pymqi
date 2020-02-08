@@ -21,6 +21,5 @@ with qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info):
         if e.comp == pymqi.CMQC.MQCC_WARNING and e.reason == pymqi.CMQC.MQRC_ALREADY_CONNECTED:
             pass
     
-    queue = pymqi.Queue(qmgr, queue_name)
-    queue.put(message)
-    queue.close()
+    with pymqi.Queue(qmgr, queue_name) as queue:
+        queue.put(message)
