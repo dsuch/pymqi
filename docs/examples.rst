@@ -400,11 +400,9 @@ Code::
 
     qmgr = pymqi.QueueManager(None)
     with qmgr.connect_tcp_client(queue_manager, pymqi.CD(), channel, conn_info):
-        topic = pymqi.Topic(qmgr, topic_string=topic_string)
-        topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
-        topic.pub(msg)
-        topic.close()
-
+        with pymqi.Topic(qmgr, topic_string=topic_string) as topic:
+            topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
+            topic.pub(msg)
 
 Notes:
 

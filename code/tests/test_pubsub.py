@@ -99,20 +99,18 @@ class TestPubSub(unittest.TestCase):
         return sub_desc
 
     def pub(self, msg, topic_string, *opts):
-        topic = pymqi.Topic(self.qmgr, topic_string=topic_string)
-        topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
-        if isinstance(msg, str) and not isinstance(msg, bytes):
-            raise AttributeError('msg must be bytes (not str) to publish to topic.')  # py3
-        topic.pub(msg, *opts)
-        topic.close()
+        with pymqi.Topic(self.qmgr, topic_string=topic_string) as topic:
+            topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
+            if isinstance(msg, str) and not isinstance(msg, bytes):
+                raise AttributeError('msg must be bytes (not str) to publish to topic.')  # py3
+            topic.pub(msg, *opts)
 
     def pub_rfh2(self, msg, topic_string, *opts):
-        topic = pymqi.Topic(self.qmgr, topic_string=topic_string)
-        topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
-        if isinstance(msg, str) and not isinstance(msg, bytes):
-            raise AttributeError('msg must be bytes (not str) to publish to topic.')  # py3
-        topic.pub_rfh2(msg, *opts)
-        topic.close()
+        with pymqi.Topic(self.qmgr, topic_string=topic_string) as topic:
+            topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
+            if isinstance(msg, str) and not isinstance(msg, bytes):
+                raise AttributeError('msg must be bytes (not str) to publish to topic.')  # py3
+            topic.pub_rfh2(msg, *opts)
 
     def create_api_subscription(self):
         return pymqi.Subscription(self.qmgr)
@@ -163,12 +161,13 @@ class TestPubSub(unittest.TestCase):
                                                     pymqi.CMQC.MQSO_MANAGED)
         self.sub_desc_list = [(sub, sub_desc, None)]
 
-        sub.sub(sub_desc=sub_desc)
-        # publish (put)
-        self.pub(msg, topic_string)
-        get_opts = self.create_get_opts()
-        data = sub.get(None, pymqi.md(), get_opts)
-        sub.close(sub_close_options=0, close_sub_queue=True)
+        with sub.sub(sub_desc=sub_desc):
+            # publish (put)
+            self.pub(msg, topic_string)
+            get_opts = self.create_get_opts()
+            data = sub.get(None, pymqi.md(), get_opts)
+            sub.close(sub_close_options=0, close_sub_queue=True)
+        
         self.assertEqual(data, msg)
 
     def test_pubsub_api_managed_durable_1_to_n(self):
@@ -208,12 +207,13 @@ class TestPubSub(unittest.TestCase):
         # register Subscription
         sub = self.create_api_subscription()
         self.sub_desc_list = [(sub, sub_desc, None)]
-        sub.sub(sub_desc=sub_desc)
-        # publish (put)
-        self.pub(msg, topic_string)
-        get_opts = self.create_get_opts()
-        data = sub.get(None, pymqi.md(), get_opts)
-        sub.close(sub_close_options=0, close_sub_queue=True)
+        with sub.sub(sub_desc=sub_desc):
+            # publish (put)
+            self.pub(msg, topic_string)
+            get_opts = self.create_get_opts()
+            data = sub.get(None, pymqi.md(), get_opts)
+            sub.close(sub_close_options=0, close_sub_queue=True)
+        
         self.assertEqual(data, msg)
 
     def test_pubsub_api_managed_non_durable_rfh2(self):

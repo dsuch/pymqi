@@ -2262,6 +2262,21 @@ class Topic:
 
         return topic_desc
 
+    def __enter__(self):
+        if not self.__topic_handle:
+            if self.__open_opts:
+                self.__real_open()
+        
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.__topic_handle:
+            try:
+                self.close()
+            except Exception:
+                if not exc_value:
+                    raise
+
     def __del__(self):
         """ Close the Topic, if it has been opened.
         """
@@ -2299,6 +2314,8 @@ class Topic:
         if open_opts:
             self.__open_opts = open_opts
             self.__real_open()
+            
+        return self
 
     def pub(self, msg, *opts):
         """ Publish the string buffer 'msg' to the Topic. If the Topic is not
@@ -2387,13 +2404,14 @@ class Topic:
         if not self.__topic_handle:
             raise PYIFError('Topic not open.')
 
-        rv = pymqe.MQCLOSE(self.__queue_manager.getHandle(), self.__topic_handle, options)
-        if rv[0]:
-            raise MQMIError(rv[-2], rv[-1])
-
-        self.__topic_handle = None
-        self.__topic_desc = None
-        self.__open_opts = None
+        try:
+            rv = pymqe.MQCLOSE(self.__queue_manager.getHandle(), self.__topic_handle, options)
+            if rv[0]:
+                raise MQMIError(rv[-2], rv[-1])
+        finally:
+            self.__topic_handle = None
+            self.__topic_desc = None
+            self.__open_opts = None
 
 class Subscription:
     """ Encapsulates a subscription to a topic.
