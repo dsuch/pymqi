@@ -2436,6 +2436,20 @@ class Subscription:
 
         if self.__sub_desc:
             self.sub(sub_desc=self.__sub_desc)
+            
+    def __enter__(self):
+        if not self.__sub_handle and self.__sub_desc:
+            self.sub(sub_desc=self.__sub_desc)
+        
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        if self.__sub_handle:
+            try:
+                self.close(close_sub_queue=True)
+            except Exception:
+                if not exc_value:
+                    raise
 
     def get_sub_queue(self):
         """ Return the subscription queue.
@@ -2506,6 +2520,7 @@ class Subscription:
         self.sub_queue = Queue(self.__queue_manager)
         self.sub_queue.set_handle(rv[1])
         self.__sub_handle = rv[2]
+        return self
 
     def close(self, sub_close_options=CMQC.MQCO_NONE, close_sub_queue=False, close_sub_queue_options=CMQC.MQCO_NONE):
 

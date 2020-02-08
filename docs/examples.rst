@@ -438,18 +438,17 @@ Code::
             pymqi.CMQC.MQSO_DURABLE + pymqi.CMQC.MQSO_MANAGED
         sub_desc.set_vs('SubName', 'MySub')
         sub_desc.set_vs('ObjectString', topic_string)
-
+        
         sub = pymqi.Subscription(qmgr)
-        sub.sub(sub_desc=sub_desc)
-
-        get_opts = pymqi.GMO(
-            Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING + pymqi.CMQC.MQGMO_WAIT)
-        get_opts['WaitInterval'] = 15000
-
-        data = sub.get(None, pymqi.md(), get_opts)
-        logging.info('Here's the received data: [%s]' % data)
-
-        sub.close(sub_close_options=pymqi.CMQC.MQCO_KEEP_SUB, close_sub_queue=True)
+        with sub.sub(sub_desc=sub_desc):
+            get_opts = pymqi.GMO(
+                Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING + pymqi.CMQC.MQGMO_WAIT)
+            get_opts['WaitInterval'] = 15000
+        
+            data = sub.get(None, pymqi.md(), get_opts)
+            logging.info('Here's the received data: [%s]' % data)
+        
+            sub.close(sub_close_options=pymqi.CMQC.MQCO_KEEP_SUB, close_sub_queue=True)
 
 Notes:
 
