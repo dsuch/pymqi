@@ -1426,10 +1426,21 @@ class QueueManager(object):
         If mDesc and/or putOpts arguments were supplied, they may be
         updated by the put1 operation.
         """
-
-        msg = ensure_bytes(msg, self.bytes_encoding)
-
         m_desc, put_opts = common_q_args(*opts)
+
+        if not isinstance(msg, bytes):
+            if (
+                (sys.version_info.major >= 3 and isinstance(msg, str))  # Python 3 string is unicode
+                or
+                (sys.version_info.major <= 2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
+              ):
+                msg = msg.encode('utf-8')
+                m_desc.CodedCharSetId = 1208
+                m_desc.Format = CMQC.MQFMT_STRING
+            else:
+                error_message = 'Message type is {0}. Convert to bytes.'
+                raise TypeError(error_message.format(type(msg)))
+
         if put_opts is None:
             put_opts = PMO()
 
@@ -1615,7 +1626,7 @@ class Queue:
                 raise TypeError(error_message.format(type(msg)))
 
         if put_opts is None:
-            put_opts = pmo()
+            put_opts = PMO()
         # If queue open was deferred, open it for put now
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_OUTPUT
