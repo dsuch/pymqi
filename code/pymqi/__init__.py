@@ -95,6 +95,7 @@ their MQI counterparts.
 import struct
 import threading
 import ctypes
+import sys
 
 # import xml parser.  lxml/etree only available since python 2.5
 use_minidom = False
@@ -119,7 +120,7 @@ try:
             mq_dll_directory = join(mq_home_path, dir)
             if exists(mq_dll_directory):
                 add_dll_directory(mq_dll_directory)
-except:
+except ImportError:
     pass
 
 # PyMQI
@@ -1425,10 +1426,21 @@ class QueueManager(object):
         If mDesc and/or putOpts arguments were supplied, they may be
         updated by the put1 operation.
         """
-
-        ensure_not_unicode(msg)  # Python 3 bytes check
-
         m_desc, put_opts = common_q_args(*opts)
+
+        if not isinstance(msg, bytes):
+            if (
+                (sys.version_info.major >= 3 and isinstance(msg, str))  # Python 3 string is unicode
+                or
+                (sys.version_info.major <= 2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
+              ):
+                msg = msg.encode('utf-8')
+                m_desc.CodedCharSetId = 1208
+                m_desc.Format = CMQC.MQFMT_STRING
+            else:
+                error_message = 'Message type is {0}. Convert to bytes.'
+                raise TypeError(error_message.format(type(msg)))
+
         if put_opts is None:
             put_opts = PMO()
 
@@ -1598,11 +1610,23 @@ class Queue:
         If m_desc and/or put_opts arguments were supplied, they may be
         updated by the put operation.
         """
-        ensure_not_unicode(msg)  # Python 3 bytes check
-
         m_desc, put_opts = common_q_args(*opts)
+
+        if not isinstance(msg, bytes):
+            if (
+                (sys.version_info.major >= 3 and isinstance(msg, str))  # Python 3 string is unicode
+                or
+                (sys.version_info.major <= 2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
+              ):
+                msg = msg.encode('utf-8')
+                m_desc.CodedCharSetId = 1208
+                m_desc.Format = CMQC.MQFMT_STRING
+            else:
+                error_message = 'Message type is {0}. Convert to bytes.'
+                raise TypeError(error_message.format(type(msg)))
+
         if put_opts is None:
-            put_opts = pmo()
+            put_opts = PMO()
         # If queue open was deferred, open it for put now
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_OUTPUT

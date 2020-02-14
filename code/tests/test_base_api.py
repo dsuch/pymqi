@@ -1,40 +1,29 @@
+# -*- coding: utf8 -*-
 """Test base API."""
+from sys import version_info
+#from sys.version_info import major as py_ver
 import unittest
 
 import config
 import utils
 
+from test_setup import Tests
+
 import pymqi
 
 
-class TestGet(unittest.TestCase):
+class TestGet(Tests):
     """Test Qeueu.get() method."""
 
     def setUp(self):
         """Initialize test environment."""
-        # max length of queue names is 48 characters
-        self.queue_name = "{prefix}GET.QUEUE".format(prefix=config.MQ.QUEUE.PREFIX)
-        self.queue_manager = config.MQ.QM.NAME
-        self.channel = config.MQ.QM.CHANNEL
-        self.host = config.MQ.QM.HOST
-        self.port = config.MQ.QM.PORT
-        self.user = config.MQ.QM.USER
-        self.password = config.MQ.QM.PASSWORD
+        super(TestGet, self).setUp()
+
+        self.create_queue(self.queue_name)
 
         self.message = b'12345'
         self.buffer_length = 3
 
-        self.conn_info = "{0}({1})".format(self.host, self.port)
-
-        self.qmgr = pymqi.QueueManager(None)
-        self.qmgr.connectTCPClient(self.queue_manager,
-                                   pymqi.CD(),
-                                   self.channel,
-                                   self.conn_info,
-                                   self.user,
-                                   self.password)
-
-        self._create_queue(self.queue_name)
         self.queue = pymqi.Queue(self.qmgr,
                                  self.queue_name,
                                  pymqi.CMQC.MQOO_INPUT_AS_Q_DEF | pymqi.CMQC.MQOO_OUTPUT)
@@ -44,30 +33,9 @@ class TestGet(unittest.TestCase):
         if self.queue:
             self.queue.close()
 
-        if self.queue_name:
-            self._delete_queue(self.queue_name)
-        self.qmgr.disconnect()
+        self.delete_queue(self.queue_name)
 
-    def _create_queue(self, queue_name):
-        queue_type = pymqi.CMQC.MQQT_LOCAL
-        max_depth = 5000
-
-        args = {pymqi.CMQC.MQCA_Q_NAME: utils.py3str2bytes(queue_name),
-                pymqi.CMQC.MQIA_Q_TYPE: queue_type,
-                pymqi.CMQC.MQIA_MAX_Q_DEPTH: max_depth,
-                pymqi.CMQCFC.MQIACF_REPLACE: pymqi.CMQCFC.MQRP_YES}
-        pcf = pymqi.PCFExecute(self.qmgr)
-        pcf.MQCMD_CREATE_Q(args)
-
-        if pcf.is_connected:
-            pcf.disconnect()
-
-    def _delete_queue(self, queue_name):
-
-        pcf = pymqi.PCFExecute(self.qmgr)
-        args = {pymqi.CMQC.MQCA_Q_NAME: utils.py3str2bytes(queue_name),
-                pymqi.CMQCFC.MQIACF_PURGE: pymqi.CMQCFC.MQPO_YES}
-        pcf.MQCMD_DELETE_Q(args)
+        super(TestGet, self).tearDown()
 
     def _put_message(self):
         md = pymqi.MD()
@@ -127,7 +95,7 @@ class TestGet(unittest.TestCase):
                              len(self.message))
 
     def test_get_nontruncated_enough(self):
-        """Test nontruncated with big buffer."""
+        """Test nontruncated with big enough buffer."""
         md_put = self._put_message()
         gmo = pymqi.GMO()
         gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
@@ -208,6 +176,147 @@ class TestGet(unittest.TestCase):
 
         self.assertEqual(self.message, message)
 
+    def test_put_string(self):
+        md = pymqi.MD()
+        # file coding defined (utf-8)
+        self.queue.put('тест', md)  # Cyrillic (non-ascii) characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        # In Python3 pymqi should put unicode string
+        if version_info.major >= 3:
+            self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+            self.assertEqual(md.CodedCharSetId, 1208)
+        else:
+            self.assertEqual(md.Format, pymqi.CMQC.MQFMT_NONE)
+
+    def test_put_string_with_ccsid_and_format(self):
+        md = pymqi.MD(
+            CodedCharSetId=1208,  # coding: utf8 is set
+            Format=pymqi.CMQC.MQFMT_STRING)
+
+        self.queue.put('тест', md)  # Cyrillic (non-ascii) characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        # In Python3 pymqi should put unicode string
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+        self.assertEqual(md.CodedCharSetId, 1208)
+
+    def test_put_unicode(self):
+        self.queue.put(u'\u0442\u0435\u0441\u0442')  # Unicode characters
+
+        md = pymqi.MD()
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+        self.assertEqual(md.CodedCharSetId, 1208)
+
+    def test_put_unicode_with_ccsid_and_format(self):
+        md = pymqi.MD(
+            CodedCharSetId=1208,
+            Format=pymqi.CMQC.MQFMT_STRING)
+
+        self.queue.put(u'\u0442\u0435\u0441\u0442', md)  # Unicode characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+        self.assertEqual(md.CodedCharSetId, 1208)
+
+    def test_put1_bytes(self):
+        md = pymqi.MD()
+        self.qmgr.put1(self.queue_name, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82', md)  # Non-ascii characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_NONE)
+
+    def test_put1_string(self):
+        md = pymqi.MD()
+        # file coding defined (utf-8)
+        self.qmgr.put1(self.queue_name, 'тест', md)  # Cyrillic (non-ascii) characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        # In Python3 pymqi should put unicode string
+        if version_info.major >= 3:
+            self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+            self.assertEqual(md.CodedCharSetId, 1208)
+        else:
+            self.assertEqual(md.Format, pymqi.CMQC.MQFMT_NONE)
+
+    def test_put1_string_with_ccsid_and_format(self):
+        md = pymqi.MD(
+            CodedCharSetId=1208,  # coding: utf8 is set
+            Format=pymqi.CMQC.MQFMT_STRING)
+
+        self.qmgr.put1(self.queue_name, 'тест', md)  # Cyrillic (non-ascii) characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        # In Python3 pymqi should put unicode string
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+        self.assertEqual(md.CodedCharSetId, 1208)
+
+    def test_put1_unicode(self):
+        self.qmgr.put1(self.queue_name, u'\u0442\u0435\u0441\u0442')  # Unicode characters
+
+        md = pymqi.MD()
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+        self.assertEqual(md.CodedCharSetId, 1208)
+
+    def test_put1_unicode_with_ccsid_and_format(self):
+        md = pymqi.MD(
+            CodedCharSetId=1208,
+            Format=pymqi.CMQC.MQFMT_STRING)
+
+        self.qmgr.put1(self.queue_name, u'\u0442\u0435\u0441\u0442', md)  # Unicode characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
+        self.assertEqual(md.CodedCharSetId, 1208)
+
+    def test_put1_bytes(self):
+        md = pymqi.MD()
+        self.qmgr.put1(self.queue_name, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82', md)  # Non-ascii characters
+
+        gmo = pymqi.GMO()
+        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
+        message = self.queue.get(None, md, gmo)
+
+        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
+        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_NONE)
 
 if __name__ == "__main__":
     unittest.main()
