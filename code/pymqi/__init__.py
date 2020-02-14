@@ -143,6 +143,9 @@ __mqbuild__ = pymqe.__mqbuild__
 # Python 2/3 compatibility
 #
 
+is_py2 = sys.version_info.major <= 2 # type: bool
+is_py3 = not is_py2 # type: bool
+
 def py23long(x):
     """ Convert:
        py2 int -> py2 long
@@ -1430,9 +1433,9 @@ class QueueManager(object):
 
         if not isinstance(msg, bytes):
             if (
-                (sys.version_info.major >= 3 and isinstance(msg, str))  # Python 3 string is unicode
+                (is_py3 and isinstance(msg, str))  # Python 3 string is unicode
                 or
-                (sys.version_info.major <= 2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
+                (is_py2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
               ):
                 msg = msg.encode('utf-8')
                 m_desc.CodedCharSetId = 1208
@@ -1614,9 +1617,9 @@ class Queue:
 
         if not isinstance(msg, bytes):
             if (
-                (sys.version_info.major >= 3 and isinstance(msg, str))  # Python 3 string is unicode
+                (is_py3 and isinstance(msg, str))  # Python 3 string is unicode
                 or
-                (sys.version_info.major <= 2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
+                (is_py2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
               ):
                 msg = msg.encode('utf-8')
                 m_desc.CodedCharSetId = 1208
