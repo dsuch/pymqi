@@ -3,7 +3,8 @@ PyMQI changelog
 
 * **1.10.1** (2020-02-15)
 
-  * Added automatic conversion of Unicode to bytes in put and put1 operations (thanks @SeyfSV and @leonjza)
+  * Added [automatic conversion of Unicode to bytes](https://dsuch.github.io/pymqi/examples.html#sending-unicode-data-vs-bytes)
+    in put and put1 operations (thanks @SeyfSV and @leonjza)
 
 * **1.9.3** (2019-12-04)
 
