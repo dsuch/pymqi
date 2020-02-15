@@ -1,5 +1,5 @@
-# See discussion and more examples at http://packages.python.org/pymqi/examples.html
-# or in doc/sphinx/examples.rst in the source distribution.
+# More examples are at https://dsuch.github.io/pymqi/examples.html
+# or in code/examples in the source distribution.
 
 import pymqi
 
