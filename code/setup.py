@@ -16,7 +16,7 @@ from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
-version = "1.9.3"
+version = '1.9.3'
 
 # Build either in bindings or client mode.
 bindings_mode = 0
@@ -28,7 +28,7 @@ if sys.argv[-1] == 'client':
     sys.argv = sys.argv[:-1]
 
 # Are we running 64bits?
-if calcsize("P") == 8:
+if calcsize('P') == 8:
     bits = 64
 else:
     bits = 32
@@ -37,11 +37,11 @@ def get_windows_settings():
     """ Windows settings.
     """
     if bits == 64:
-        library_dirs = [r"c:\Program Files (x86)\IBM\WebSphere MQ\tools\Lib64"]
-        include_dirs = [r"c:\Program Files (x86)\IBM\WebSphere MQ\tools\c\include"]
+        library_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\Lib64']
+        include_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\c\include']
     else:
-        library_dirs = [r"c:\Program Files\IBM\WebSphere MQ\Tools\Lib"]
-        include_dirs = [r"c:\Program Files\IBM\WebSphere MQ\tools\c\include"]
+        library_dirs = [r'c:\Program Files\IBM\WebSphere MQ\Tools\Lib']
+        include_dirs = [r'c:\Program Files\IBM\WebSphere MQ\tools\c\include']
 
     if bindings_mode:
         libraries = ['mqm']
@@ -161,9 +161,9 @@ else:
             raise Exception('MQ libraries could not be found')
 
 if bindings_mode:
-    print("Building PyMQI bindings mode %sbits" % bits)
+    print('Building PyMQI bindings mode %sbits' % bits)
 else:
-    print("Building PyMQI client mode %sbits" % bits)
+    print('Building PyMQI client mode %sbits' % bits)
 
 print('Using library_dirs:`%s`, include:`%s`, libraries:`%s`' % (library_dirs, include_dirs, libraries))
 
