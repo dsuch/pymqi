@@ -132,7 +132,9 @@ from pymqi import CMQCFC
 from pymqi import CMQC, CMQXC, CMQZC
 
 # For pyflakes
-CMQZC = CMQZC
+if 0:
+    CMQZC = CMQZC
+    unicode = object()
 
 __version__ = '1.10a1'
 __mqlevels__ = pymqe.__mqlevels__
@@ -1234,10 +1236,10 @@ class QueueManager(object):
     default, the Queue Manager is implicitly connected. If required,
     the connection may be deferred until a call to connect().
     """
-    def __init__(self, name='', disconnect_on_exit=True, bytes_encoding=default.bytes_encoding, ccsid=default.ccsid):
+    def __init__(self, name='', disconnect_on_exit=True, bytes_encoding=default.bytes_encoding, default_ccsid=default.ccsid):
         """ Connect to the Queue Manager 'name' (default value '').
         If 'name' is None, don't connect now, but defer the connection until connect() is called.
-        Input 'bytes_encoding'  and 'ccsid' are the encodings that will be used in PCF, MQPUT and MQPUT1 calls
+        Input 'bytes_encoding'  and 'default_ccsid' are the encodings that will be used in PCF, MQPUT and MQPUT1 calls
         using this MQ connection in case Unicode objects should be given on input.
         """
         name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
@@ -1247,7 +1249,7 @@ class QueueManager(object):
         self.__disconnect_on_exit = disconnect_on_exit
         self.__qmobj = None
         self.bytes_encoding = bytes_encoding
-        self.default_ccsid = ccsid
+        self.default_ccsid = default_ccsid
 
         if name is not None:
             self.connect(name)
@@ -2452,12 +2454,12 @@ def connect(queue_manager, channel=None, conn_info=None, user=None, password=Non
     A pymqi.QueueManager is returned on successfully establishing a connection.
     """
     if channel and conn_info:
-        qmgr = QueueManager(None, disconnect_on_exit)
+        qmgr = QueueManager(None, disconnect_on_exit, bytes_encoding=bytes_encoding, ccsid=default_ccsid)
         qmgr.connect_tcp_client(queue_manager or '', CD(), channel, conn_info, user, password)
         return qmgr
 
     elif queue_manager:
-        qmgr = QueueManager(queue_manager, disconnect_on_exit)
+        qmgr = QueueManager(queue_manager, disconnect_on_exit, bytes_encoding=bytes_encoding, ccsid=default_ccsid)
         return qmgr
 
     else:
