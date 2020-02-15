@@ -136,7 +136,7 @@ if 0:
     CMQZC = CMQZC
     unicode = object()
 
-__version__ = '1.10a1'
+__version__ = '1.10'
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 
