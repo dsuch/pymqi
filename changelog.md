@@ -1,9 +1,14 @@
 PyMQI changelog
 ---------------
 
+* **1.10** (2020-02-15)
+
+  * Added automatic conversion of Unicode to bytes in put and put1 operations -
+    check the [usage example]() for more details
+
 * **1.9.3** (2019-12-04)
 
-  * Many thanks to [@SeyfSV](https://github.com/SeyfSV) contributing the features below
+  * Many thanks to [@SeyfSV](https://github.com/SeyfSV) for contributing the features below
   * Updated MQCD for MQ v9.1.3
   * Changed default values for MQCD.ChannelType and MQCD.TransportType
   * Added MQOpts class for MQXQH header
