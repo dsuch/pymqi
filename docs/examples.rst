@@ -124,6 +124,67 @@ Notes:
   2033 MQRC_NO_MSG_AVAILABLE, see :ref:`here <wait_single_message>`
   and :ref:`here <wait_multiple_messages>` for info on how to wait for a single or multiple messages.
 
+==============================
+Sending Unicode data vs. bytes
+==============================
+
+* Note that Unicode and bytes handling is unified in PyMQI regardless of whether one uses Python 2 or 3, i.e.
+  everything below applies to both Python lines
+
+* PyMQI does not process in any way bytes objects used in **queue.put** calls - this means that if you encode
+  your data as bytes before handling it to queue.put, the data will be sent as-is
+
+* If you give queue.put Unicode objects on input, though, they will be automatically converted to bytes,
+  using **UTF-8** by default - this should suffice in most cases
+
+* It is possible to change the default encoding used for conversion from Unicode to bytes by providing
+  two parameters when calling **pymqi.connect** or when constructing **QueueManager** objects
+
+* The parameters are called **bytes_encoding** and **default_ccsid** and their default values are **utf8** and **1208**,
+  respectively
+
+* Parameter bytes_encoding is used for conversion of Python Unicode objects to bytes objects
+
+* Parameter default_ccsid is used to specify a CCSID in the underlying call's MQMD structure
+
+* Both parameters will be used in all put calls related to a single MQ connection - that is, they are specified once only
+  on the level of the connection to a queue manager, rather than individually for each put call
+
+* If not using the defaults, it is the user's responsibility to make sure that the two parameters match - for instance,
+  encoding UTF-8 is represented by CCSID 1208, but a different CCSID may be required with other encodings
+
+* It is also the user's responsibility to ensure that default_ccsid matches the queue manager's CCSID
+
+* Again, the conversion from Unicode to bytes as well as the application of bytes_encoding and default_ccsid take place
+  only if Unicode objects are given on input to queue.put - if data is already bytes, there is no conversion
+
+* In the example below, message is a Unicode object and it will be converted to ISO-8859-1 by PyMQI
+  because this is the encoding explicitly specified. Also, that encoding's corresponding CCSID - 819 - is given on input
+  to pymqi.connect.
+
+Code::
+
+    import pymqi
+
+    queue_manager = 'QM1'
+    channel = 'DEV.APP.SVRCONN'
+    host = '127.0.0.1'
+    port = '1414'
+    queue_name = 'TEST.1'
+    message = u'My Unicode data'
+    conn_info = '%s(%s)' % (host, port)
+
+    bytes_encoding = 'iso-8859-1'
+    default_ccsid = 819
+
+    qmgr = pymqi.connect(queue_manager, channel, conn_info, bytes_encoding=bytes_encoding, default_ccsid=default_ccsid)
+
+    queue = pymqi.Queue(qmgr, queue_name)
+    queue.put(message)
+    queue.close()
+
+    qmgr.disconnect()
+
 =================================================
 How to get a message without JMS (MQRFH2) headers
 =================================================
