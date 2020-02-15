@@ -45,7 +45,7 @@ PERFORMANCE OF THIS SOFTWARE.
  *
  */
 
-static char __version__[] = "1.9.3";
+static char __version__[] = "1.10a1";
 
 static char pymqe_doc[] = " \
 pymqe - A Python MQ Extension.  This presents a low-level Python \

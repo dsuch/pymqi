@@ -134,7 +134,7 @@ from pymqi import CMQC, CMQXC, CMQZC
 # For pyflakes
 CMQZC = CMQZC
 
-__version__ = '1.9.3'
+__version__ = '1.10a1'
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
 
@@ -145,6 +145,10 @@ __mqbuild__ = pymqe.__mqbuild__
 
 is_py2 = sys.version_info.major <= 2 # type: bool
 is_py3 = not is_py2 # type: bool
+
+class default:
+    bytes_encoding = 'utf8'
+    ccsid          = 1208
 
 def py23long(x):
     """ Convert:
@@ -1230,10 +1234,10 @@ class QueueManager(object):
     default, the Queue Manager is implicitly connected. If required,
     the connection may be deferred until a call to connect().
     """
-    def __init__(self, name='', disconnect_on_exit=True, bytes_encoding='utf8'):
+    def __init__(self, name='', disconnect_on_exit=True, bytes_encoding=default.bytes_encoding, ccsid=default.ccsid):
         """ Connect to the Queue Manager 'name' (default value '').
         If 'name' is None, don't connect now, but defer the connection until connect() is called.
-        Input 'bytes_encoding' is the encoding that will be used in PCF calls
+        Input 'bytes_encoding'  and 'ccsid' are the encodings that will be used in PCF, MQPUT and MQPUT1 calls
         using this MQ connection in case Unicode objects should be given on input.
         """
         name = ensure_bytes(name)  # Python 3 strings to be converted to bytes
@@ -1243,6 +1247,7 @@ class QueueManager(object):
         self.__disconnect_on_exit = disconnect_on_exit
         self.__qmobj = None
         self.bytes_encoding = bytes_encoding
+        self.default_ccsid = ccsid
 
         if name is not None:
             self.connect(name)
@@ -1437,8 +1442,8 @@ class QueueManager(object):
                 or
                 (is_py2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
               ):
-                msg = msg.encode('utf-8')
-                m_desc.CodedCharSetId = 1208
+                msg = msg.encode(self.bytes_encoding)
+                m_desc.CodedCharSetId = self.default_ccsid
                 m_desc.Format = CMQC.MQFMT_STRING
             else:
                 error_message = 'Message type is {0}. Convert to bytes.'
@@ -1448,8 +1453,7 @@ class QueueManager(object):
             put_opts = PMO()
 
         # Now send the message
-        rv = pymqe.MQPUT1(self.__handle, make_q_desc(qDesc).pack(),
-                          m_desc.pack(), put_opts.pack(), msg)
+        rv = pymqe.MQPUT1(self.__handle, make_q_desc(qDesc).pack(), m_desc.pack(), put_opts.pack(), msg)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
         m_desc.unpack(rv[0])
@@ -1560,7 +1564,7 @@ class Queue:
              Y       Y       Immediately
         """
 
-        self.__qMgr = ensure_bytes(qMgr)  # Python 3 strings to be converted to bytes
+        self.__qMgr = qMgr # type: QueueManager
         self.__qHandle = self.__qDesc = self.__openOpts = None
         ln = len(opts)
         if ln > 2:
@@ -1621,8 +1625,8 @@ class Queue:
                 or
                 (is_py2 and isinstance(msg, unicode)) # Python 2.7 string can be unicode
               ):
-                msg = msg.encode('utf-8')
-                m_desc.CodedCharSetId = 1208
+                msg = msg.encode(self.__qMgr.bytes_encoding)
+                m_desc.CodedCharSetId = self.__qMgr.default_ccsid
                 m_desc.Format = CMQC.MQFMT_STRING
             else:
                 error_message = 'Message type is {0}. Convert to bytes.'
@@ -1630,12 +1634,14 @@ class Queue:
 
         if put_opts is None:
             put_opts = PMO()
+
         # If queue open was deferred, open it for put now
         if not self.__qHandle:
             self.__openOpts = CMQC.MQOO_OUTPUT
             self.__realOpen()
+
         # Now send the message
-        rv = pymqe.MQPUT(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), put_opts.pack(), msg)
+        rv = pymqe.MQPUT(self.__qMgr.get_handle(), self.__qHandle, m_desc.pack(), put_opts.pack(), msg)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
         m_desc.unpack(rv[0])
@@ -2438,7 +2444,8 @@ class ByteString(object):
     def __len__(self):
         return len(self.value)
 
-def connect(queue_manager, channel=None, conn_info=None, user=None, password=None, disconnect_on_exit=True):
+def connect(queue_manager, channel=None, conn_info=None, user=None, password=None, disconnect_on_exit=True,
+    bytes_encoding=default.bytes_encoding, default_ccsid=default.ccsid):
     """ A convenience wrapper for connecting to MQ queue managers. If given the
     'queue_manager' parameter only, will try connecting to it in bindings mode.
     If given both 'channel' and 'conn_info' will connect in client mode.
