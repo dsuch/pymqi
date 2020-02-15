@@ -2454,12 +2454,12 @@ def connect(queue_manager, channel=None, conn_info=None, user=None, password=Non
     A pymqi.QueueManager is returned on successfully establishing a connection.
     """
     if channel and conn_info:
-        qmgr = QueueManager(None, disconnect_on_exit, bytes_encoding=bytes_encoding, ccsid=default_ccsid)
+        qmgr = QueueManager(None, disconnect_on_exit, bytes_encoding=bytes_encoding, default_ccsid=default.ccsid)
         qmgr.connect_tcp_client(queue_manager or '', CD(), channel, conn_info, user, password)
         return qmgr
 
     elif queue_manager:
-        qmgr = QueueManager(queue_manager, disconnect_on_exit, bytes_encoding=bytes_encoding, ccsid=default_ccsid)
+        qmgr = QueueManager(queue_manager, disconnect_on_exit, bytes_encoding=bytes_encoding, default_ccsid=default.ccsid)
         return qmgr
 
     else:
