@@ -5,6 +5,7 @@ from sys import version_info
 import unittest
 
 import config
+import os
 import utils
 
 from test_setup import Tests
@@ -175,6 +176,23 @@ class TestGet(Tests):
         message = self.queue.get(len(self.message), md_get, gmo)
 
         self.assertEqual(self.message, message)
+
+    def test_get_nontruncated_big_msg(self):
+        """Test get nontruncated big message"""
+        tbl = bytes.maketrans(bytearray(range(256)),
+                              bytearray([ord(b'a') + b % 26 for b in range(256)]))
+
+        self.message = os.urandom(1024*1024*3).translate(tbl)
+        md_put = self._put_message()
+        gmo = pymqi.GMO()
+
+        md_get = pymqi.MD()
+        md_get.MsgId = md_put.MsgId
+
+        message = self.queue.get(None, md_get, gmo)
+
+        self.assertEqual(self.message, message)
+        self.assertEqual(md_put.PutDate, md_get.PutDate)
 
     def test_put_string(self):
         md = pymqi.MD()
