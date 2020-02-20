@@ -1737,6 +1737,9 @@ class Queue:
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
 
+        m_desc.unpack(rv[1])
+        get_opts.unpack(rv[2])
+
         return rv[0]
 
     def get_no_jms(self, max_length=None, *args):
