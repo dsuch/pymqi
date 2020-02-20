@@ -1729,6 +1729,10 @@ class Queue:
             (rv[-1] == CMQC.MQRC_TRUNCATED_MSG_FAILED and maxLength is not None) or
             # Other errors
             (rv[-1] != CMQC.MQRC_TRUNCATED_MSG_FAILED)):
+            if rv[-2] == CMQC.MQCC_WARNING:
+                m_desc.unpack(rv[1])
+                get_opts.unpack(rv[2])
+
             raise MQMIError(rv[-2], rv[-1], message=rv[0], original_length=rv[-3])
 
         # Message truncated, but we know its size. Do another MQGET
@@ -1736,6 +1740,9 @@ class Queue:
         rv = pymqe.MQGET(self.__qMgr.getHandle(), self.__qHandle, m_desc.pack(), get_opts.pack(), rv[-3])
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
+
+        m_desc.unpack(rv[1])
+        get_opts.unpack(rv[2])
 
         return rv[0]
 

@@ -51,28 +51,20 @@ class TestGet(Tests):
 
     def test_get_nontruncated(self):
         """Test nontruncated without buffer."""
-        md_put = self._put_message()
-        gmo = pymqi.GMO()
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
+        self._put_message()
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
-        message = self.queue.get(None, md_get, gmo)
+        message = self.queue.get(None, md_get)
 
         self.assertEqual(self.message, message)
 
     def test_get_nontruncated_0(self):
         """Test nontruncated with zerro buffer length."""
-        md_put = self._put_message()
-        gmo = pymqi.GMO()
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
+        self._put_message()
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
         try:
-            self.queue.get(0, md_get, gmo)
+            self.queue.get(0, md_get)
         except pymqi.MQMIError as ex:
             self.assertEqual(ex.reason, pymqi.CMQC.MQRC_TRUNCATED_MSG_FAILED)
             self.assertEqual(ex.original_length,  # pylint: disable=no-member
@@ -81,14 +73,10 @@ class TestGet(Tests):
     def test_get_nontruncated_short(self):
         """Test nontruncated with short buffer."""
         md_put = self._put_message()
-        gmo = pymqi.GMO()
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
         try:
-            self.queue.get(self.buffer_length, md_get, gmo)
+            self.queue.get(self.buffer_length, md_get)
         except pymqi.MQMIError as ex:
             self.assertEqual(ex.reason, pymqi.CMQC.MQRC_TRUNCATED_MSG_FAILED)
             self.assertEqual(ex.original_length,  # pylint: disable=no-member
@@ -97,26 +85,19 @@ class TestGet(Tests):
     def test_get_nontruncated_enough(self):
         """Test nontruncated with big enough buffer."""
         md_put = self._put_message()
-        gmo = pymqi.GMO()
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
-        message = self.queue.get(len(self.message), md_get, gmo)
+        message = self.queue.get(len(self.message), md_get)
 
         self.assertEqual(self.message, message)
 
     def test_get_truncated(self):
         """Test truncated without buffer."""
-        md_put = self._put_message()
+        self._put_message()
         gmo = pymqi.GMO()
         gmo.Options = pymqi.CMQC.MQGMO_ACCEPT_TRUNCATED_MSG
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
         try:
             self.queue.get(0, md_get, gmo)
         except pymqi.MQMIError as ex:
@@ -127,14 +108,11 @@ class TestGet(Tests):
 
     def test_get_truncated_0(self):
         """Test truncated with zero buffer length."""
-        md_put = self._put_message()
+        self._put_message()
         gmo = pymqi.GMO()
         gmo.Options = pymqi.CMQC.MQGMO_ACCEPT_TRUNCATED_MSG
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
         try:
             self.queue.get(0, md_get, gmo)
         except pymqi.MQMIError as ex:
@@ -145,14 +123,11 @@ class TestGet(Tests):
 
     def test_get_truncated_short(self):
         """Test truncated with short buffer."""
-        md_put = self._put_message()
+        self._put_message()
         gmo = pymqi.GMO()
         gmo.Options = pymqi.CMQC.MQGMO_ACCEPT_TRUNCATED_MSG
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
         try:
             self.queue.get(self.buffer_length, md_get, gmo)
         except pymqi.MQMIError as ex:
@@ -164,17 +139,43 @@ class TestGet(Tests):
 
     def test_get_truncated_enough(self):
         """Test truncated with big buffer."""
-        md_put = self._put_message()
+        self._put_message()
         gmo = pymqi.GMO()
         gmo.Options = pymqi.CMQC.MQGMO_ACCEPT_TRUNCATED_MSG
-        gmo.MatchOptions = pymqi.CMQC.MQMO_MATCH_MSG_ID
 
         md_get = pymqi.MD()
-        md_get.MsgId = md_put.MsgId
-
         message = self.queue.get(len(self.message), md_get, gmo)
 
         self.assertEqual(self.message, message)
+
+    def test_get_nontruncated_big_msg(self):
+        """Test get nontruncated big message"""
+        md_put = pymqi.MD()
+        self.queue.put(bytes(4097), md_put)
+
+        md_get = pymqi.MD()
+        message = self.queue.get(None, md_get)
+
+        self.assertEqual(len(message), 4097)
+        self.assertEqual(md_put.PutDate, md_get.PutDate)
+
+    def test_get_truncated_big_msg(self):
+        """Test get nontruncated big message"""
+        md_put = pymqi.MD()
+        self.queue.put(bytes(4097), md_put)
+
+        gmo = pymqi.GMO()
+        gmo.Options = pymqi.CMQC.MQGMO_ACCEPT_TRUNCATED_MSG
+
+        md_get = pymqi.MD()
+        try:
+            message = self.queue.get(None, md_get, gmo)
+        except pymqi.MQMIError as ex:
+            self.assertEqual(ex.reason, pymqi.CMQC.MQRC_TRUNCATED_MSG_ACCEPTED)
+            self.assertEqual(ex.original_length,  # pylint: disable=no-member
+                             4097)
+            self.assertEqual(len(ex.message), 0)
+            self.assertEqual(md_put.PutDate, md_get.PutDate)
 
     def test_put_string(self):
         md = pymqi.MD()
