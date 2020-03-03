@@ -11,7 +11,6 @@ from test_setup import Tests
 
 import pymqi
 
-
 class TestGet(Tests):
     """Test Qeueu.get() method."""
 
@@ -151,7 +150,10 @@ class TestGet(Tests):
     def test_get_nontruncated_big_msg(self):
         """Test get nontruncated big message"""
         md_put = pymqi.MD()
-        self.queue.put(bytes(4097), md_put)
+        if version_info.major >= 3:
+            self.queue.put(bytes(4097), md_put)
+        else:
+            self.queue.put(bytes(b'\0'*4097), md_put)
 
         md_get = pymqi.MD()
         message = self.queue.get(None, md_get)
@@ -162,8 +164,10 @@ class TestGet(Tests):
     def test_get_truncated_big_msg(self):
         """Test get nontruncated big message"""
         md_put = pymqi.MD()
-        self.queue.put(bytes(4097), md_put)
-
+        if version_info.major >= 3:
+            self.queue.put(bytes(4097), md_put)
+        else:
+            self.queue.put(bytes(b'\0'*4097), md_put)
         gmo = pymqi.GMO()
         gmo.Options = pymqi.CMQC.MQGMO_ACCEPT_TRUNCATED_MSG
 
