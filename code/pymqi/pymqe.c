@@ -316,7 +316,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   char* name = NULL;
   MQHCONN handle;
   MQLONG comp_code, comp_reason;
-  char* mqcd = NULL;
+  PMQCD mqcd = NULL;
   Py_ssize_t mqcd_buf_len = 0;
   MQCNO cno = {MQCNO_DEFAULT};
   PyObject* user_password = NULL;
@@ -329,7 +329,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   long options = MQCNO_NONE;
 
 #ifdef PYMQI_FEATURE_SSL
-  char *sco = NULL;
+  MQSCO *sco = NULL;
   Py_ssize_t sco_len = 0;
 #if PY_MAJOR_VERSION==2
   if (!PyArg_ParseTuple(args, "slz#O|s#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
@@ -337,9 +337,6 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
   if (!PyArg_ParseTuple(args, "ylz#O|y#", &name, &options, &mqcd, &mqcd_buf_len, &user_password, &sco, &sco_len)) {
 #endif
     return 0;
-  }
-  if (sco && checkArgSize(sco_len, PYMQI_MQSCO_SIZEOF, "MQSCO")) {
-    return NULL;
   }
 #else
 #if PY_MAJOR_VERSION==2
@@ -357,7 +354,7 @@ static PyObject * pymqe_MQCONNX(PyObject *self, PyObject *args) {
    */
 #ifdef PYMQI_FEATURE_SSL
   cno.Version = MQCNO_VERSION_5;
-  cno.SSLConfigPtr =  (MQSCO *)sco;
+  cno.SSLConfigPtr = sco;
 #else
   cno.Version = MQCNO_VERSION_2;
 #endif
@@ -812,7 +809,7 @@ attribute. \
  * look like there's anything bigger than this in cmqc.h. I'm sure
  * someone will tell me if I'm wrong.
  */
-#define MAX_CHARATTR_LENGTH 129
+#define MAX_CHARATTR_LENGTH 257
 
 static PyObject *pymqe_MQINQ(PyObject *self, PyObject *args) {
   MQLONG compCode, compReason;
