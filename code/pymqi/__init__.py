@@ -976,13 +976,11 @@ class SCO(MQOpts):
                      ['FipsRequired', py23long(0), MQLONG_TYPE]]
 
         if '7.0' in pymqe.__mqlevels__:
-            opts += [['EncryptionPolicySuiteB', [0, 0, 0, 0], '4' + MQLONG_TYPE]]
+            opts += [['EncryptionPolicySuiteB', [1, 0, 0, 0], '4' + MQLONG_TYPE]]
 
         if '7.1' in pymqe.__mqlevels__:
             opts += [['CertificateValPolicy', py23long(0), MQLONG_TYPE]]
 
-            if MQLONG_TYPE == 'i':
-                opts += [['pad', b'', '4s']]
 
         if '8.0.0' in pymqe.__mqlevels__:
             opts += [['CertificateLabel', b'', '64s']]
@@ -1353,12 +1351,12 @@ class QueueManager(object):
     connectWithOptions = connect_with_options
 
     def connect_tcp_client(self, name, cd, channel, conn_name, user, password):
+        # type: (str, CD, str, str, str, str)
         """ Connect immediately to the remote Queue Manager 'name', using
         a TCP Client connection, with channnel 'channel' and the
         TCP connection string 'conn_name'. All other connection
         optons come from 'cd'.
         """
-        # type: (str, CD, str, str, str, str)
 
         cd.ChannelName = ensure_bytes(channel)
         cd.ConnectionName = ensure_bytes(conn_name)
