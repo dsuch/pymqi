@@ -23,7 +23,11 @@ class TestPCF(unittest.TestCase):
         self.conn_info = "{0}({1})".format(self.host, self.port)
 
         self.qmgr = pymqi.QueueManager(None)
-        self.qmgr.connectTCPClient(self.queue_manager, pymqi.CD(), self.channel, self.conn_info, self.user, self.password)
+        try:
+            self.qmgr.connectTCPClient(self.queue_manager, pymqi.CD(), self.channel, self.conn_info, self.user, self.password)
+        except pymqi.MQMIError as ex:
+            if ex.comp == 2:
+                raise ex
 
         self.create_queue(self.queue_name)
 
@@ -44,7 +48,7 @@ class TestPCF(unittest.TestCase):
                 pymqi.CMQCFC.MQIACF_REPLACE: pymqi.CMQCFC.MQRP_YES}
         pcf = pymqi.PCFExecute(self.qmgr)
         pcf.MQCMD_CREATE_Q(args)
-        pcf.disconnect
+        pcf.disconnect()
 
     def delete_queue(self, queue_name):
 
@@ -52,26 +56,178 @@ class TestPCF(unittest.TestCase):
         args = {pymqi.CMQC.MQCA_Q_NAME: utils.py3str2bytes(queue_name),
                 pymqi.CMQCFC.MQIACF_PURGE: pymqi.CMQCFC.MQPO_YES}
         pcf.MQCMD_DELETE_Q(args)
-        pcf.disconnect
+        pcf.disconnect()
+    
+    @unittest.skip('Not implemented')
+    def test_mqcfbs(self):
+        pass
 
-    def test_object_inquire_multiple_attributes(self):
+    def test_mqcfbf(self):
+        """Test byte string MQCFBF
+        Also uses MQCFST, MQCFIN and MQCFIL as parameters
+        """
+        attrs = []
+        attrs.append(pymqi.CFST(Parameter=pymqi.CMQCFC.MQCACF_SUB_NAME,
+                                String=b'SYSTEM.DEFAULT.SUB'))
+        attrs.append(pymqi.CFIN(Parameter=pymqi.CMQCFC.MQIACF_SUB_TYPE,
+                                Value=pymqi.CMQCFC.MQSUBTYPE_ADMIN))
+        attrs.append(pymqi.CFIL(Parameter=pymqi.CMQCFC.MQIACF_SUB_ATTRS,
+                                Values=[pymqi.CMQCFC.MQBACF_DESTINATION_CORREL_ID]))
+
+        pcf = pymqi.PCFExecute(self.qmgr)
+        results = pcf.MQCMD_INQUIRE_SUBSCRIPTION(attrs)
+        pcf.disconnect()
+
+        self.assertTrue(results, 'Subscription not found')
+        for result in results:
+            self.assertTrue(len(result[pymqi.CMQCFC.MQBACF_DESTINATION_CORREL_ID]) == 24,
+                            'Correlation ID has wrong size ({})'.format(len(result[pymqi.CMQCFC.MQBACF_DESTINATION_CORREL_ID])))
+
+    def test_mqcfif(self):
+        """Test string filter MQCFIF
+        Also uses MQCFST, MQCFIN and MQCFIL as parameters
+        """
+        attrs = []
+        attrs.append(pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_NAME,
+                                String=b'*'))
+        attrs.append(pymqi.CFIN(Parameter=pymqi.CMQC.MQIA_Q_TYPE,
+                                Value=pymqi.CMQC.MQQT_LOCAL))
+        attrs.append(pymqi.CFIL(Parameter=pymqi.CMQCFC.MQIACF_Q_ATTRS,
+                                Values=[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC]))
+
+        object_filters = []
+        object_filters.append(
+            pymqi.CFIF(Parameter=pymqi.CMQC.MQIA_CURRENT_Q_DEPTH,
+                       Operator=pymqi.CMQCFC.MQCFOP_GREATER,
+                       FilterValue=0))
+
+        pcf = pymqi.PCFExecute(self.qmgr)
+        results = pcf.MQCMD_INQUIRE_Q(attrs, object_filters)
+        pcf.disconnect()
+
+        self.assertTrue(results, 'Queue not found')
+        for result in results:
+            self.assertTrue(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH] > 0,
+                            'Found Queue with depth {}'.format(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH]))
+
+    def test_mqcfsf(self):
+        """Test string filter MQCFSF
+        Also uses MQCFST, MQCFIN and MQCFIL as parameters
+        """
+        attrs = []
+        attrs.append(pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_NAME,
+                                String=b'*'))
+        attrs.append(pymqi.CFIN(Parameter=pymqi.CMQC.MQIA_Q_TYPE,
+                                Value=pymqi.CMQC.MQQT_LOCAL))
+        attrs.append(pymqi.CFIL(Parameter=pymqi.CMQCFC.MQIACF_Q_ATTRS,
+                                Values=[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC]))
+
+        object_filters = []
+        object_filters.append(
+            pymqi.CFSF(Parameter=pymqi.CMQC.MQCA_Q_DESC,
+                       Operator=pymqi.CMQCFC.MQCFOP_LIKE,
+                       FilterValue=b'IBM MQ*'))
+
+        pcf = pymqi.PCFExecute(self.qmgr)
+        results = pcf.MQCMD_INQUIRE_Q(attrs, object_filters)
+        pcf.disconnect()
+
+        self.assertTrue(results, 'Queue not found')
+        for result in results:
+            self.assertTrue(not result[pymqi.CMQC.MQCA_Q_DESC].startswith(b'MQ'),
+                            'Found Queue with description {}'.format(result[pymqi.CMQC.MQCA_Q_DESC]))
+            self.assertTrue(pymqi.CMQC.MQCA_Q_DESC in result,
+                            'Attribute {} is not returned'.format(result[pymqi.CMQC.MQCA_Q_DESC]))
+
+    def test_mqcfsl(self):
+        """Test string filter MQCFSL
+        Also uses MQCFST as parameters
+        """
+        attrs = []
+        attrs.append(pymqi.CFST(Parameter=pymqi.CMQC.MQCA_TOPIC_NAME,
+                                String=b'*'))
+
+        pcf = pymqi.PCFExecute(self.qmgr)
+        results = pcf.MQCMD_INQUIRE_TOPIC_NAMES(attrs)
+        pcf.disconnect()
+
+        self.assertTrue(results, 'Topics not found')
+        for result in results:
+            self.assertTrue(isinstance(result[pymqi.CMQCFC.MQCACF_TOPIC_NAMES], list),
+                            'Returned value is not list: {}'.format(type(result[pymqi.CMQCFC.MQCACF_TOPIC_NAMES])))
+
+    def test_arbitrary_message_with_mqcfil(self):
+        """Test arbitrary message with MQCFIL
+        """
+        message = pymqi.CFH(Version=pymqi.CMQCFC.MQCFH_VERSION_1,
+                    Type=pymqi.CMQCFC.MQCFT_USER,
+                    ParameterCount=1).pack()
+        message = message + pymqi.CFIL(Parameter=1,
+                                       Values=[1,2,3,4,5]).pack()
+
+        queue = pymqi.Queue(self.qmgr, self.queue_name,
+                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
+
+        put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
+        queue.put(message, put_md)
+
+        get_opts = pymqi.GMO(
+                    Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
+                    Version=pymqi.CMQC.MQGMO_VERSION_2,
+                    MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID) 
+        get_md = pymqi.MD(MsgId=put_md.MsgId) 
+        message = queue.get(None, get_md, get_opts)
+        queue.close()
+        message = pymqi.PCFExecute.unpack(message)
+
+        self.assertTrue(isinstance(message[1], list),
+                        'Returned value is not list: {}'.format(type(message[1])))
+
+
+    def test_object_filter_int_old(self):
         attrs = {
-            pymqi.CMQC.MQCA_Q_NAME : utils.py3str2bytes(self.queue_name),
-            pymqi.CMQC.MQIA_Q_TYPE : pymqi.CMQC.MQQT_LOCAL,
+            pymqi.CMQC.MQCA_Q_NAME : b'*',
             pymqi.CMQCFC.MQIACF_Q_ATTRS : [pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC]
             }
 
+        filter_depth = pymqi.Filter(pymqi.CMQC.MQIA_CURRENT_Q_DEPTH).greater(0)
+
         pcf = pymqi.PCFExecute(self.qmgr)
-        results = pcf.MQCMD_INQUIRE_Q(attrs)
-        pcf.disconnect
-        
-        queue_inquired = False
+        results = pcf.MQCMD_INQUIRE_Q(attrs, [filter_depth])
+        pcf.disconnect()
+
+        self.assertTrue(results, 'Queue not found')
         for result in results:
-            if result.get(pymqi.CMQC.MQCA_Q_NAME).decode().strip() == self.queue_name:
-                if pymqi.CMQC.MQIA_CURRENT_Q_DEPTH in result and pymqi.CMQC.MQCA_Q_DESC in result:
-                    queue_inquired = True
+            self.assertTrue(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH] > 0,
+                            'Found Queue with depth {}'.format(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH]))
+
+    def test_object_filter_str_old(self):
+        attrs = {
+            pymqi.CMQC.MQCA_Q_NAME : b'*',
+            pymqi.CMQCFC.MQIACF_Q_ATTRS : [pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC]
+            }
+
+        filter_depth =  pymqi.Filter(pymqi.CMQC.MQCA_Q_DESC).like(b'IBM MQ *')
+
+        pcf = pymqi.PCFExecute(self.qmgr)
+        results = pcf.MQCMD_INQUIRE_Q(attrs, [filter_depth])
+        pcf.disconnect()
+
+        self.assertTrue(results, 'Queue not found')
+        for result in results:
+            self.assertTrue(not result[pymqi.CMQC.MQCA_Q_DESC].startswith(b'MQ'),
+                            'Found Queue with description {}'.format(result[pymqi.CMQC.MQCA_Q_DESC]))
+
+    def test_disconnect(self):
+        pcf = pymqi.PCFExecute(self.qmgr)
+
+        self.assertTrue(pymqi.PCFExecute._reply_queue)
+        self.assertTrue(pymqi.PCFExecute._reply_queue_name)
         
-        self.assertEqual(True, queue_inquired)
+        pcf.disconnect()
+        self.assertTrue(self.qmgr)
+        self.assertFalse(pymqi.PCFExecute._reply_queue)
+        self.assertFalse(pymqi.PCFExecute._reply_queue_name)
 
 if __name__ == "__main__":
     unittest.main()        

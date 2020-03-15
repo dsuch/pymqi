@@ -20,7 +20,7 @@ class Tests(unittest.TestCase):
     password = ''
 
     qmgr = None
-    
+
 
     @classmethod
     def setUpClass(cls):
@@ -54,10 +54,27 @@ class Tests(unittest.TestCase):
         Creates connection `self.qmgr` to Queue Manager `self.queue_manager`
         and creates queue `self.queue_name`
         """
+        # max length of queue names is 48 characters
+        self.queue_name = "{prefix}MSG.QUEUE".format(prefix=config.MQ.QUEUE.PREFIX)
+        self.queue_manager = config.MQ.QM.NAME
+        self.channel = config.MQ.QM.CHANNEL
+        self.host = config.MQ.QM.HOST
+        self.port = config.MQ.QM.PORT
+        self.user = config.MQ.QM.USER
+        self.password = config.MQ.QM.PASSWORD
+
+        self.conn_info = "{0}({1})".format(self.host, self.port)
+
+        self.qmgr = pymqi.QueueManager(None)
+        try:
+            self.qmgr.connectTCPClient(self.queue_manager, pymqi.CD(), self.channel, self.conn_info, self.user, self.password)
+        except pymqi.MQMIError as ex:
+            if ex.comp == 2:
+                raise ex
 
     def tearDown(self):
         """Clear test environment."""
-    
+
     @classmethod
     def inquire_qmgr_version(cls):
         return cls.qmgr.inquire(pymqi.CMQC.MQCA_VERSION)
@@ -78,7 +95,7 @@ class Tests(unittest.TestCase):
         args = {pymqi.CMQC.MQCA_Q_NAME: utils.py3str2bytes(queue_name),
                 pymqi.CMQCFC.MQIACF_PURGE: pymqi.CMQCFC.MQPO_YES}
         pcf.MQCMD_DELETE_Q(args)
-    
+
     def create_channel(self, channel_name, args=None):
         if args:
             args[pymqi.CMQCFC.MQCACH_CHANNEL_NAME] = utils.py3str2bytes(channel_name)
@@ -97,11 +114,11 @@ class Tests(unittest.TestCase):
     def create_auth_rec(self, args):
         pcf = pymqi.PCFExecute(self.qmgr)
         pcf.MQCMD_SET_CHLAUTH_REC(args)
-    
+
     def delete_auth_rec(self, args):
         pcf = pymqi.PCFExecute(self.qmgr)
         pcf.MQCMD_SET_CHLAUTH_REC(args)
-    
+
     @classmethod
     def edit_qmgr(cls, args):
         pcf = pymqi.PCFExecute(cls.qmgr)
