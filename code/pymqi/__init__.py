@@ -97,7 +97,7 @@ import threading
 import ctypes
 import sys
 
-from typing import Any, Optional, Union
+from typing import Any, Optional, Union, Dict
 
 # import xml parser.  lxml/etree only available since python 2.5
 use_minidom = False
@@ -268,7 +268,7 @@ class MQOpts(object):
 
         # Dict to store c_char arrays to prevent memory addresses
         # from getting overwritten
-        self.__vs_ctype_store = {str, Any} # type Dict[]
+        self.__vs_ctype_store = {} # type: Dict[str, Any]
 
         # Create the structure members as instance attributes and build
         # the struct.pack/unpack format string. The attribute name is
