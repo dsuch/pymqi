@@ -2646,7 +2646,7 @@ class _Method:
 
         put_md = MD(Format=CMQC.MQFMT_ADMIN,
                     MsgType=CMQC.MQMT_REQUEST,
-                    ReplyToQ=PCFExecute._reply_queue_name,
+                    ReplyToQ=self.__pcf._reply_queue_name,
                     Feedback=CMQC.MQFB_NONE,
                     Expiry=300)
         put_opts = PMO(Options=CMQC.MQPMO_NO_SYNCPOINT)
@@ -2665,8 +2665,8 @@ class _Method:
         ress = []
         try:
             while True:
-                message = PCFExecute._reply_queue.get(None, get_md, get_opts)
-                res = PCFExecute.unpack(message)
+                message = self.__pcf._reply_queue.get(None, get_md, get_opts)
+                res = self.__pcf.unpack(message)
 
                 ress.append(res)
 
@@ -2698,10 +2698,10 @@ class PCFExecute(QueueManager):
     caStringDict = _MQConst2String(CMQC, 'MQCA_')
 
     def __init__(self, name=None,
-                 disconnect_on_exit=True,
-                 model_queue_name=b'SYSTEM.DEFAULT.MODEL.QUEUE',
-                 dynamic_queue_name=b'PYMQPCF.*',
-                 command_queue_name=b''):
+                disconnect_on_exit=True,
+                model_queue_name=b'SYSTEM.DEFAULT.MODEL.QUEUE',
+                dynamic_queue_name=b'PYMQPCF.*',
+                command_queue_name=b''):
         # type: (Any, bool, bytes, bytes, bytes) -> None
         """PCFExecute(name = '')
 
@@ -2710,7 +2710,7 @@ class PCFExecute(QueueManager):
         used for the connection, otherwise a new connection is made """
 
         if command_queue_name:
-            PCFExecute._command_queue_name = command_queue_name
+            self._command_queue_name = command_queue_name
 
         if isinstance(name, QueueManager):
             self.qm = name
@@ -2719,12 +2719,12 @@ class PCFExecute(QueueManager):
             self.qm = None
             super(PCFExecute, self).__init__(name)
 
-        if not PCFExecute._reply_queue and not PCFExecute._reply_queue_name:
+        if not self._reply_queue and not self._reply_queue_name:
             od = OD(ObjectName=model_queue_name,
                     DynamicQName=dynamic_queue_name)
 
-            PCFExecute._reply_queue = Queue(self.qm, od, CMQC.MQOO_INPUT_EXCLUSIVE)
-            PCFExecute._reply_queue_name = od.ObjectName.strip()
+            self._reply_queue = Queue(self.qm, od, CMQC.MQOO_INPUT_EXCLUSIVE)
+            self._reply_queue_name = od.ObjectName.strip()
 
 
     def __getattr__(self, name):
@@ -2773,17 +2773,17 @@ class PCFExecute(QueueManager):
     # Backward compatibility
     stringifyKeys = stringify_keys
 
-    @staticmethod
-    def disconnect():
+    def disconnect(self):
         """ Disconnect from reply_queue
         """
-        if PCFExecute._reply_queue and PCFExecute._reply_queue.get_handle():
-            PCFExecute._reply_queue.close()
-            PCFExecute._reply_queue = None
-            PCFExecute._reply_queue_name = None
-
-    def __del__(self):
-        self.disconnect()
+        try:
+            if self._reply_queue and self._reply_queue.get_handle():
+                self._reply_queue.close()
+        except MQMIError as ex:
+            pass
+        finally:
+            self._reply_queue = None
+            self._reply_queue_name = None
 
     @staticmethod
     def unpack(message): # type: (bytes) -> dict

@@ -221,13 +221,14 @@ class TestPCF(unittest.TestCase):
     def test_disconnect(self):
         pcf = pymqi.PCFExecute(self.qmgr)
 
-        self.assertTrue(pymqi.PCFExecute._reply_queue)
-        self.assertTrue(pymqi.PCFExecute._reply_queue_name)
+        self.assertTrue(pcf._reply_queue)
+        self.assertTrue(pcf._reply_queue_name)
         
         pcf.disconnect()
+        
         self.assertTrue(self.qmgr)
-        self.assertFalse(pymqi.PCFExecute._reply_queue)
-        self.assertFalse(pymqi.PCFExecute._reply_queue_name)
+        self.assertFalse(pcf._reply_queue)
+        self.assertFalse(pcf._reply_queue_name)
 
 if __name__ == "__main__":
     unittest.main()        
