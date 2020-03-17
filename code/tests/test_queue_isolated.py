@@ -1,5 +1,8 @@
 import unittest
-from unittest.mock import patch, ANY
+try:
+    from unittest.mock import patch, ANY # >= Python 3.3
+except ImportError:
+    from mock import patch, ANY
 
 from base_isolated_test import BaseIsolatedTest
 

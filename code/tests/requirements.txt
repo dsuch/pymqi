@@ -1,4 +1,5 @@
 ddt
+mock
 nose
 pytest
 pytest-cov

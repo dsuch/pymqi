@@ -1,5 +1,8 @@
 import unittest
-from unittest.mock import Mock
+try:
+    from unittest.mock import Mock # >= Python 3.3
+except ImportError:
+    from mock import Mock
 
 class BaseIsolatedTest(unittest.TestCase):
     """ Test utility class to write unit tests without relying on pymqe and an MQ client """

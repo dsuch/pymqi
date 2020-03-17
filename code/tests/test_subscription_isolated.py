@@ -1,7 +1,11 @@
 import unittest
-from unittest.mock import patch, ANY, call
+try:
+    from unittest.mock import patch, ANY, call # >= Python 3.3
+except ImportError:
+    from mock import patch, ANY, call
 
 from base_isolated_test import BaseIsolatedTest
+
 
 class TestSubscriptionIsolated(BaseIsolatedTest):
 
