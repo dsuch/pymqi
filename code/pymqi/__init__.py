@@ -2648,7 +2648,8 @@ class _Method:
                     MsgType=CMQC.MQMT_REQUEST,
                     ReplyToQ=self.__pcf._reply_queue_name,
                     Feedback=CMQC.MQFB_NONE,
-                    Expiry=300)
+                    Expiry=300,
+                    Report=CMQC.MQRO_PASS_DISCARD_AND_EXPIRY | CMQC.MQRO_DISCARD_MSG)
         put_opts = PMO(Options=CMQC.MQPMO_NO_SYNCPOINT)
 
         command_queue.put(message, put_md, put_opts)
