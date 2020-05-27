@@ -2289,8 +2289,8 @@ class FilterOperator(object):
             priv_filter_class = StringFilter
         else:
             msg = 'selector [%s] is of an unsupported type (neither integer ' \
-                'nor a string attribute). Send details to http://packages.' \
-                'python.org/pymqi/support-consulting-contact.html'
+                'nor a string attribute). Please see' \
+                'https://dsuch.github.io/pymqi/support.html'
             raise Error(msg % self.pub_filter.selector)
 
         # Do we support the operator?
