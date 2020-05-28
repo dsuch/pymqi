@@ -2611,6 +2611,9 @@ class _Method:
                             value = value.encode(bytes_encoding)
                         parameter = CFST(Parameter=key,
                                          String=value)
+                    elif (isinstance(value, ByteString)):
+                        parameter = CFBS(Parameter=key,
+                                         String=value.value.encode(bytes_encoding))
                     elif isinstance(value, int):
                         parameter = CFIN(Parameter=key,
                                          Value=value)

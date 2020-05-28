@@ -57,7 +57,7 @@ class TestPCF(unittest.TestCase):
                 pymqi.CMQCFC.MQIACF_PURGE: pymqi.CMQCFC.MQPO_YES}
         pcf.MQCMD_DELETE_Q(args)
         pcf.disconnect()
-    
+
     @unittest.skip('Not implemented')
     def test_mqcfbs(self):
         pass
@@ -174,8 +174,8 @@ class TestPCF(unittest.TestCase):
         get_opts = pymqi.GMO(
                     Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
                     Version=pymqi.CMQC.MQGMO_VERSION_2,
-                    MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID) 
-        get_md = pymqi.MD(MsgId=put_md.MsgId) 
+                    MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
+        get_md = pymqi.MD(MsgId=put_md.MsgId)
         message = queue.get(None, get_md, get_opts)
         queue.close()
         message = pymqi.PCFExecute.unpack(message)
@@ -223,12 +223,27 @@ class TestPCF(unittest.TestCase):
 
         self.assertTrue(pcf._reply_queue)
         self.assertTrue(pcf._reply_queue_name)
-        
+
         pcf.disconnect()
-        
+
         self.assertTrue(self.qmgr)
         self.assertFalse(pcf._reply_queue)
         self.assertFalse(pcf._reply_queue_name)
 
+    def test_connections(self):
+        attrs = {
+            pymqi.CMQCFC.MQBACF_GENERIC_CONNECTION_ID: pymqi.ByteString(''),
+            pymqi.CMQCFC.MQIACF_CONN_INFO_TYPE: pymqi.CMQCFC.MQIACF_CONN_INFO_CONN,
+            pymqi.CMQCFC.MQIACF_CONNECTION_ATTRS: [pymqi.CMQCFC.MQIACF_ALL]
+        }
+        fltr = pymqi.Filter(pymqi.CMQC.MQIA_APPL_TYPE).equal(pymqi.CMQC.MQAT_USER)
+
+        pcf = pymqi.PCFExecute(self.qmgr)
+        results = pcf.MQCMD_INQUIRE_CONNECTION(attrs, [fltr])
+        pcf.disconnect
+
+        self.assertGreater(len(results), 0)
+
+
 if __name__ == "__main__":
-    unittest.main()        
+    unittest.main()
