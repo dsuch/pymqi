@@ -20,9 +20,9 @@ import utils
 import pymqi
 import pymqi.CMQC
 
-    
+
 class TestQueueManager(unittest.TestCase):
-    
+
     qm_name = config.MQ.QM.NAME
     channel = config.MQ.QM.CHANNEL
     host = config.MQ.QM.HOST
@@ -33,7 +33,7 @@ class TestQueueManager(unittest.TestCase):
 
     user = config.MQ.QM.USER
     password = config.MQ.QM.PASSWORD
-    
+
     def test_init_none(self):
         qmgr = pymqi.QueueManager(None)
         self.assertFalse(qmgr.is_connected)
@@ -67,7 +67,7 @@ class TestQueueManager(unittest.TestCase):
         qmgr.connect(self.qm_name)
         self.assertTrue(qmgr.is_connected)
         qmgr.disconnect()
-        
+
     def test_connect_tcp_client(self):
         qmgr = pymqi.QueueManager(None)
         qmgr.connect_tcp_client(
@@ -79,12 +79,11 @@ class TestQueueManager(unittest.TestCase):
     def test_connect_tcp_client_conection_list(self):
         qmgr = pymqi.QueueManager(None)
         self.conn_info = '127.0.0.1(22),{0}'.format(self.conn_info)
-        #self.conn_info = '127.0.0.1(1314)'
         qmgr.connect_tcp_client(
             self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
             password=self.password)
         self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()        
+        qmgr.disconnect()
 
     # This test overlaps with
     # test_mq80.test_successful_connect_without_optional_credentials,
@@ -122,7 +121,7 @@ class TestQueueManager(unittest.TestCase):
         handle = qmgr.get_handle()
         # assertIsInstance is available >= Python2.7
         self.assertTrue(isinstance(handle, int))
-        
+
     @unittest.skip('Not implemented yet')
     def test_begin(self):
         pass
@@ -155,9 +154,9 @@ class TestQueueManager(unittest.TestCase):
         attribute = pymqi.CMQC.MQCA_Q_MGR_NAME
         expected_value = utils.py3str2bytes(self.qm_name)
         attribute_value = qmgr.inquire(attribute)
-        self.assertEqual(len(attribute_value), pymqi.CMQC.MQ_Q_MGR_NAME_LENGTH)  
+        self.assertEqual(len(attribute_value), pymqi.CMQC.MQ_Q_MGR_NAME_LENGTH)
         self.assertEqual(attribute_value.strip(), expected_value)
-        
+
     def test_is_connected(self):
         """Makes sure the QueueManager's 'is_connected' property works as
         expected.
@@ -201,7 +200,7 @@ class TestQueueManager(unittest.TestCase):
                     password)
 
                 eq_(qmgr.is_connected, expected)
-        
+
 
 if __name__ == '__main__':
     unittest.main()

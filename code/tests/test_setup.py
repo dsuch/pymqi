@@ -69,7 +69,7 @@ class Tests(unittest.TestCase):
         try:
             self.qmgr.connectTCPClient(self.queue_manager, pymqi.CD(), self.channel, self.conn_info, self.user, self.password)
         except pymqi.MQMIError as ex:
-            if ex.comp == 2:
+            if ex.comp == pymqi.CMQC.MQCC_FAILED:
                 raise ex
 
     def tearDown(self):
