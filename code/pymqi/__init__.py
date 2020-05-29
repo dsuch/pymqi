@@ -322,15 +322,16 @@ class MQOpts(object):
         r = struct.unpack(self.__format, buff)
         x = 0
         for i in self.__list:
-            ensure_not_unicode(r[x])  # Python 3 bytes check
 
             if isinstance(i[1], list):
                 l = []
                 for j in range(i[3]):
+                    ensure_not_unicode(r[x])  # Python 3 bytes check
                     l.append(r[x])
                     x = x + 1
                 setattr(self, i[0], l)
             else:
+                ensure_not_unicode(r[x])  # Python 3 bytes check
                 setattr(self, i[0], r[x])
                 x = x + 1
 
@@ -1264,7 +1265,7 @@ class CFIL(MQOpts):
                 ['StrucLength', CMQCFC.MQCFIL_STRUC_LENGTH_FIXED + 4 * count, MQLONG_TYPE], # Check python 2
                 ['Parameter', 0, MQLONG_TYPE],
                 ['Count', count, MQLONG_TYPE],
-                ['Values', values, MQLONG_TYPE, (count if count else 1)],
+                ['Values', values, MQLONG_TYPE, count],
                ]
         super(CFIL, self).__init__(tuple(opts), **kw)
 
@@ -1312,10 +1313,14 @@ class CFSL(MQOpts):
 
     def __init__(self, **kw):
         # types: (Dict[str, Any]) -> None
-        strings = kw.pop('Strings', [''])
-        max_string_length = kw.pop('StringLength', len(max(strings, key=len)))
-        padded_strings_length = padded_count((max_string_length) * len(strings))
-        count = kw.pop('Count', 0)
+        strings = kw.pop('Strings', [])
+        string_length = kw.pop('StringLength', len(max(strings, key=len)) if strings else 0)
+
+        strings_count = len(strings)
+        count = kw.pop('Count', strings_count)
+
+        max_string_length = padded_count(string_length) if count else 0
+        padded_strings_length = (max_string_length) * strings_count
 
         opts = [['Type', CMQCFC.MQCFT_STRING_LIST, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFSL_STRUC_LENGTH_FIXED + padded_strings_length, MQLONG_TYPE],
@@ -1323,7 +1328,7 @@ class CFSL(MQOpts):
                 ['CodedCharSetId', CMQC.MQCCSI_DEFAULT, MQLONG_TYPE],
                 ['Count', count, MQLONG_TYPE],
                 ['StringLength', max_string_length, MQLONG_TYPE],
-                ['Strings', strings, '{}s'.format(padded_strings_length), (count if count else 1)]
+                ['Strings', strings if strings else [b''], '{}s'.format(max_string_length), (count if count else 1)]
                ]
 
         super(CFSL, self).__init__(tuple(opts), **kw)
@@ -2649,7 +2654,7 @@ class _Method:
                     MsgType=CMQC.MQMT_REQUEST,
                     ReplyToQ=self.__pcf._reply_queue_name,
                     Feedback=CMQC.MQFB_NONE,
-                    Expiry=300,
+                    Expiry=self.__pcf.response_wait_interval,
                     Report=CMQC.MQRO_PASS_DISCARD_AND_EXPIRY | CMQC.MQRO_DISCARD_MSG)
         put_opts = PMO(Options=CMQC.MQPMO_NO_SYNCPOINT)
 
@@ -2661,20 +2666,18 @@ class _Method:
             CMQC.MQGMO_WAIT,
             Version=CMQC.MQGMO_VERSION_2,
             MatchOptions=CMQC.MQMO_MATCH_CORREL_ID,
-            WaitInterval=300)
+            WaitInterval=self.__pcf.response_wait_interval)
         get_md = MD(CorrelId=put_md.MsgId)
 
         ress = []
-        try:
-            while True:
-                message = self.__pcf._reply_queue.get(None, get_md, get_opts)
-                res = self.__pcf.unpack(message)
+        while True:
+            message = self.__pcf._reply_queue.get(None, get_md, get_opts)
+            res, control = self.__pcf.unpack(message)
 
-                ress.append(res)
+            ress.append(res)
 
-        except MQMIError as ex:
-            if not(ex.reason == CMQC.MQRC_NO_MSG_AVAILABLE and len(ress)):
-                raise ex
+            if control == CMQCFC.MQCFC_LAST:
+                break
 
         return ress
 
@@ -2693,6 +2696,7 @@ class PCFExecute(QueueManager):
     _reply_queue = None # type: Queue
     _reply_queue_name = None # type: str
     _command_queue_name = b'SYSTEM.ADMIN.COMMAND.QUEUE' # type: bytes
+    response_wait_interval = 0
 
     qm = None # type: Optional[QueueManager]
 
@@ -2703,13 +2707,16 @@ class PCFExecute(QueueManager):
                  disconnect_on_exit=True,
                  model_queue_name=b'SYSTEM.DEFAULT.MODEL.QUEUE',
                  dynamic_queue_name=b'PYMQPCF.*',
-                 command_queue_name=b''):
+                 command_queue_name=b'',
+                 response_wait_interval=100):
         # type: (Any, bool, bytes, bytes, bytes) -> None
         """PCFExecute(name = '')
 
         Connect to the Queue Manager 'name' (default value '') ready
         for a PCF command. If name is a QueueManager instance, it is
         used for the connection, otherwise a new connection is made """
+
+        self.response_wait_interval = response_wait_interval
 
         if command_queue_name:
             self._command_queue_name = command_queue_name
@@ -2819,7 +2826,8 @@ class PCFExecute(QueueManager):
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFSL_STRUC_LENGTH_FIXED])
                 if parameter.StringLength > 1:
                     parameter = CFSL(StringLength=parameter.StringLength,
-                                     Count=parameter.Count)
+                                     Count=parameter.Count,
+                                     StrucLength=parameter.StrucLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.Strings
             elif message[cursor] == CMQCFC.MQCFT_INTEGER:
@@ -2829,8 +2837,9 @@ class PCFExecute(QueueManager):
             elif message[cursor] == CMQCFC.MQCFT_INTEGER_LIST:
                 parameter = CFIL()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIL_STRUC_LENGTH_FIXED])
-                if parameter.Count > 1:
-                    parameter = CFIL(Count=parameter.Count)
+                if parameter.Count > 0:
+                    parameter = CFIL(Count=parameter.Count,
+                                     StrucLength=parameter.StrucLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.Values
             elif message[cursor] == CMQCFC.MQCFT_BYTE_STRING:
@@ -2847,7 +2856,7 @@ class PCFExecute(QueueManager):
             cursor += parameter.StrucLength
             res[parameter.Parameter] = value
 
-        return res
+        return res, mqcfh.Control
 
 
 class ByteString(object):
