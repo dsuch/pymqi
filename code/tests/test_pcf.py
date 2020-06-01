@@ -258,4 +258,4 @@ class TestPCF(Tests):
         self.assertFalse(pcf._reply_queue_name)
 
 if __name__ == "__main__":
-    main(module="test_pcf") #defaultTest='TestPCF.test_auth_rec'
+    main(module="test_pcf")

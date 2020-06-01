@@ -457,13 +457,6 @@ class MQOpts(object):
 
         return c_vs_value
 
-    def __getattr__(self, name):
-        # types: (str) -> Any
-        return self.__dict__[name]
-
-    def __setattr__(self, name, value):
-        # types: (str, Any)
-        self.__dict__[name] = value
 
 #
 # Sub-classes of MQOpts representing real MQI structures.
