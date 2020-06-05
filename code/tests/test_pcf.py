@@ -210,11 +210,12 @@ class TestPCF(Tests):
 
         self.assertGreater(len(results), 0)
 
-    def test_object_filter_int_old(self):
+    @data(pymqi.CMQCFC.MQIACF_ALL, [pymqi.CMQCFC.MQIACF_ALL], [pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC])
+    def test_object_filter_int_old(self, value):
         """Test object filter with integer attribute. Old style."""
         attrs = {
             pymqi.CMQC.MQCA_Q_NAME: b'*',
-            pymqi.CMQCFC.MQIACF_Q_ATTRS: [pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC]
+            pymqi.CMQCFC.MQIACF_Q_ATTRS: value
             }
 
         filter_depth = pymqi.Filter(pymqi.CMQC.MQIA_CURRENT_Q_DEPTH).greater(0)

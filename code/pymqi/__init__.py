@@ -2613,8 +2613,21 @@ class _Method:
                         parameter = CFBS(Parameter=key,
                                          String=value.value.encode(bytes_encoding))
                     elif isinstance(value, int):
-                        parameter = CFIN(Parameter=key,
-                                         Value=value)
+                        # Backward compatibility for MQAI behaviour
+                        # for single value instead of list
+                        is_list = False
+                        for item in CMQCFC.__dict__:
+                            if (item[:7] == 'MQIACF_'
+                                and item[-6:] == '_ATTRS'
+                                and CMQCFC.__dict__[item] == key):
+                                    is_list = True
+                                    break
+                        if not is_list:
+                            parameter = CFIN(Parameter=key,
+                                            Value=value)
+                        else:
+                            parameter = CFIL(Parameter=key,
+                                            Values=[value])
                     elif (isinstance(value, list)
                           and isinstance(value[0], int)):
                         parameter = CFIL(Parameter=key,
