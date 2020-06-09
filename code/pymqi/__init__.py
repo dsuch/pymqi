@@ -2663,9 +2663,14 @@ class _Method:
         command_queue.put(message, put_md, put_opts)
         command_queue.close()
 
+        gmo_options = CMQC.MQGMO_NO_SYNCPOINT + CMQC.MQGMO_FAIL_IF_QUIESCING + \
+                      CMQC.MQGMO_WAIT
+
+        if self.__pcf.convert:
+            gmo_options = gmo_options + CMQC.MQGMO_CONVERT
+
         get_opts = GMO(
-            Options=CMQC.MQGMO_NO_SYNCPOINT + CMQC.MQGMO_FAIL_IF_QUIESCING +
-            CMQC.MQGMO_WAIT + CMQC.MQGMO_CONVERT,
+            Options=gmo_options,
             Version=CMQC.MQGMO_VERSION_2,
             MatchOptions=CMQC.MQMO_MATCH_CORREL_ID,
             WaitInterval=self.__pcf.response_wait_interval)
@@ -2710,7 +2715,8 @@ class PCFExecute(QueueManager):
                  model_queue_name=b'SYSTEM.DEFAULT.MODEL.QUEUE',
                  dynamic_queue_name=b'PYMQPCF.*',
                  command_queue_name=b'',
-                 response_wait_interval=100):
+                 response_wait_interval=100,
+                 convert=False):
         # type: (Any, bool, bytes, bytes, bytes) -> None
         """PCFExecute(name = '')
 
@@ -2719,6 +2725,7 @@ class PCFExecute(QueueManager):
         used for the connection, otherwise a new connection is made """
 
         self.response_wait_interval = response_wait_interval
+        self.convert = convert
 
         if command_queue_name:
             self._command_queue_name = command_queue_name
