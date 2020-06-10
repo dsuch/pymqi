@@ -21,7 +21,7 @@ class TestPCF(Tests):
 
         # max length of queue names is 48 characters
         cls.queue_name = "{prefix}PCF.QUEUE".format(prefix=cls.prefix)
-        cls.pcf = pymqi.PCFExecute(cls.qmgr)
+        cls.pcf = pymqi.PCFExecute(cls.qmgr, response_wait_interval=600)
 
     @classmethod
     def tearDownClass(cls):
@@ -183,7 +183,7 @@ class TestPCF(Tests):
             Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
             Version=pymqi.CMQC.MQGMO_VERSION_2,
             MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
-        get_md = pymqi.MD(MsgId=put_md.MsgId)
+        get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
         message = queue.get(None, get_md, get_opts)
         queue.close()
         message = pymqi.PCFExecute.unpack(message)
@@ -210,8 +210,10 @@ class TestPCF(Tests):
 
         self.assertGreater(len(results), 0)
 
-    @data(pymqi.CMQCFC.MQIACF_ALL, [pymqi.CMQCFC.MQIACF_ALL], [pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC])
-    def test_object_filter_int_old(self, value):
+    @data(pymqi.CMQCFC.MQIACF_ALL, [pymqi.CMQCFC.MQIACF_ALL],
+          pymqi.CMQC.MQCA_Q_DESC, [pymqi.CMQC.MQCA_Q_DESC],
+          [pymqi.CMQC.MQIA_CURRENT_Q_DEPTH, pymqi.CMQC.MQCA_Q_DESC])
+    def test_object_filter_int_old_queue(self, value):
         """Test object filter with integer attribute. Old style."""
         attrs = {
             pymqi.CMQC.MQCA_Q_NAME: b'*',
@@ -226,6 +228,25 @@ class TestPCF(Tests):
         for result in results:
             self.assertTrue(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH] > 0,
                             'Found Queue with depth {}'.format(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH]))
+
+    @skip('https://stackoverflow.com/questions/62250844/ibm-mq-pcf-parameters-order')
+    @data(pymqi.CMQCFC.MQIACF_ALL, [pymqi.CMQCFC.MQIACF_ALL],
+          pymqi.CMQCFC.MQCACH_DESC, [pymqi.CMQCFC.MQCACH_DESC],
+          [pymqi.CMQCFC.MQCACH_DESC, pymqi.CMQCFC.MQIACH_CHANNEL_TYPE])
+    def test_object_filter_int_old_channel(self, value):
+        """Test object filter with integer attribute. Old style."""
+        attrs = {
+            pymqi.CMQCFC.MQCACH_CHANNEL_NAME: b'*',
+            pymqi.CMQCFC.MQIACF_CHANNEL_ATTRS: value}
+
+        filter_type = pymqi.Filter(pymqi.CMQCFC.MQIACH_CHANNEL_TYPE).equal(pymqi.CMQC.MQCHT_SVRCONN)
+
+        results = self.pcf.MQCMD_INQUIRE_CHANNEL(attrs, [filter_type])
+
+        self.assertTrue(results, 'Channel not found')
+        for result in results:
+            self.assertTrue(result[pymqi.CMQCFC.MQIACH_CHANNEL_TYPE] == pymqi.CMQC.MQCHT_SVRCONN,
+                            'Found Channel with type {}'.format(result[pymqi.CMQCFC.MQIACH_CHANNEL_TYPE]))
 
     def test_object_filter_str_old(self):
         """Test object filter with string attribute. Old style."""

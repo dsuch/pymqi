@@ -2613,7 +2613,9 @@ class _Method:
                         # for single value instead of list
                         is_list = False
                         for item in CMQCFC.__dict__:
-                            if (item[:7] == 'MQIACF_'
+                            if ((item[:7] == 'MQIACF_'
+                                or
+                                item[:7] == 'MQIACH_')
                                 and item[-6:] == '_ATTRS'
                                 and CMQCFC.__dict__[item] == key):
                                     is_list = True
