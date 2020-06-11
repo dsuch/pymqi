@@ -1,6 +1,13 @@
 PyMQI changelog
 ---------------
 
+* **1.11.0** (2020-06-11)
+
+  * Moved from MQAI to raw PCF, making it possible to use PCF commands on z/OS in addition to other systems
+  * Added a wait (expiry) interval to PCF messages (needed for large responses)
+  * Added ability to request a conversion of response PCF messages (required for z/OS)
+  * Thanks to @salapat11 for the assistance in preparing this release
+
 * **1.10.1** (2020-02-15)
 
   * Added [automatic conversion of Unicode to bytes](https://dsuch.github.io/pymqi/examples.html#sending-unicode-data-vs-bytes)
