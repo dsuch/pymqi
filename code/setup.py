@@ -16,7 +16,7 @@ from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
-version = '1.10.1'
+version = '1.11.0'
 
 # Build either in bindings or client mode.
 bindings_mode = 0

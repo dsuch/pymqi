@@ -1278,7 +1278,7 @@ Code::
     filter1 = pymqi.Filter(CMQC.MQCA_Q_DESC).like('IBM MQ *')
     filter2 = pymqi.Filter(CMQC.MQIA_CURRENT_Q_DEPTH).greater(2)
 
-    result = pcf.MQCMD_INQUIRE_Q(attrs, [f1, f2])
+    result = pcf.MQCMD_INQUIRE_Q(attrs, [filter1, filter2])
 
     logging.info('Result is %s', result)
 
