@@ -131,6 +131,7 @@ except ImportError:
     import pymqe # type: ignore # Backward compatibility
 from pymqi import CMQCFC
 from pymqi import CMQC, CMQXC, CMQZC
+from pymqi import mqconstants
 
 # For pyflakes
 if 0:
