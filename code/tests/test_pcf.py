@@ -1,4 +1,5 @@
 """Test PCF usage."""
+import os
 from unittest import skip
 from ddt import data
 from ddt import ddt
@@ -13,6 +14,7 @@ class TestPCF(Tests):
     """Class for MQ PCF testing."""
 
     pcf = None
+    messages_dir = os.path.join(os.path.dirname(__file__), "messages")
 
     @classmethod
     def setUpClass(cls):
@@ -196,6 +198,80 @@ class TestPCF(Tests):
         for item in message[0][1]:
             self.assertTrue(item in value, '{} value not in values list'.format(item))
             value.remove(item)
+
+    def test_mqcfgr_mqcfin64_mqcfil64(self):
+        """Test arbitrary message with MQCFIL."""
+        message = pymqi.CFH(Version=pymqi.CMQCFC.MQCFH_VERSION_1,
+                            Type=pymqi.CMQCFC.MQCFT_USER,
+                            ParameterCount=4).pack()
+        message += pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_MGR_NAME,
+                                    String=b'QM1').pack()
+        # group1
+        message += pymqi.CFGR(Parameter=pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA,
+                                    ParameterCount=3).pack()
+        message += pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_NAME,
+                                    String=b'SYSTEM.ADMIN.COMMAND.QUEUE').pack()
+        message += pymqi.CFIN64(Parameter=pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH,
+                                    Value=10).pack()
+        message += pymqi.CFIL64(Parameter=pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME,
+                                    Values=[1, 2, 3]).pack()
+        # group2
+        message += pymqi.CFGR(Parameter=pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA,
+                                    ParameterCount=3).pack()
+        message += pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_NAME,
+                                    String=b'SYSTEM.ADMIN.COMMAND.QUEUE2').pack()
+        message += pymqi.CFIN64(Parameter=pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH,
+                                    Value=20).pack()
+        message += pymqi.CFIL64(Parameter=pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME,
+                                    Values=[111, 222]).pack()
+
+        message += pymqi.CFST(Parameter=pymqi.CMQCFC.MQCAMO_START_TIME,
+                              String=b'10.41.58').pack()
+
+        queue = pymqi.Queue(self.qmgr, self.queue_name,
+                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
+
+        put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
+        queue.put(message, put_md)
+
+        get_opts = pymqi.GMO(
+            Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
+            Version=pymqi.CMQC.MQGMO_VERSION_2,
+            MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
+        get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
+        message = queue.get(None, get_md, get_opts)
+        queue.close()
+        message, _ = pymqi.PCFExecute.unpack(message)
+
+        self.assertEqual({
+            pymqi.CMQC.MQCA_Q_MGR_NAME: b'QM1\x00',
+            pymqi.CMQCFC.MQCAMO_START_TIME: b'10.41.58',
+            pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA: [
+                {
+                    pymqi.CMQC.MQCA_Q_NAME: b'SYSTEM.ADMIN.COMMAND.QUEUE\x00\x00',
+                    pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH: 10,
+                    pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME: [1, 2, 3],
+                },
+                {
+                    pymqi.CMQC.MQCA_Q_NAME: b'SYSTEM.ADMIN.COMMAND.QUEUE2\x00',
+                    pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH: 20,
+                    pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME: [111, 222],
+                },
+            ]
+        }, message)
+
+    def test_unpack_group(self):
+        binary_message = open(os.path.join(self.messages_dir, "statistics_q.dat"), "rb").read()
+
+        message, _ = pymqi.PCFExecute.unpack(binary_message)
+
+        self.assertEqual(message[pymqi.CMQC.MQCA_Q_MGR_NAME].strip(), b'mq_mgr1')
+        self.assertEqual(message[pymqi.CMQCFC.MQCAMO_START_DATE], b'2020-06-15\x00\x00')
+        self.assertEqual(len(message[pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA]), 16)
+
+        item = message[pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA][0]
+        self.assertEqual(item[pymqi.CMQC.MQCA_Q_NAME].strip(), b'SYSTEM.ADMIN.COMMAND.QUEUE')
+        self.assertEqual(item[pymqi.CMQCFC.MQIAMO_PUTS], [14, 0])
 
     def test_mqcfbs_old(self):
         """Test byte string MQCFBS with old style."""

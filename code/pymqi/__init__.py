@@ -204,6 +204,8 @@ if struct.calcsize('P') == 8:
 else:
     MQLONG_TYPE = 'l'  # 32 bit
 
+INTEGER64_TYPE = 'q'
+
 #######################################################################
 #
 
@@ -1229,6 +1231,22 @@ class CFBS(MQOpts):
 
         super(CFBS, self).__init__(tuple(opts), **kw)
 
+class CFGR(MQOpts):
+    """ Construct an MQCFGR Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
+    """
+
+    def __init__(self, **kw):
+        # types: (Dict[str, Any]) -> None
+        count = kw.pop('ParameterCount', 0)
+
+        opts = [['Type', CMQCFC.MQCFT_GROUP, MQLONG_TYPE],
+                ['StrucLength', CMQCFC.MQCFGR_STRUC_LENGTH, MQLONG_TYPE],
+                ['Parameter', 0, MQLONG_TYPE],
+                ['ParameterCount', count, MQLONG_TYPE],
+               ]
+        super(CFGR, self).__init__(tuple(opts), **kw)
+
 class CFIF(MQOpts):
     """ Construct an MQCFIF Structure with default values as per MQI.
     The default values may be overridden by the optional keyword arguments 'kw'.
@@ -1262,6 +1280,23 @@ class CFIL(MQOpts):
                ]
         super(CFIL, self).__init__(tuple(opts), **kw)
 
+class CFIL64(MQOpts):
+    """ Construct an MQCFIL64 Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
+    """
+    def __init__(self, **kw):
+        # types: (Dict[str, Any]) -> None
+        values = kw.pop('Values', [])
+        count = kw.pop('Count', len(values))
+
+        opts = [['Type', CMQCFC.MQCFT_INTEGER64_LIST, MQLONG_TYPE],
+                ['StrucLength', CMQCFC.MQCFIL64_STRUC_LENGTH_FIXED + 8 * count, MQLONG_TYPE],
+                ['Parameter', 0, MQLONG_TYPE],
+                ['Count', count, MQLONG_TYPE],
+                ['Values', values, INTEGER64_TYPE, count],
+               ]
+        super(CFIL64, self).__init__(tuple(opts), **kw)
+
 class CFIN(MQOpts):
     """ Construct an MQCFIN Structure with default values as per MQI.
     The default values may be overridden by the optional keyword arguments 'kw'.
@@ -1275,6 +1310,20 @@ class CFIN(MQOpts):
                 ['Value', 0, MQLONG_TYPE],
                ]
         super(CFIN, self).__init__(tuple(opts), **kw)
+
+class CFIN64(MQOpts):
+    """ Construct an MQCFIN64 Structure with default values as per MQI.
+    The default values may be overridden by the optional keyword arguments 'kw'.
+    """
+    def __init__(self, **kw):
+        # types: (Dict[str, Any]) -> None -> None
+
+        opts = [['Type', CMQCFC.MQCFT_INTEGER64, MQLONG_TYPE],
+                ['StrucLength', CMQCFC.MQCFIN64_STRUC_LENGTH, MQLONG_TYPE],
+                ['Parameter', 0, MQLONG_TYPE],
+                ['Value', 0, INTEGER64_TYPE],
+               ]
+        super(CFIN64, self).__init__(tuple(opts), **kw)
 
 class CFSF(MQOpts):
     """ Construct an MQCFSF Structure with default values as per MQI.
@@ -2824,7 +2873,13 @@ class PCFExecute(QueueManager):
         index = mqcfh.ParameterCount
         cursor = CMQCFC.MQCFH_STRUC_LENGTH
         parameter = None # type: Optional[MQOpts]
+        group = None
+        group_count = 0
         while (index > 0):
+            if group_count == 0:
+                group = None
+            if group is not None:
+                group_count -= 1
             if message[cursor] == CMQCFC.MQCFT_STRING:
                 parameter = CFST()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFST_STRUC_LENGTH_FIXED])
@@ -2845,6 +2900,10 @@ class PCFExecute(QueueManager):
                 parameter = CFIN()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIN_STRUC_LENGTH])
                 value = parameter.Value
+            elif message[cursor] == CMQCFC.MQCFT_INTEGER64:
+                parameter = CFIN64()
+                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIN64_STRUC_LENGTH])
+                value = parameter.Value
             elif message[cursor] == CMQCFC.MQCFT_INTEGER_LIST:
                 parameter = CFIL()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIL_STRUC_LENGTH_FIXED])
@@ -2853,6 +2912,22 @@ class PCFExecute(QueueManager):
                                      StrucLength=parameter.StrucLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.Values
+            elif message[cursor] == CMQCFC.MQCFT_INTEGER64_LIST:
+                parameter = CFIL64()
+                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIL64_STRUC_LENGTH_FIXED])
+                if parameter.Count > 0:
+                    parameter = CFIL64(Count=parameter.Count,
+                                       StrucLength=parameter.StrucLength)
+                    parameter.unpack(message[cursor:cursor + parameter.StrucLength])
+                value = parameter.Values
+            elif message[cursor] == CMQCFC.MQCFT_GROUP:
+                parameter = CFGR()
+                parameter.unpack(message[cursor:cursor + parameter.StrucLength])
+                group_count = parameter.ParameterCount
+                index += group_count
+                group = {}
+                res[parameter.Parameter] = res.get(parameter.Parameter, [])
+                res[parameter.Parameter].append(group)
             elif message[cursor] == CMQCFC.MQCFT_BYTE_STRING:
                 parameter = CFBS()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFBS_STRUC_LENGTH_FIXED])
@@ -2865,7 +2940,12 @@ class PCFExecute(QueueManager):
                 raise NotImplementedError('Unpack for type ({}) not implemented'.format(pcf_type))
             index -= 1
             cursor += parameter.StrucLength
-            res[parameter.Parameter] = value
+            if parameter.Type == CMQCFC.MQCFT_GROUP:
+                continue
+            if group is not None:
+                group[parameter.Parameter] = value
+            else:
+                res[parameter.Parameter] = value
 
         return res, mqcfh.Control
 
