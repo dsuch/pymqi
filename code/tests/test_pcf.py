@@ -203,7 +203,9 @@ class TestPCF(Tests):
         """Test arbitrary message with MQCFIL."""
         message = pymqi.CFH(Version=pymqi.CMQCFC.MQCFH_VERSION_1,
                             Type=pymqi.CMQCFC.MQCFT_USER,
-                            ParameterCount=2).pack()
+                            ParameterCount=4).pack()
+        message += pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_MGR_NAME,
+                                    String=b'QM1').pack()
         # group1
         message += pymqi.CFGR(Parameter=pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA,
                                     ParameterCount=3).pack()
@@ -226,6 +228,9 @@ class TestPCF(Tests):
         queue = pymqi.Queue(self.qmgr, self.queue_name,
                             pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
 
+        message += pymqi.CFST(Parameter=pymqi.CMQCFC.MQCAMO_START_TIME,
+                              String=b'10.41.58').pack()
+
         put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
         queue.put(message, put_md)
 
@@ -238,6 +243,8 @@ class TestPCF(Tests):
         queue.close()
         message, _ = pymqi.PCFExecute.unpack(message)
 
+        self.assertEqual(b'QM1\x00', message[pymqi.CMQC.MQCA_Q_MGR_NAME])
+        self.assertEqual(b'10.41.58', message[pymqi.CMQCFC.MQCAMO_START_TIME])
         item1 = message[pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA][0]
         item2 = message[pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA][1]
         self.assertEqual(b'SYSTEM.ADMIN.COMMAND.QUEUE\x00\x00', item1[pymqi.CMQC.MQCA_Q_NAME])
