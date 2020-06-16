@@ -1317,11 +1317,11 @@ class CFIN64(MQOpts):
         # types: (Dict[str, Any]) -> None -> None
 
         opts = [['Type', CMQCFC.MQCFT_INTEGER64, MQLONG_TYPE],
-                ['StrucLength', CMQCFC.MQCFIN_STRUC_LENGTH, MQLONG_TYPE],
+                ['StrucLength', CMQCFC.MQCFIN64_STRUC_LENGTH, MQLONG_TYPE],
                 ['Parameter', 0, MQLONG_TYPE],
                 ['Value', 0, 'l'],
                ]
-        super(CFIN, self).__init__(tuple(opts), **kw)
+        super(CFIN64, self).__init__(tuple(opts), **kw)
 
 class CFSF(MQOpts):
     """ Construct an MQCFSF Structure with default values as per MQI.
@@ -2899,8 +2899,8 @@ class PCFExecute(QueueManager):
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIN_STRUC_LENGTH])
                 value = parameter.Value
             elif message[cursor] == CMQCFC.MQCFT_INTEGER64:
-                parameter = CFIN()
-                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIN_STRUC_LENGTH])
+                parameter = CFIN64()
+                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIN64_STRUC_LENGTH])
                 value = parameter.Value
             elif message[cursor] == CMQCFC.MQCFT_INTEGER_LIST:
                 parameter = CFIL()
@@ -2944,6 +2944,8 @@ class PCFExecute(QueueManager):
                 raise NotImplementedError('Unpack for type ({}) not implemented'.format(pcf_type))
             index -= 1
             cursor += parameter.StrucLength
+            if parameter.Type == CMQCFC.MQCFT_GROUP:
+                continue
             if group is not None:
                 group[parameter.Parameter] = value
             else:
