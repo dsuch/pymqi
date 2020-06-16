@@ -204,6 +204,8 @@ if struct.calcsize('P') == 8:
 else:
     MQLONG_TYPE = 'l'  # 32 bit
 
+INTEGER64_TYPE = 'l'
+
 #######################################################################
 #
 
@@ -1291,7 +1293,7 @@ class CFIL64(MQOpts):
                 ['StrucLength', CMQCFC.MQCFIL64_STRUC_LENGTH_FIXED + 8 * count, MQLONG_TYPE],
                 ['Parameter', 0, MQLONG_TYPE],
                 ['Count', count, MQLONG_TYPE],
-                ['Values', values, 'l', count],
+                ['Values', values, INTEGER64_TYPE, count],
                ]
         super(CFIL64, self).__init__(tuple(opts), **kw)
 
@@ -1319,7 +1321,7 @@ class CFIN64(MQOpts):
         opts = [['Type', CMQCFC.MQCFT_INTEGER64, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIN64_STRUC_LENGTH, MQLONG_TYPE],
                 ['Parameter', 0, MQLONG_TYPE],
-                ['Value', 0, 'l'],
+                ['Value', 0, INTEGER64_TYPE],
                ]
         super(CFIN64, self).__init__(tuple(opts), **kw)
 
@@ -2920,18 +2922,12 @@ class PCFExecute(QueueManager):
                 value = parameter.Values
             elif message[cursor] == CMQCFC.MQCFT_GROUP:
                 parameter = CFGR()
-                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFGR_STRUC_LENGTH])
-                if parameter.ParameterCount > 0:
-                    parameter = CFGR(ParameterCount=parameter.ParameterCount,
-                                     StrucLength=parameter.StrucLength)
-                    parameter.unpack(message[cursor:cursor + parameter.StrucLength])
-                group = {}
+                parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 group_count = parameter.ParameterCount
                 index += group_count
+                group = {}
                 res[parameter.Parameter] = res.get(parameter.Parameter, [])
                 res[parameter.Parameter].append(group)
-                # TODO:  It's possible that a group is not a list.
-                #        https://gist.github.com/AlexandreYang/03d3407f864fab3580dbb87d8da1cf95#file-amqsevta-c-L1340-L1354
             elif message[cursor] == CMQCFC.MQCFT_BYTE_STRING:
                 parameter = CFBS()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFBS_STRUC_LENGTH_FIXED])
