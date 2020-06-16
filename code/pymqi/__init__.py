@@ -204,7 +204,7 @@ if struct.calcsize('P') == 8:
 else:
     MQLONG_TYPE = 'l'  # 32 bit
 
-INTEGER64_TYPE = 'l'
+INTEGER64_TYPE = 'q'
 
 #######################################################################
 #
