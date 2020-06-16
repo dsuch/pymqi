@@ -256,7 +256,7 @@ class TestPCF(Tests):
         self.assertEqual([111, 222], item2[pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME])
 
     def test_unpack_group(self):
-        binary_message = self.single_rfh2_message = open(os.path.join(self.messages_dir, "statistics_q.dat"), "rb").read()
+        binary_message = open(os.path.join(self.messages_dir, "statistics_q.dat"), "rb").read()
 
         message, _ = pymqi.PCFExecute.unpack(binary_message)
 
