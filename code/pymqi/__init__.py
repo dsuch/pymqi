@@ -1286,13 +1286,12 @@ class CFIL64(MQOpts):
         # types: (Dict[str, Any]) -> None
         values = kw.pop('Values', [])
         count = kw.pop('Count', len(values))
-        TYPE_64 = 'l'
 
         opts = [['Type', CMQCFC.MQCFT_INTEGER64_LIST, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIL64_STRUC_LENGTH_FIXED + 8 * count, MQLONG_TYPE],
                 ['Parameter', 0, MQLONG_TYPE],
                 ['Count', count, MQLONG_TYPE],
-                ['Values', values, TYPE_64, count],
+                ['Values', values, 'l', count],
                ]
         super(CFIL64, self).__init__(tuple(opts), **kw)
 
@@ -1317,11 +1316,10 @@ class CFIN64(MQOpts):
     def __init__(self, **kw):
         # types: (Dict[str, Any]) -> None -> None
 
-        TYPE_64 = 'l'
         opts = [['Type', CMQCFC.MQCFT_INTEGER64, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIN_STRUC_LENGTH, MQLONG_TYPE],
                 ['Parameter', 0, MQLONG_TYPE],
-                ['Value', 0, TYPE_64],
+                ['Value', 0, 'l'],
                ]
         super(CFIN, self).__init__(tuple(opts), **kw)
 
