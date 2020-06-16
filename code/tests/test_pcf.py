@@ -243,17 +243,22 @@ class TestPCF(Tests):
         queue.close()
         message, _ = pymqi.PCFExecute.unpack(message)
 
-        self.assertEqual(b'QM1\x00', message[pymqi.CMQC.MQCA_Q_MGR_NAME])
-        self.assertEqual(b'10.41.58', message[pymqi.CMQCFC.MQCAMO_START_TIME])
-        item1 = message[pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA][0]
-        item2 = message[pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA][1]
-        self.assertEqual(b'SYSTEM.ADMIN.COMMAND.QUEUE\x00\x00', item1[pymqi.CMQC.MQCA_Q_NAME])
-        self.assertEqual(10, item1[pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH])
-        self.assertEqual([1, 2, 3], item1[pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME])
-
-        self.assertEqual(b'SYSTEM.ADMIN.COMMAND.QUEUE2\x00', item2[pymqi.CMQC.MQCA_Q_NAME])
-        self.assertEqual(20, item2[pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH])
-        self.assertEqual([111, 222], item2[pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME])
+        self.assertEqual({
+            pymqi.CMQC.MQCA_Q_MGR_NAME: b'QM1\x00',
+            pymqi.CMQCFC.MQCAMO_START_TIME: b'10.41.58',
+            pymqi.CMQCFC.MQGACF_Q_STATISTICS_DATA: [
+                {
+                    pymqi.CMQC.MQCA_Q_NAME: b'SYSTEM.ADMIN.COMMAND.QUEUE\x00\x00',
+                    pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH: 10,
+                    pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME: [1, 2, 3],
+                },
+                {
+                    pymqi.CMQC.MQCA_Q_NAME: b'SYSTEM.ADMIN.COMMAND.QUEUE2\x00',
+                    pymqi.CMQCFC.MQIAMO_Q_MIN_DEPTH: 20,
+                    pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME: [111, 222],
+                },
+            ]
+        }, message)
 
     def test_unpack_group(self):
         binary_message = open(os.path.join(self.messages_dir, "statistics_q.dat"), "rb").read()
