@@ -225,11 +225,11 @@ class TestPCF(Tests):
         message += pymqi.CFIL64(Parameter=pymqi.CMQCFC.MQIAMO64_AVG_Q_TIME,
                                     Values=[111, 222]).pack()
 
-        queue = pymqi.Queue(self.qmgr, self.queue_name,
-                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
-
         message += pymqi.CFST(Parameter=pymqi.CMQCFC.MQCAMO_START_TIME,
                               String=b'10.41.58').pack()
+
+        queue = pymqi.Queue(self.qmgr, self.queue_name,
+                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
 
         put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
         queue.put(message, put_md)
