@@ -6,7 +6,6 @@ import sys
 
 sys.path.insert(0, "..")
 
-# nose
 from nose.tools import eq_
 
 # PyMQI

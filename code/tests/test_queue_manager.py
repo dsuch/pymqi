@@ -1,22 +1,16 @@
 """ Tests for pymqi.QueueManager class.
 """
 
-# stdlib
 import os
 import unittest
 from uuid import uuid4
 
-# nose
 from nose.tools import eq_
-
-# testfixtures
 from testfixtures import Replacer
 
-# test env, configuration & utilities
-import config
-import utils
+import config  # noqa
+import utils  # noqa
 
-# PyMQI
 import pymqi
 import pymqi.CMQC
 

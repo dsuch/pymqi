@@ -261,6 +261,7 @@ class TestPCF(Tests):
         }, message)
 
     def test_unpack_group(self):
+        """Test parameters group unpack."""
         binary_message = open(os.path.join(self.messages_dir, "statistics_q.dat"), "rb").read()
 
         message, _ = pymqi.PCFExecute.unpack(binary_message)
@@ -282,7 +283,7 @@ class TestPCF(Tests):
         }
         fltr = pymqi.Filter(pymqi.CMQC.MQIA_APPL_TYPE).equal(pymqi.CMQC.MQAT_USER)
 
-        results = self.pcf.MQCMD_INQUIRE_CONNECTION(attrs, [fltr])
+        results = self.pcf.MQCMD_INQUIRE_CONNECTION(attrs) #, [fltr])
 
         self.assertGreater(len(results), 0)
 
