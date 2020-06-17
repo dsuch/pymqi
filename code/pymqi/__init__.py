@@ -97,7 +97,10 @@ import threading
 import ctypes
 import sys
 
-from typing import Any, Optional, Union, Dict
+try:
+    from typing import Any, Optional, Union, Dict
+except ImportError:
+    pass
 
 # import xml parser.  lxml/etree only available since python 2.5
 use_minidom = False
@@ -2875,19 +2878,21 @@ class PCFExecute(QueueManager):
         parameter = None # type: Optional[MQOpts]
         group = None
         group_count = 0
+
         while (index > 0):
+            parameter_type = struct.unpack(MQLONG_TYPE, message[cursor:cursor + 4])[0]
             if group_count == 0:
                 group = None
             if group is not None:
                 group_count -= 1
-            if message[cursor] == CMQCFC.MQCFT_STRING:
+            if parameter_type == CMQCFC.MQCFT_STRING:
                 parameter = CFST()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFST_STRUC_LENGTH_FIXED])
                 if parameter.StringLength > 1:
                     parameter = CFST(StringLength=parameter.StringLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.String
-            elif message[cursor] == CMQCFC.MQCFT_STRING_LIST:
+            elif parameter_type == CMQCFC.MQCFT_STRING_LIST:
                 parameter = CFSL()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFSL_STRUC_LENGTH_FIXED])
                 if parameter.StringLength > 1:
@@ -2896,15 +2901,15 @@ class PCFExecute(QueueManager):
                                      StrucLength=parameter.StrucLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.Strings
-            elif message[cursor] == CMQCFC.MQCFT_INTEGER:
+            elif parameter_type == CMQCFC.MQCFT_INTEGER:
                 parameter = CFIN()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIN_STRUC_LENGTH])
                 value = parameter.Value
-            elif message[cursor] == CMQCFC.MQCFT_INTEGER64:
+            elif parameter_type == CMQCFC.MQCFT_INTEGER64:
                 parameter = CFIN64()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIN64_STRUC_LENGTH])
                 value = parameter.Value
-            elif message[cursor] == CMQCFC.MQCFT_INTEGER_LIST:
+            elif parameter_type == CMQCFC.MQCFT_INTEGER_LIST:
                 parameter = CFIL()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIL_STRUC_LENGTH_FIXED])
                 if parameter.Count > 0:
@@ -2912,7 +2917,7 @@ class PCFExecute(QueueManager):
                                      StrucLength=parameter.StrucLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.Values
-            elif message[cursor] == CMQCFC.MQCFT_INTEGER64_LIST:
+            elif parameter_type == CMQCFC.MQCFT_INTEGER64_LIST:
                 parameter = CFIL64()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIL64_STRUC_LENGTH_FIXED])
                 if parameter.Count > 0:
@@ -2920,7 +2925,7 @@ class PCFExecute(QueueManager):
                                        StrucLength=parameter.StrucLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.Values
-            elif message[cursor] == CMQCFC.MQCFT_GROUP:
+            elif parameter_type == CMQCFC.MQCFT_GROUP:
                 parameter = CFGR()
                 parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 group_count = parameter.ParameterCount
@@ -2928,7 +2933,7 @@ class PCFExecute(QueueManager):
                 group = {}
                 res[parameter.Parameter] = res.get(parameter.Parameter, [])
                 res[parameter.Parameter].append(group)
-            elif message[cursor] == CMQCFC.MQCFT_BYTE_STRING:
+            elif parameter_type == CMQCFC.MQCFT_BYTE_STRING:
                 parameter = CFBS()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFBS_STRUC_LENGTH_FIXED])
                 if parameter.StringLength > 1:
