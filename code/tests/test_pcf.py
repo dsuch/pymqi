@@ -347,14 +347,14 @@ class TestPCF(Tests):
 
         pcf = pymqi.PCFExecute(self.qmgr)
 
-        self.assertTrue(pcf._reply_queue)
-        self.assertTrue(pcf._reply_queue_name)
+        self.assertTrue(pcf.reply_queue)
+        self.assertTrue(pcf.reply_queue_name)
 
         pcf.disconnect()
 
         self.assertTrue(self.qmgr)
-        self.assertFalse(pcf._reply_queue)
-        self.assertFalse(pcf._reply_queue_name)
+        self.assertFalse(pcf.reply_queue)
+        self.assertFalse(pcf.reply_queue_name)
 
 if __name__ == "__main__":
     main(module="test_pcf")

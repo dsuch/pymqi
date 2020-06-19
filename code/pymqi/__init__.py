@@ -2703,14 +2703,14 @@ class _Method:
                 message = message + pcf_filter.pack()
 
         command_queue = Queue(self.__pcf.qm,
-                              self.__pcf._command_queue_name,
+                              self.__pcf.command_queue_name,
                               CMQC.MQOO_OUTPUT)
 
         put_md = MD(Format=CMQC.MQFMT_ADMIN,
                     MsgType=CMQC.MQMT_REQUEST,
-                    ReplyToQ=self.__pcf._reply_queue_name,
+                    ReplyToQ=self.__pcf.reply_queue_name,
                     Feedback=CMQC.MQFB_NONE,
-                    Expiry=self.__pcf.response_wait_interval,
+                    Expiry=self.__pcf.response_wait_interval // 100,
                     Report=CMQC.MQRO_PASS_DISCARD_AND_EXPIRY | CMQC.MQRO_DISCARD_MSG)
         put_opts = PMO(Options=CMQC.MQPMO_NO_SYNCPOINT)
 
@@ -2732,7 +2732,7 @@ class _Method:
 
         ress = []
         while True:
-            message = self.__pcf._reply_queue.get(None, get_md, get_opts)
+            message = self.__pcf.reply_queue.get(None, get_md, get_opts)
             res, control = self.__pcf.unpack(message)
 
             ress.append(res)
@@ -2754,11 +2754,6 @@ class PCFExecute(QueueManager):
     its used. PCF commands are executed by calling a CMQC defined
     MQCMD_* method on the object.  """
 
-    _reply_queue = None # type: Queue
-    _reply_queue_name = None # type: str
-    _command_queue_name = b'SYSTEM.ADMIN.COMMAND.QUEUE' # type: bytes
-    response_wait_interval = 0
-
     qm = None # type: Optional[QueueManager]
 
     iaStringDict = _MQConst2String(CMQC, 'MQIA_')
@@ -2768,21 +2763,20 @@ class PCFExecute(QueueManager):
                  disconnect_on_exit=True,
                  model_queue_name=b'SYSTEM.DEFAULT.MODEL.QUEUE',
                  dynamic_queue_name=b'PYMQPCF.*',
-                 command_queue_name=b'',
-                 response_wait_interval=100,
+                 command_queue_name=b'SYSTEM.ADMIN.COMMAND.QUEUE',
+                 response_wait_interval=5000,
                  convert=False):
-        # type: (Any, bool, bytes, bytes, bytes) -> None
+        # type: (Any, bool, bytes, bytes, bytes, int, bool) -> None
         """PCFExecute(name = '')
 
         Connect to the Queue Manager 'name' (default value '') ready
         for a PCF command. If name is a QueueManager instance, it is
         used for the connection, otherwise a new connection is made """
 
-        self.response_wait_interval = response_wait_interval
-        self.convert = convert
+        self.__command_queue_name = command_queue_name
+        self.__convert = convert
+        self.__response_wait_interval = response_wait_interval
 
-        if command_queue_name:
-            self._command_queue_name = command_queue_name
 
         if isinstance(name, QueueManager):
             self.qm = name
@@ -2791,13 +2785,31 @@ class PCFExecute(QueueManager):
             self.qm = None
             super(PCFExecute, self).__init__(name)
 
-        if not self._reply_queue and not self._reply_queue_name:
-            od = OD(ObjectName=model_queue_name,
-                    DynamicQName=dynamic_queue_name)
+        od = OD(ObjectName=model_queue_name,
+                DynamicQName=dynamic_queue_name)
 
-            self._reply_queue = Queue(self.qm, od, CMQC.MQOO_INPUT_EXCLUSIVE)
-            self._reply_queue_name = od.ObjectName.strip()
+        self.__reply_queue = Queue(self.qm, od, CMQC.MQOO_INPUT_EXCLUSIVE)
+        self.__reply_queue_name = od.ObjectName.strip()
 
+    @property
+    def command_queue_name(self):
+        return self.__command_queue_name
+
+    @property
+    def convert(self):
+        return self.__convert
+
+    @property
+    def reply_queue(self):
+        return self.__reply_queue
+
+    @property
+    def reply_queue_name(self):
+        return self.__reply_queue_name
+
+    @property
+    def response_wait_interval(self):
+        return self.__response_wait_interval
 
     def __getattr__(self, name):
         """MQCMD_*(attrDict)
@@ -2849,13 +2861,13 @@ class PCFExecute(QueueManager):
         """ Disconnect from reply_queue
         """
         try:
-            if self._reply_queue and self._reply_queue.get_handle():
-                self._reply_queue.close()
+            if self._reply_queue and self.__reply_queue.get_handle():
+                self.__reply_queue.close()
         except MQMIError as ex:
             pass
         finally:
-            self._reply_queue = None
-            self._reply_queue_name = None
+            self.__reply_queue = None
+            self.__reply_queue_name = None
 
     @staticmethod
     def unpack(message): # type: (bytes) -> dict
@@ -2872,11 +2884,11 @@ class PCFExecute(QueueManager):
         if mqcfh.CompCode:
             raise MQMIError(mqcfh.CompCode, mqcfh.Reason)
 
-        res = {}
+        res = {}  # type: Dict[str, Union[int, str, bool, Dict]]
         index = mqcfh.ParameterCount
         cursor = CMQCFC.MQCFH_STRUC_LENGTH
-        parameter = None # type: Optional[MQOpts]
-        group = None
+        parameter = None  # type: Optional[MQOpts]
+        group = None  # type: Union[None, Dict[str, Union[str, int, bool]]]
         group_count = 0
 
         while (index > 0):
