@@ -2861,7 +2861,7 @@ class PCFExecute(QueueManager):
         """ Disconnect from reply_queue
         """
         try:
-            if self._reply_queue and self.__reply_queue.get_handle():
+            if self.__reply_queue and self.__reply_queue.get_handle():
                 self.__reply_queue.close()
         except MQMIError as ex:
             pass
