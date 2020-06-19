@@ -27,8 +27,6 @@ class TestPCF(Tests):
     @classmethod
     def tearDownClass(cls):
         """Tear down test environment."""
-        cls.pcf.disconnect()
-
         super(TestPCF, cls).tearDownClass()
 
     def setUp(self):

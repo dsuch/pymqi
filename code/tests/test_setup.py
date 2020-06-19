@@ -56,6 +56,7 @@ class Tests(TestCase):
     @classmethod
     def tearDownClass(cls):
         """Clear test environment."""
+        cls.pcf.disconnect()
         cls.qmgr.disconnect()
 
     def setUp(self):
