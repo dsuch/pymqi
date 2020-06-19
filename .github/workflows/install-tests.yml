@@ -1,5 +1,5 @@
 name: install-tests
-on: 
+on:
   push:
     branches:
       - master
@@ -16,8 +16,6 @@ jobs:
         exclude:
           - environment: windows-latest
             python-version: 2.7
-          - environment: windows-latest
-            python-version: 3.5        
     runs-on: ${{ matrix.environment}}
     steps:
       - name: Checkout source
@@ -38,7 +36,7 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
-      
+
       - name: Install pymqi
         run: |
           python setup.py install --verbose
