@@ -220,11 +220,11 @@ class TestRFH2(unittest.TestCase):
 
         rfh2 = pymqi.RFH2()
         try:
-            rfh2.unpack(self.single_rfh2_message[0:36])
+            rfh2.unpack(self.single_rfh2_message[0:32])
         except pymqi.PYIFError as e:
             self.assertEqual(str(e),
-                             "PYMQI Error: RFH2 - Buffer too short. Should be 36 bytes or longer.  Buffer Length: 32",
-                             "Not Buffer to short exception?")
+                             'PYMQI Error: RFH2 - Buffer too short. Should be 36+ bytes instead of 32',
+                             'Not Buffer to short exception?')
 
     def test_buffer_too_short_for_complete_rfh2_exception(self):
         """Test exception occurs when buffer is too short for complete RFH2.
