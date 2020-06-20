@@ -16,7 +16,7 @@ from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
-version = '1.11.0'
+version = '1.11.1'
 
 # Build either in bindings or client mode.
 bindings_mode = 0
@@ -37,11 +37,15 @@ def get_windows_settings():
     """ Windows settings.
     """
     if bits == 64:
-        library_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\Lib64']
-        include_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\c\include']
+        library_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\Lib64',
+                        r'{}\tools\Lib64'.format(os.environ['MQ_FILE_PATH'])]
+        include_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\c\include',
+                        r'{}\tools\c\include'.format(os.environ['MQ_FILE_PATH'])]
     else:
-        library_dirs = [r'c:\Program Files\IBM\WebSphere MQ\Tools\Lib']
-        include_dirs = [r'c:\Program Files\IBM\WebSphere MQ\tools\c\include']
+        library_dirs = [r'c:\Program Files\IBM\WebSphere MQ\Tools\Lib',
+                        r'{}\tools\Lib'.format(os.environ['MQ_FILE_PATH'])]
+        include_dirs = [r'c:\Program Files\IBM\WebSphere MQ\tools\c\include',
+                        r'{}\tools\c\include'.format(os.environ['MQ_FILE_PATH'])]
 
     if bindings_mode:
         libraries = ['mqm']

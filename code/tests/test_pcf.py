@@ -1,8 +1,10 @@
 """Test PCF usage."""
 import os
 from unittest import skip
+from unittest import skipIf
 from ddt import data
 from ddt import ddt
+from sys import version_info as sys_version_info
 
 from test_setup import Tests  # noqa
 from test_setup import main  # noqa
@@ -271,7 +273,7 @@ class TestPCF(Tests):
         self.assertEqual(item[pymqi.CMQC.MQCA_Q_NAME].strip(), b'SYSTEM.ADMIN.COMMAND.QUEUE')
         self.assertEqual(item[pymqi.CMQCFC.MQIAMO_PUTS], [14, 0])
 
-    @skip('Python pre 3.7 issues')
+    @skipIf(sys_version_info < (3, 7),'Python pre 3.7 issues: https://github.com/dsuch/pymqi/issues/207#issuecomment-645422229')
     def test_mqcfbs_old(self):
         """Test byte string MQCFBS with old style."""
         attrs = {
