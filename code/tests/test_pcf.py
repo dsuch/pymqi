@@ -1,8 +1,10 @@
 """Test PCF usage."""
 import os
 from unittest import skip
+from unittest import skipIf
 from ddt import data
 from ddt import ddt
+from sys import version_info as sys_version_info
 
 from test_setup import Tests  # noqa
 from test_setup import main  # noqa
@@ -23,13 +25,10 @@ class TestPCF(Tests):
 
         # max length of queue names is 48 characters
         cls.queue_name = "{prefix}PCF.QUEUE".format(prefix=cls.prefix)
-        cls.pcf = pymqi.PCFExecute(cls.qmgr, response_wait_interval=600)
 
     @classmethod
     def tearDownClass(cls):
         """Tear down test environment."""
-        cls.pcf.disconnect()
-
         super(TestPCF, cls).tearDownClass()
 
     def setUp(self):
@@ -274,6 +273,7 @@ class TestPCF(Tests):
         self.assertEqual(item[pymqi.CMQC.MQCA_Q_NAME].strip(), b'SYSTEM.ADMIN.COMMAND.QUEUE')
         self.assertEqual(item[pymqi.CMQCFC.MQIAMO_PUTS], [14, 0])
 
+    @skipIf(sys_version_info < (3, 7),'Python pre 3.7 issues: https://github.com/dsuch/pymqi/issues/207#issuecomment-645422229')
     def test_mqcfbs_old(self):
         """Test byte string MQCFBS with old style."""
         attrs = {

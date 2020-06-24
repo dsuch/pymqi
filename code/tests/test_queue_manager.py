@@ -5,7 +5,6 @@ import os
 import unittest
 from uuid import uuid4
 
-from nose.tools import eq_
 from testfixtures import Replacer
 
 import config  # noqa
@@ -128,18 +127,6 @@ class TestQueueManager(unittest.TestCase):
     def test_backout(self):
         pass
 
-    def test_put1(self):
-        qmgr = pymqi.QueueManager(None)
-        qmgr.connect_tcp_client(
-            self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
-            password=self.password)
-        input_msg = b'Hello world!'
-        qmgr.put1(self.queue_name, input_msg)
-        # now get the message from the queue
-        queue = pymqi.Queue(qmgr, self.queue_name)
-        result_msg = queue.get()
-        self.assertEqual(input_msg, result_msg)
-
     def test_inquire(self):
         qmgr = pymqi.QueueManager(None)
         qmgr.connect_tcp_client(
@@ -150,51 +137,6 @@ class TestQueueManager(unittest.TestCase):
         attribute_value = qmgr.inquire(attribute)
         self.assertEqual(len(attribute_value), pymqi.CMQC.MQ_Q_MGR_NAME_LENGTH)
         self.assertEqual(attribute_value.strip(), expected_value)
-
-    def test_is_connected(self):
-        """Makes sure the QueueManager's 'is_connected' property works as
-        expected.
-        """
-        # uses a mock so no real connection to a queue manager will be
-        # established - the parameters below are basically moot
-        with Replacer() as r:
-            queue_manager = uuid4().hex
-            channel = uuid4().hex
-            host = uuid4().hex
-            port = "1431"
-            conn_info = "%s(%s)" % (host, port)
-            user = "myuser"
-            password = "mypass"
-
-            for expected in(True, False):
-
-                # noinspection PyUnusedLocal
-                def _connect_tcp_client(*ignored_args, **ignored_kwargs):
-                    pass
-
-                # noinspection PyUnusedLocal
-                def _getattr(self2, name):
-                    if expected:
-                        class _DummyMethod(object):
-                            pass
-                        # The mere fact of not raising an exception will suffice
-                        # for QueueManager._is_connected to understand it as an
-                        # all's OK condition.
-                        return _DummyMethod
-                    else:
-                        raise Exception()
-
-                r.replace('pymqi.QueueManager.connect_tcp_client',
-                          _connect_tcp_client)
-                r.replace('pymqi.PCFExecute.__getattr__', _getattr)
-
-                qmgr = pymqi.QueueManager(None)
-                qmgr.connect_tcp_client(
-                    queue_manager, pymqi.cd(), channel, conn_info, user,
-                    password)
-
-                eq_(qmgr.is_connected, expected)
-
 
 if __name__ == '__main__':
     unittest.main()

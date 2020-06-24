@@ -19,7 +19,6 @@ import unittest
 
 # test config & env
 import config
-import env
 
 # PyMQI
 import pymqi
@@ -46,8 +45,8 @@ class TestMQ80(unittest.TestCase):
         conn = self.get_conn()
         pcf = pymqi.PCFExecute(conn)
         command_level = pcf.MQCMD_INQUIRE_Q_MGR()[0][CMQC.MQIA_COMMAND_LEVEL]
-        self.assertGreaterEqual(command_level, 800)
         conn.disconnect()
+        self.assertGreaterEqual(command_level, 800)
 
 
     def test_connect_with_credentials(self):

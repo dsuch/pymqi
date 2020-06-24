@@ -10,8 +10,10 @@ import config
 import pymqi
 from pymqi import CMQC
 
+import test_setup
 
-class TestRFH2PutGet(unittest.TestCase):
+
+class TestRFH2PutGet(test_setup.Tests):
     """This test case tests the RFH2 class and it's methods.
     """
 
@@ -22,6 +24,7 @@ class TestRFH2PutGet(unittest.TestCase):
         Must be run as a user that has 'mqm' access.
 
         """
+        super(TestRFH2PutGet, self).setUp()
 
         self.single_rfh2_message = open(
             os.path.join(self.messages_dir, "single_rfh2.dat"), "rb").read()
@@ -33,21 +36,10 @@ class TestRFH2PutGet(unittest.TestCase):
         self.multiple_rfh2_message_not_well_formed = \
             self.multiple_rfh2_message[0:117] + self.multiple_rfh2_message[121:]
 
-        queue_manager = config.MQ.QM.NAME
-        channel = config.MQ.QM.CHANNEL
-        conn_info = "%s(%s)" % (config.MQ.QM.HOST, config.MQ.QM.PORT)
-        queue_name = config.MQ.QUEUE.QUEUE_NAMES['TestRFH2PutGet']
+        self.create_queue(self.queue_name)
 
-        self.qmgr = None
-        if pymqi.__mqbuild__ == 'server':
-            self.qmgr = pymqi.QueueManager(queue_manager)
-        else:
-            self.qmgr = pymqi.QueueManager(None)
-            self.qmgr.connect_tcp_client(
-                queue_manager, pymqi.cd(), channel, conn_info,
-                user=config.MQ.QM.USER, password=config.MQ.QM.PASSWORD)
-        self.put_queue = pymqi.Queue(self.qmgr, queue_name)
-        self.get_queue = pymqi.Queue(self.qmgr, queue_name)
+        self.put_queue = pymqi.Queue(self.qmgr, self.queue_name)
+        self.get_queue = pymqi.Queue(self.qmgr, self.queue_name)
         self.clear_queue(self.get_queue)
 
     def tearDown(self):
@@ -56,7 +48,8 @@ class TestRFH2PutGet(unittest.TestCase):
         """
         self.put_queue.close()
         self.get_queue.close()
-        self.qmgr.disconnect()
+        self.delete_queue(self.queue_name)
+        super(TestRFH2PutGet, self).tearDown()
 
     @staticmethod
     def clear_queue(queue):

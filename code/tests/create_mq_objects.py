@@ -150,8 +150,8 @@ else:
                  errormsg="MQ queue manager connection authentication setup not successful.")
     else:
         print("Connection authentication not applicable for pre-8.0 MQ.")
-        
-    
+
+
 print("Disabling MQ queue manager channel authentication records feature.")
 run_mqsc(mqsc_script_channel_auth,
          errormsg="Disabling MQ queue manager channel authentication records not successful.")

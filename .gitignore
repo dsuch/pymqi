@@ -1,6 +1,6 @@
 .idea
 .idea/*
-code/build/*
+build/*
 code/dist
 code/develop-eggs/*
 code/MANIFEST
