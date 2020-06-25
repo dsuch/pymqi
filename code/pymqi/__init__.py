@@ -2733,11 +2733,11 @@ class _Method:
         ress = []
         while True:
             message = self.__pcf.reply_queue.get(None, get_md, get_opts)
-            res, control = self.__pcf.unpack(message)
+            res, mqcfh_response = self.__pcf.unpack(message)
 
             ress.append(res)
 
-            if control == CMQCFC.MQCFC_LAST:
+            if mqcfh_response.Control == CMQCFC.MQCFC_LAST:
                 break
 
         return ress
@@ -2964,7 +2964,7 @@ class PCFExecute(QueueManager):
             else:
                 res[parameter.Parameter] = value
 
-        return res, mqcfh.Control
+        return res, mqcfh
 
 
 class ByteString(object):

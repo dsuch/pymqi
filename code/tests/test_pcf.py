@@ -259,11 +259,45 @@ class TestPCF(Tests):
             ]
         }, message)
 
+    def test_unpack_header(self):
+        """Test unpack header."""
+        message = pymqi.CFH(Version=pymqi.CMQCFC.MQCFH_VERSION_1,
+                            Type=pymqi.CMQCFC.MQCFT_STATISTICS,
+                            Command=pymqi.CMQCFC.MQCMD_STATISTICS_Q,
+                            ParameterCount=1).pack()
+        message += pymqi.CFST(Parameter=pymqi.CMQC.MQCA_Q_MGR_NAME,
+                                    String=b'QM1').pack()
+
+        queue = pymqi.Queue(self.qmgr, self.queue_name,
+                            pymqi.CMQC.MQOO_INPUT_AS_Q_DEF + pymqi.CMQC.MQOO_OUTPUT)
+
+        put_md = pymqi.MD(Format=pymqi.CMQC.MQFMT_PCF)
+        queue.put(message, put_md)
+
+        get_opts = pymqi.GMO(
+            Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING,
+            Version=pymqi.CMQC.MQGMO_VERSION_2,
+            MatchOptions=pymqi.CMQC.MQMO_MATCH_CORREL_ID)
+        get_md = pymqi.MD(MsgId=put_md.MsgId)  # pylint: disable=no-member
+        message = queue.get(None, get_md, get_opts)
+        queue.close()
+        message, header = pymqi.PCFExecute.unpack(message)
+
+        self.assertEqual(header.Command,  pymqi.CMQCFC.MQCMD_STATISTICS_Q)
+        self.assertEqual(header.Type,  pymqi.CMQCFC.MQCFT_STATISTICS)
+
+        self.assertEqual({
+            pymqi.CMQC.MQCA_Q_MGR_NAME: b'QM1\x00',
+        }, message)
+
     def test_unpack_group(self):
         """Test parameters group unpack."""
         binary_message = open(os.path.join(self.messages_dir, "statistics_q.dat"), "rb").read()
 
-        message, _ = pymqi.PCFExecute.unpack(binary_message)
+        message, header = pymqi.PCFExecute.unpack(binary_message)
+
+        self.assertEqual(header.Command,  pymqi.CMQCFC.MQCMD_STATISTICS_Q)
+        self.assertEqual(header.Type,  pymqi.CMQCFC.MQCFT_STATISTICS)
 
         self.assertEqual(message[pymqi.CMQC.MQCA_Q_MGR_NAME].strip(), b'mq_mgr1')
         self.assertEqual(message[pymqi.CMQCFC.MQCAMO_START_DATE], b'2020-06-15\x00\x00')
