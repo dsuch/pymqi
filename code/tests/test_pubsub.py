@@ -106,6 +106,14 @@ class TestPubSub(unittest.TestCase):
         topic.pub(msg, *opts)
         topic.close()
 
+    def pub_rfh2(self, msg, topic_string, *opts):
+        topic = pymqi.Topic(self.qmgr, topic_string=topic_string)
+        topic.open(open_opts=pymqi.CMQC.MQOO_OUTPUT)
+        if isinstance(msg, str) and not isinstance(msg, bytes):
+            raise AttributeError('msg must be bytes (not str) to publish to topic.')  # py3
+        topic.pub_rfh2(msg, *opts)
+        topic.close()
+
     def create_api_subscription(self):
         return pymqi.Subscription(self.qmgr)
 
@@ -208,6 +216,48 @@ class TestPubSub(unittest.TestCase):
         sub.close(sub_close_options=0, close_sub_queue=True)
         self.assertEqual(data, msg)
 
+    def test_pubsub_api_managed_non_durable_rfh2(self):
+        topic_string = self.topic_string_template.format(type="API_RFH2", destination="MANAGED", durable="NON DURABLE")
+        subname = self.subname_template.format(type="Api_rfh2", destination="Managed", durable="Non Durable")
+        msg = self.msg_format(topic_string=topic_string)
+        sub_desc = self.get_subscription_descriptor(subname, topic_string,
+                                                    pymqi.CMQC.MQSO_CREATE + pymqi.CMQC.MQSO_MANAGED)
+        # register Subscription
+        sub = self.create_api_subscription()
+        self.sub_desc_list = [(sub, sub_desc, None)]
+        sub.sub(sub_desc=sub_desc)
+
+        # publish (put)
+        put_mqmd = pymqi.md(
+                            Format=pymqi.CMQC.MQFMT_RF_HEADER_2,
+                            Encoding=273,
+                            CodedCharSetId=1208)
+
+        put_opts = pymqi.pmo()
+
+        put_rfh2 = pymqi.RFH2(StrucId=pymqi.CMQC.MQRFH_STRUC_ID,
+                              Version=pymqi.CMQC.MQRFH_VERSION_2,
+                              StrucLength=188,
+                              Encoding=273,
+                              CodedCharSetId=1208,
+                              Format=pymqi.CMQC.MQFMT_STRING,
+                              Flags=0,
+                              NameValueCCSID=1208)
+        put_rfh2.add_folder(b"<psc><Command>RegSub</Command><Topic>$topictree/topiccat/topic</Topic><QMgrName>DebugQM</QMgrName><QName>PUBOUT</QName><RegOpt>PersAsPub</RegOpt></psc>")
+        put_rfh2.add_folder(b"<testFolder><testVar>testValue</testVar></testFolder>")
+        put_rfh2.add_folder(b"<mcd><Msd>xmlnsc</Msd></mcd>")
+
+        self.pub_rfh2(msg, topic_string, put_mqmd, put_opts, [put_rfh2])
+        get_opts = pymqi.GMO(Version=pymqi.CMQC.MQGMO_VERSION_4,
+                             WaitInterval=15000,
+                             Options=pymqi.CMQC.MQGMO_NO_SYNCPOINT + \
+                                    pymqi.CMQC.MQGMO_FAIL_IF_QUIESCING + \
+                                    pymqi.CMQC.MQGMO_WAIT)
+        get_rfh2_list = []
+        data = sub.get_rfh2(None, pymqi.md(Version=pymqi.CMQC.MQMD_VERSION_2), get_opts, get_rfh2_list)
+        sub.close(sub_close_options=0, close_sub_queue=True)
+        self.assertEqual(data, msg)
+
     def test_pubsub_admin_managed(self):
         topic_string = self.topic_string_template.format(type="ADMIN", destination="MANAGED", durable="DURABLE")
         subname = self.subname_template.format(type="Admin", destination="Managed", durable="Durable")
@@ -275,7 +325,7 @@ class TestPubSub(unittest.TestCase):
         data = sub.get(None, pymqi.md(), get_opts)
         sub.close(sub_close_options=0, close_sub_queue=True)
         self.assertEqual(data, msg)
-        
+
     def test_pubsub_admin_provided(self):
         topic_string = self.topic_string_template.format(type="ADMIN", destination="PROVIDED", durable="DURABLE")
         subname = self.subname_template.format(type="Admin", destination="Provided", durable="Durable")
@@ -290,7 +340,7 @@ class TestPubSub(unittest.TestCase):
         # register Subscription
         self.create_admin_subscription(pymqi.CMQC.MQDC_PROVIDED, subname, queue_name, topic_string)
         sub = pymqi.Subscription(self.qmgr)
-        
+
         sub.sub(sub_desc=sub_desc, sub_queue=sub_queue)
         self.sub_desc_list = [(sub, sub_desc, queue_name)]
         # publish (put)
@@ -334,7 +384,7 @@ class TestPubSub(unittest.TestCase):
         """
         topic_string = self.topic_string_template.format(type="API", destination="MANAGED", durable="NON DURABLE")
         subname = self.subname_template.format(type="Api", destination="Managed", durable="Non Durable")
-        messages = ["ascii", unicode("Euro sign: ¤", "iso-8859-15"), unicode("Umläut", "iso-8859-15"), unicodedata.lookup("INFINITY")]
+        messages = ["ascii", unicode("Euro sign: ï¿½", "iso-8859-15"), unicode("Umlï¿½ut", "iso-8859-15"), unicodedata.lookup("INFINITY")]
 
         md = pymqi.md()
         # setting this means the message is entirely character data
