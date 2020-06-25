@@ -2964,7 +2964,7 @@ class PCFExecute(QueueManager):
             else:
                 res[parameter.Parameter] = value
 
-        return res, mqcfh.Control
+        return res, mqcfh
 
 
 class ByteString(object):
