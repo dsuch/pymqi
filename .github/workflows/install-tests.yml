@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-      - gh159-actions-unit-testing
   pull_request:
 
 jobs:
