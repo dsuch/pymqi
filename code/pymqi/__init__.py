@@ -2283,6 +2283,34 @@ class Topic:
         msg_desc.unpack(rv[0])
         put_opts.unpack(rv[1])
 
+    def pub_rfh2(self, msg, *opts):
+        # type: (bytes, *MQOpts) -> None
+        """pub_rfh2(msg[, mDesc ,putOpts, [rfh2_header, ]])
+        Put a RFH2 message. opts[2] is a list of RFH2 headers.
+        MQMD and RFH2's must be correct.
+        """
+        ensure_not_unicode(msg)  # Python 3 bytes check
+
+        rfh2_buff = b''
+        if len(opts) >= 3:
+            if opts[2] is not None:
+                if not isinstance(opts[2], list):
+                    raise TypeError('Third item of opts should be a list.')
+                encoding = CMQC.MQENC_NATIVE
+                if opts[0] is not None:
+                    mqmd = opts[0]
+                    encoding = mqmd['Encoding']
+
+                for rfh2_header in opts[2]:
+                    if rfh2_header is not None:
+                        rfh2_buff = rfh2_buff + rfh2_header.pack(encoding)
+                        encoding = rfh2_header['Encoding']
+
+                msg = rfh2_buff + msg
+            self.pub(msg, *opts[0:2])
+        else:
+            self.pub(msg, *opts)
+
     def sub(self, *opts):
         """ Subscribe to the topic and return a Subscription object.
         A subscription to a topic can be made using an existing queue, either
@@ -2349,6 +2377,12 @@ class Subscription:
         """ Get a publication from the Queue.
         """
         return self.sub_queue.get(max_length, *opts)
+
+    def get_rfh2(self, max_length=None, *opts):
+        # type: (int, *MQOpts) -> bytes
+        """ Get a publication from the Queue.
+        """
+        return self.sub_queue.get_rfh2(max_length, *opts)
 
     def sub(self, sub_desc=None, sub_queue=None, sub_name=None, sub_opts=None,
             topic_name=None, topic_string=None):
