@@ -2986,6 +2986,10 @@ class PCFExecute(QueueManager):
                     parameter = CFBS(StringLength=parameter.StringLength)
                     parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = parameter.String
+            elif parameter_type == CMQCFC.MQCFT_STRING_FILTER:
+                parameter = CFSF()
+                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFSF_STRUC_LENGTH_FIXED])
+                value = [parameter.Operator, parameter.FilterValue]
             else:
                 pcf_type = struct.unpack(MQLONG_TYPE, message[cursor:cursor + 4])
                 raise NotImplementedError('Unpack for type ({}) not implemented'.format(pcf_type))
