@@ -62,6 +62,8 @@ Installation
 * As a prerequisite, you first need to install an IBM MQ client in the system that PyMQI is about to be installed;
   it is a free library offered by IBM on top of which higher-level ones, such as PyMQI, can connect to queue managers.
   IBM MQ clients can be downloaded from IBM's website.
+ 
+* Prerequisite for Windows: Microsoft Visual C++ 14.0. Get it with "Build Tools for Visual Studio": https://visualstudio.microsoft.com/downloads/
 
 * Now you can use pip to install PyMQI itself:
 
