@@ -37,15 +37,15 @@ def get_windows_settings():
     """ Windows settings.
     """
     if bits == 64:
-        library_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\Lib64',
-                        r'{}\tools\Lib64'.format(os.environ['MQ_FILE_PATH'])]
-        include_dirs = [r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\c\include',
-                        r'{}\tools\c\include'.format(os.environ['MQ_FILE_PATH'])]
+        library_dirs = [r'{}\tools\Lib64'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\Lib64']
+        include_dirs = [r'{}\tools\c\include'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        r'c:\Program Files (x86)\IBM\WebSphere MQ\tools\c\include']
     else:
-        library_dirs = [r'c:\Program Files\IBM\WebSphere MQ\Tools\Lib',
-                        r'{}\tools\Lib'.format(os.environ['MQ_FILE_PATH'])]
-        include_dirs = [r'c:\Program Files\IBM\WebSphere MQ\tools\c\include',
-                        r'{}\tools\c\include'.format(os.environ['MQ_FILE_PATH'])]
+        library_dirs = [r'{}\tools\Lib'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        r'c:\Program Files\IBM\WebSphere MQ\Tools\Lib']
+        include_dirs = [r'{}\tools\c\include'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        r'c:\Program Files\IBM\WebSphere MQ\tools\c\include']
 
     if bindings_mode:
         libraries = ['mqm']
@@ -61,14 +61,17 @@ def get_sunos_zlinux_settings():
     """ SunOS and z/Linux settings.
     """
     if bits == 64:
-        library_dirs = ['/opt/mqm/lib64']
+        library_dirs = ['{}/lib64'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        '/opt/mqm/lib64']
     else:
-        library_dirs = ['/opt/mqm/lib']
+        library_dirs = ['{}/lib'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        '/opt/mqm/lib']
 
-    include_dirs = ['/opt/mqm/inc']
+    include_dirs = ['{}/inc'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                    '/opt/mqm/inc']
 
     if bindings_mode:
-        libraries = ['mqm','mqmcs','mqmzse']
+        libraries = ['mqm', 'mqmcs', 'mqmzse']
     else:
         libraries = ['mqic']
 
@@ -78,11 +81,14 @@ def get_aix_settings():
     """ AIX settings.
     """
     if bits == 64:
-        library_dirs = ['/usr/mqm/lib64']
+        library_dirs = ['{}/lib64'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        '/usr/mqm/lib64']
     else:
-        library_dirs = ['/usr/mqm/lib']
+        library_dirs = ['{}/lib'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        '/usr/mqm/lib']
 
-    include_dirs = ['/usr/mqm/inc']
+    include_dirs = ['{}/inc'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                    '/usr/mqm/inc']
 
     if bindings_mode:
         libraries = ['mqm_r']
@@ -95,11 +101,14 @@ def get_generic_unix_settings():
     """ Generic UNIX, including Linux, settings.
     """
     if bits == 64:
-        library_dirs = ['/opt/mqm/lib64']
+        library_dirs = ['{}/lib64'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        '/opt/mqm/lib64']
     else:
-        library_dirs = ['/opt/mqm/lib']
+        library_dirs = ['{}/lib'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                        '/opt/mqm/lib']
 
-    include_dirs = ['/opt/mqm/inc']
+    include_dirs = ['{}/inc'.format(os.environ.get('MQ_FILE_PATH', '.')),
+                    '/opt/mqm/inc']
 
     if bindings_mode:
         libraries = ['mqm_r']
@@ -146,8 +155,9 @@ elif sys.platform.startswith('aix'):
 else:
 
     has_generic_lib = os.path.exists('/opt/mqm/lib64') if bits == 64 else os.path.exists('/opt/mqm/lib')
+    has_mq_file_path = os.environ.get('MQ_FILE_PATH', False)
 
-    if has_generic_lib:
+    if has_generic_lib or has_mq_file_path:
         library_dirs, include_dirs, libraries = get_generic_unix_settings()
 
     else:
