@@ -2989,7 +2989,21 @@ class PCFExecute(QueueManager):
             elif parameter_type == CMQCFC.MQCFT_STRING_FILTER:
                 parameter = CFSF()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFSF_STRUC_LENGTH_FIXED])
-                value = [parameter.Operator, parameter.FilterValue]
+                if parameter.FilterValueLength > 0:
+                    parameter = CFSF(FilterValueLength=parameter.FilterValueLength)
+                    parameter.unpack(message[cursor:cursor + CMQCFC.MQCFSF_STRUC_LENGTH_FIXED + parameter.FilterValueLength])
+                value = (parameter.Operator, parameter.FilterValue)
+            elif parameter_type == CMQCFC.MQCFT_BYTE_STRING_FILTER:
+                parameter = CFBF()
+                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFBF_STRUC_LENGTH_FIXED])
+                if parameter.FilterValueLength > 0:
+                    parameter = CFBF(FilterValueLength=parameter.FilterValueLength)
+                    parameter.unpack(message[cursor:cursor + CMQCFC.MQCFBF_STRUC_LENGTH_FIXED + parameter.FilterValueLength])
+                value = (parameter.Operator, parameter.FilterValue)
+            elif parameter_type == CMQCFC.MQCFT_INTEGER_FILTER:
+                parameter = CFIF()
+                parameter.unpack(message[cursor:cursor + CMQCFC.MQCFIF_STRUC_LENGTH])
+                value = (parameter.Operator, parameter.FilterValue)
             else:
                 pcf_type = struct.unpack(MQLONG_TYPE, message[cursor:cursor + 4])
                 raise NotImplementedError('Unpack for type ({}) not implemented'.format(pcf_type))
