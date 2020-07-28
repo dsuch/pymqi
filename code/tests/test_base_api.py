@@ -312,17 +312,6 @@ class TestGet(Tests):
         self.assertEqual(md.Format, pymqi.CMQC.MQFMT_STRING)
         self.assertEqual(md.CodedCharSetId, 1208)
 
-    def test_put1_bytes(self):
-        md = pymqi.MD()
-        self.qmgr.put1(self.queue_name, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82', md)  # Non-ascii characters
-
-        gmo = pymqi.GMO()
-        gmo.Options = gmo.Options & ~ pymqi.CMQC.MQGMO_CONVERT
-        message = self.queue.get(None, md, gmo)
-
-        self.assertEqual(message, b'\xd1\x82\xd0\xb5\xd1\x81\xd1\x82')
-        self.assertEqual(md.Format, pymqi.CMQC.MQFMT_NONE)
-
     def test_put1(self):
         input_msg = b'Hello world!'
         self.qmgr.put1(self.queue_name, input_msg)

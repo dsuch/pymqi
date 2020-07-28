@@ -23,7 +23,8 @@ class Tests(TestCase):
 
     prefix = ''
 
-    qmgr = None
+    qmgr = None  # type: pymqi.QueueManager
+    pcf = None  # type: pymqi.PCFExecute
 
 
     @classmethod
