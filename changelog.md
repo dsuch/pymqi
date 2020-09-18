@@ -1,6 +1,15 @@
 PyMQI changelog
 ---------------
 
+* **1.12.0** (2020-07-01)
+
+  * All MQ constants can be now imported from a new module called **pymqi.const**, e.g. `from pymqi.const import MQCAMO_LAST_USED`
+  * Added int64 (CFIN64), int64 list (CFIL64) and group (CFGR) support to raw PCF,
+    making it possible to read PFC messages from queues like `SYSTEM.ADMIN.STATISTICS.QUEUE`.
+  * Corrected typing import and raw PCF for Python 2.7
+  * Corrected PCF command message expiry
+  * Thanks to @JochemGit, @AlexandreYang and @Skyler-Altol for the assistance in preparing this release
+
 * **1.11.0** (2020-06-11)
 
   * Moved from MQAI to raw PCF, making it possible to use PCF commands on z/OS in addition to other systems
