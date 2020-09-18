@@ -23,7 +23,8 @@ class Tests(TestCase):
 
     prefix = ''
 
-    qmgr = None
+    qmgr = None  # type: pymqi.QueueManager
+    pcf = None  # type: pymqi.PCFExecute
 
 
     @classmethod
@@ -49,7 +50,7 @@ class Tests(TestCase):
             cls.qmgr.connectTCPClient(cls.queue_manager, pymqi.CD(), cls.channel,
                                       cls.conn_info, cls.user, cls.password)
 
-        cls.pcf = pymqi.PCFExecute(cls.qmgr, response_wait_interval=5000)
+        cls.pcf = pymqi.PCFExecute(cls.qmgr, response_wait_interval=15000)
 
         cls.version = cls.inquire_qmgr_version().decode()
 
