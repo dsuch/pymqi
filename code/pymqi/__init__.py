@@ -2597,31 +2597,27 @@ class FilterOperator(object):
         'excludes_gen': CMQCFC.MQCFOP_EXCLUDES_GEN,
         }
 
-    def __init__(self, pub_filter):
-        self.pub_filter = pub_filter
-
-    def __call__(self, value):
-
-        ensure_not_unicode(value)  # Python 3 bytes accepted here
-
+    def __init__(self, selector, opName):
         # Do we support the given attribute filter?
-        if CMQC.MQIA_FIRST <= self.pub_filter.selector <= CMQC.MQIA_LAST:
-            priv_filter_class = IntegerFilter
-        elif CMQC.MQCA_FIRST <= self.pub_filter.selector <= CMQC.MQCA_LAST:
-            priv_filter_class = StringFilter
+        if CMQC.MQIA_FIRST <= selector <= CMQC.MQIA_LAST:
+            self.internal_filter_cls = IntegerFilter
+        elif CMQC.MQCA_FIRST <= selector <= CMQC.MQCA_LAST:
+            self.internal_filter_cls = StringFilter
         else:
             msg = 'selector [%s] is of an unsupported type (neither integer ' \
                 'nor a string attribute). Please see' \
                 'https://dsuch.github.io/pymqi/support.html'
-            raise Error(msg % self.pub_filter.selector)
-
+            raise Error(msg % selector)
+        self.selector = selector
+        self.operator = self.operator_mapping.get(opName)
         # Do we support the operator?
-        operator = self.operator_mapping.get(self.pub_filter.operator)
-        if not operator:
+        if not self.operator:
             msg = 'Operator [%s] is not supported.'
-            raise Error(msg % self.pub_filter.operator)
+            raise Error(msg % opName)
 
-        return priv_filter_class(self.pub_filter.selector, value, operator)
+    def __call__(self, value):
+        ensure_not_unicode(value)  # Python 3 bytes accepted here
+        return (self.internal_filter_cls)(self.selector, value, self.operator)
 
 class Filter(object):
     """ The user-facing MQAI filtering class which provides syntactic sugar
@@ -2629,17 +2625,15 @@ class Filter(object):
     """
     def __init__(self, selector):
         self.selector = selector
-        self.operator = None
 
     def __getattribute__(self, name):
         """ A generic method for either fetching the pymqi.Filter object's
         attributes or calling magic methods like 'like', 'contains' etc.
         """
-        if name in('selector', 'operator'):
+        if name=='selector':
             return object.__getattribute__(self, name)
-        self.operator = name
 
-        return FilterOperator(self)
+        return FilterOperator(self.selector,name)
 
 #
 # This piece of magic shamelessly plagiarised from xmlrpclib.py. It
