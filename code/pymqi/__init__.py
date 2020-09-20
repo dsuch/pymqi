@@ -98,7 +98,7 @@ import ctypes
 import sys
 
 try:
-    from typing import Any, Optional, Union, Dict
+    from typing import Any, Optional, Union, Dict, List
 except ImportError:
     pass
 
@@ -261,7 +261,7 @@ class MQOpts(object):
     """
 
     def __init__(self, memlist, **kw):
-        # type: (list, Any) -> None
+        # type: (Union[list,tuple], Any) -> None
         """ Initialise the option structure. 'list' is a list of structure
     member names, default values and pack/unpack formats. 'kw' is an
     optional keyword dictionary that may be used to override default
@@ -285,7 +285,7 @@ class MQOpts(object):
             except:
                 i.append(1)
             self.__format = self.__format + i[2] * i[3]
-        self.set(**kw), list
+        self.set(**kw)
 
     def pack(self):
         # type: () -> bytes
@@ -341,7 +341,7 @@ class MQOpts(object):
                 x = x + 1
 
     def set(self, **kw):
-        # types: (Dict[str, Any])
+        # type: (Dict[str, Any]) -> None
         """ Set a structure member using the keyword dictionary 'kw'.
         An AttributeError exception is raised for invalid member names.
         """
@@ -354,7 +354,7 @@ class MQOpts(object):
             setattr(self, str(i), kw[i])
 
     def __setitem__(self, key, value):
-        # types: (str, Any)
+        # type: (str, Any) -> None
         """ Set the structure member attribute 'key' to 'value', as in obj['Attr'] = 42.
         """
         # Only set if the attribute already exists. getattr raises an
@@ -364,7 +364,7 @@ class MQOpts(object):
         setattr(self, key, value)
 
     def get(self):
-        # types: () -> dict
+        # type: () -> dict
         """ Return a dictionary of the current structure member values. The dictionary is keyed by a 'C' member name.
         """
         d = {}
@@ -373,13 +373,13 @@ class MQOpts(object):
         return d
 
     def __getitem__(self, key):
-        # types: (str) -> Any
+        # type: (str) -> Any
         """Return the member value associated with key, as in print obj['Attr'].
         """
         return getattr(self, key)
 
     def __str__(self):
-        # types: () -> str
+        # type: () -> str
         rv = ''
         for i in self.__list:
             rv = rv + str(i[0]) + ': ' + str(getattr(self, i[0])) + '\n'
@@ -387,19 +387,19 @@ class MQOpts(object):
         return rv[:-1]
 
     def __repr__(self):
-        # types: () -> str
+        # type: () -> str
         """ Return the packed buffer as a printable string.
         """
         return str(self.pack())
 
     def get_length(self):
-        # types: () -> int
+        # type: () -> int
         """ Returns the length of the (would be) packed buffer.
         """
         return struct.calcsize(self.__format)
 
     def set_vs(self, vs_name, vs_value=None, vs_offset=0, vs_buffer_size=0, vs_ccsid=0):
-        # types: (str, Union[bytes, str, None], int, int, int)
+        # type: (str, Union[bytes, str, None], int, int, int) -> None
         """ This method aids in the setting of the MQCHARV (variable length
         string) types in MQ structures.  The type contains a pointer to a
         variable length string.  A common example of a MQCHARV type
@@ -414,7 +414,7 @@ class MQOpts(object):
         """
         if vs_name in ['SubName',  # subject name
                        'ObjectString']:  # topic name
-            vs_value = ensure_bytes(vs_value)  # allow known args be a string in Py3
+            vs_value = ensure_bytes(vs_value) # allow known args be a string in Py3
         else:
             ensure_not_unicode(vs_value)  # Python 3 bytes check
 
@@ -430,7 +430,7 @@ class MQOpts(object):
         vs_name_vsccsid = vs_name + 'VSCCSID'
 
         c_vs_value = None
-        c_vs_value_p = 0
+        c_vs_value_p = 0 # type: Optional[int]
 
         if vs_value is not None:
             c_vs_value = ctypes.create_string_buffer(vs_value)
@@ -446,7 +446,7 @@ class MQOpts(object):
         self.__vs_ctype_store[vs_name] = c_vs_value
 
     def get_vs(self, vs_name):
-        # types: (str) -> Union[bytes, str, None]
+        # type: (str) -> Union[bytes, str, None]
         """ This method returns the string to which the VSPtr pointer points to.
         """
         # if the VSPtr name is passed - remove VSPtr to be left with name.
@@ -643,7 +643,7 @@ class RFH2(MQOpts):
                     ['CodedCharSetId', CMQC.MQCCSI_Q_MGR, MQLONG_TYPE],
                     ['Format', CMQC.MQFMT_NONE, '8s'],
                     ['Flags', 0, MQLONG_TYPE],
-                    ['NameValueCCSID', CMQC.MQCCSI_Q_MGR, MQLONG_TYPE]]
+                    ['NameValueCCSID', CMQC.MQCCSI_Q_MGR, MQLONG_TYPE]] # type: List[List[Union[str, int, bytes]]]
 
     big_endian_encodings = [CMQC.MQENC_INTEGER_NORMAL,
                             CMQC.MQENC_DECIMAL_NORMAL,
@@ -1178,7 +1178,7 @@ class CFH(MQOpts):
     The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
+        # type: (int) -> None
         opts = [['Type', CMQCFC.MQCFT_COMMAND, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFH_STRUC_LENGTH, MQLONG_TYPE],
                 ['Version', CMQCFC.MQCFH_VERSION_1, MQLONG_TYPE],
@@ -1197,10 +1197,10 @@ class CFBF(MQOpts):
     """
 
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
+        # type: (Dict[str, Any]) -> None
         filter_value = kw.pop('FilterValue', '')
         filter_value_length = kw.pop('FilterValueLength', len(filter_value))
-        padded_filter_value_length = padded_count(filter_value_length)
+        padded_filter_value_length = padded_count(filter_value_length) # type: int
 
         opts = [['Type', CMQCFC.MQCFT_BYTE_STRING_FILTER, MQLONG_TYPE],
                 ['StrucLength',
@@ -1219,7 +1219,7 @@ class CFBS(MQOpts):
     """
 
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
+        # type: (Dict[str, Any]) -> None
         string = kw.pop('String', '')
         string_length = kw.pop('StringLength', len(string))
         padded_string_length = padded_count(string_length)
@@ -1240,7 +1240,7 @@ class CFGR(MQOpts):
     """
 
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
+        # type: (Dict[str, Any]) -> None
         count = kw.pop('ParameterCount', 0)
 
         opts = [['Type', CMQCFC.MQCFT_GROUP, MQLONG_TYPE],
@@ -1256,7 +1256,7 @@ class CFIF(MQOpts):
     """
 
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
+        # type: (Dict[str, Any]) -> None
         opts = [['Type', CMQCFC.MQCFT_INTEGER_FILTER, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIF_STRUC_LENGTH, MQLONG_TYPE],
                 ['Parameter', 0, MQLONG_TYPE],
@@ -1271,9 +1271,9 @@ class CFIL(MQOpts):
     The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
-        values = kw.pop('Values', [])
-        count = kw.pop('Count', len(values))
+        # type: (Dict[str, Any]) -> None
+        values = kw.pop('Values', []) # type: List[int]
+        count = kw.pop('Count', len(values)) # type: int
 
         opts = [['Type', CMQCFC.MQCFT_INTEGER_LIST, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIL_STRUC_LENGTH_FIXED + 4 * count, MQLONG_TYPE], # Check python 2
@@ -1288,9 +1288,9 @@ class CFIL64(MQOpts):
     The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
-        values = kw.pop('Values', [])
-        count = kw.pop('Count', len(values))
+        # type: (Dict[str, Any]) -> None
+        values = kw.pop('Values', []) # type: List[int]
+        count = kw.pop('Count', len(values)) # type: int
 
         opts = [['Type', CMQCFC.MQCFT_INTEGER64_LIST, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIL64_STRUC_LENGTH_FIXED + 8 * count, MQLONG_TYPE],
@@ -1305,7 +1305,7 @@ class CFIN(MQOpts):
     The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None -> None
+        # type: (Dict[str, Any]) -> None
 
         opts = [['Type', CMQCFC.MQCFT_INTEGER, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIN_STRUC_LENGTH, MQLONG_TYPE],
@@ -1319,7 +1319,7 @@ class CFIN64(MQOpts):
     The default values may be overridden by the optional keyword arguments 'kw'.
     """
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None -> None
+        # type: (Dict[str, Any]) -> None
 
         opts = [['Type', CMQCFC.MQCFT_INTEGER64, MQLONG_TYPE],
                 ['StrucLength', CMQCFC.MQCFIN64_STRUC_LENGTH, MQLONG_TYPE],
@@ -1334,9 +1334,9 @@ class CFSF(MQOpts):
     """
 
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
+        # type: (Dict[str, Any]) -> None
         filter_value = kw.pop('FilterValue', '')
-        filter_value_length = kw.pop('FilterValueLength', len(filter_value))
+        filter_value_length = kw.pop('FilterValueLength', len(filter_value)) # type: int
         padded_filter_value_length = padded_count(filter_value_length)
 
         opts = [['Type', CMQCFC.MQCFT_STRING_FILTER, MQLONG_TYPE],
@@ -1357,8 +1357,8 @@ class CFSL(MQOpts):
     """
 
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
-        strings = kw.pop('Strings', [])
+        # type: (Dict[str, Any]) -> None
+        strings = kw.pop('Strings', []) # type: List[str]
         string_length = kw.pop('StringLength', len(max(strings, key=len)) if strings else 0)
 
         strings_count = len(strings)
@@ -1384,7 +1384,7 @@ class CFST(MQOpts):
     """
 
     def __init__(self, **kw):
-        # types: (Dict[str, Any]) -> None
+        # type: (Dict[str, Any]) -> None
         string = kw.pop('String', '')
         string_length = kw.pop('StringLength', len(string))
         padded_string_length = padded_count(string_length)
@@ -1456,7 +1456,7 @@ class MQMIError(Error):
     reason = CMQC.MQRC_NONE
 
     def __init__(self, comp, reason, **kw):
-        # types: (int, int, Dict[str, Any]) -> None
+        # type: (int, int, Dict[str, Any]) -> None
         """ Construct the error object with MQI completion code 'comp' and reason code 'reason'.
         """
         self.comp, self.reason = comp, reason
@@ -1465,11 +1465,11 @@ class MQMIError(Error):
             setattr(self, key, kw[key])
 
     def __str__(self):
-        # types: () -> str
+        # type: () -> str
         return 'MQI Error. Comp: %d, Reason %d: %s' % (self.comp, self.reason, self.errorAsString())
 
     def errorAsString(self):
-        # types: () -> str
+        # type: () -> str
         """ Return the exception object MQI warning/failed reason as its mnemonic string.
         """
         if self.comp == CMQC.MQCC_OK:
@@ -1525,7 +1525,7 @@ class QueueManager(object):
             self.connect(name)
 
     def __del__(self):
-        # types: ()
+        # type: () -> None
         """ Disconnect from the queue Manager, if connected.
         """
         if self.__handle:
@@ -1542,7 +1542,7 @@ class QueueManager(object):
                     pass
 
     def connect(self, name):
-        # types: (str)
+        # type: (str) -> None
         """connect(name)
 
         Connect immediately to the Queue Manager 'name'."""
@@ -1558,7 +1558,7 @@ class QueueManager(object):
 # Connect options suggested by Jaco Smuts (mailto:JSmuts@clover.co.za)
 
     def connect_with_options(self, name, *args, **kwargs):
-        # types: (str, Any, Dict[str, Any])
+        # type: (str, Any, Dict[str, Any]) -> None
         """connect_with_options(name [, opts=cnoopts][ ,cd=mqcd][ ,sco=mqsco])
            connect_with_options(name, cd, [sco])
 
@@ -1583,7 +1583,7 @@ class QueueManager(object):
             if len_args == 2:
                 kwargs['sco'] = args[1]
 
-        user_password = {}
+        user_password = {} # type: Dict[str, str]
         user = kwargs.get('user')
         password = kwargs.get('password')
 
@@ -1743,7 +1743,7 @@ class QueueManager(object):
         put_opts.unpack(rv[1])
 
     def inquire(self, attribute):
-        # types: (str) -> Any
+        # type: (str) -> Any
         """ Inquire on queue manager 'attribute'. Returns either the integer or string value for the attribute.
         """
         attribute = ensure_bytes(attribute)  # Python 3 strings to be converted to bytes
@@ -1761,7 +1761,7 @@ class QueueManager(object):
         return rv[0]
 
     def _is_connected(self):
-        # types: () -> bool
+        # type: () -> bool
         """ Try pinging the queue manager in order to see whether the application
         is connected to it. Note that the method is merely a convienece wrapper
         around MQCMD_PING_Q_MGR, in particular, there's still possibility that
@@ -1781,7 +1781,7 @@ class QueueManager(object):
 
 # Some support functions for Queue ops.
 def make_q_desc(qDescOrString):
-    # types: (Union[str, bytes, OD]) -> OD
+    # type: (Union[str, bytes, OD]) -> OD
     """Maybe make MQOD from string. Module Private"""
     if isinstance(qDescOrString, (str, bytes)):
         return OD(ObjectName=ensure_bytes(qDescOrString))  # Python 3 strings to be converted to bytes
@@ -2595,45 +2595,49 @@ class FilterOperator(object):
         'excludes': CMQCFC.MQCFOP_EXCLUDES,
         'contains_gen': CMQCFC.MQCFOP_CONTAINS_GEN,
         'excludes_gen': CMQCFC.MQCFOP_EXCLUDES_GEN,
-        }
+        } # type: Dict[str, int]
 
-    def __init__(self, selector, opName):
+    def __init__(self, selector, operator_name):
+        # type: (int, str) -> None
         # Do we support the given attribute filter?
         if CMQC.MQIA_FIRST <= selector <= CMQC.MQIA_LAST:
-            self.internal_filter_cls = IntegerFilter
+            self.filter_cls = IntegerFilter
         elif CMQC.MQCA_FIRST <= selector <= CMQC.MQCA_LAST:
-            self.internal_filter_cls = StringFilter
+            self.filter_cls = StringFilter
         else:
             msg = 'selector [%s] is of an unsupported type (neither integer ' \
                 'nor a string attribute). Please see' \
                 'https://dsuch.github.io/pymqi/support.html'
             raise Error(msg % selector)
         self.selector = selector
-        self.operator = self.operator_mapping.get(opName)
+        self.operator = self.operator_mapping.get(operator_name)
         # Do we support the operator?
         if not self.operator:
             msg = 'Operator [%s] is not supported.'
-            raise Error(msg % opName)
+            raise Error(msg % operator_name)
 
     def __call__(self, value):
+        # type: (Union[str, int]) -> Union[IntegerFilter, StringFilter]
         ensure_not_unicode(value)  # Python 3 bytes accepted here
-        return (self.internal_filter_cls)(self.selector, value, self.operator)
+        return (self.filter_cls)(self.selector, value, self.operator)
 
 class Filter(object):
     """ The user-facing MQAI filtering class which provides syntactic sugar
     on top of pymqi._Filter and its base classes.
     """
     def __init__(self, selector):
+        # type: (int) -> None
         self.selector = selector
 
     def __getattribute__(self, name):
+        # type: (str) -> FilterOperator
         """ A generic method for either fetching the pymqi.Filter object's
         attributes or calling magic methods like 'like', 'contains' etc.
         """
         if name=='selector':
             return object.__getattribute__(self, name)
 
-        return FilterOperator(self.selector,name)
+        return FilterOperator(self.selector, name)
 
 #
 # This piece of magic shamelessly plagiarised from xmlrpclib.py. It
@@ -2641,16 +2645,16 @@ class Filter(object):
 #
 class _Method:
     def __init__(self, pcf, name):
-        # types: (PCFExecute, str) -> None
+        # type: (PCFExecute, str) -> None
         self.__pcf = pcf
         self.__name = name
 
     def __getattr__(self, name):
-        # types: (str) -> _Method
+        # type: (str) -> _Method
         return _Method(self.__pcf, '%s.%s' % (self.__name, name))
 
     def __call__(self, *args):
-        # types: (Unions[dict, list, _Filter]) -> list
+        # type: (Union[dict, list, _Filter]) -> list
         if self.__name[0:7] == 'CMQCFC.':
             self.__name = self.__name[7:]
         if self.__pcf.qm:
