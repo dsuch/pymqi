@@ -2989,14 +2989,14 @@ class PCFExecute(QueueManager):
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFSF_STRUC_LENGTH_FIXED])
                 if parameter.FilterValueLength > 0:
                     parameter = CFSF(FilterValueLength=parameter.FilterValueLength)
-                    parameter.unpack(message[cursor:cursor + CMQCFC.MQCFSF_STRUC_LENGTH_FIXED + parameter.FilterValueLength])
+                    parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = (parameter.Operator, parameter.FilterValue)
             elif parameter_type == CMQCFC.MQCFT_BYTE_STRING_FILTER:
                 parameter = CFBF()
                 parameter.unpack(message[cursor:cursor + CMQCFC.MQCFBF_STRUC_LENGTH_FIXED])
                 if parameter.FilterValueLength > 0:
                     parameter = CFBF(FilterValueLength=parameter.FilterValueLength)
-                    parameter.unpack(message[cursor:cursor + CMQCFC.MQCFBF_STRUC_LENGTH_FIXED + parameter.FilterValueLength])
+                    parameter.unpack(message[cursor:cursor + parameter.StrucLength])
                 value = (parameter.Operator, parameter.FilterValue)
             elif parameter_type == CMQCFC.MQCFT_INTEGER_FILTER:
                 parameter = CFIF()
