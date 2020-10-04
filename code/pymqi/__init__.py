@@ -2527,16 +2527,27 @@ class Subscription:
         if not self.__sub_handle:
             raise PYIFError('Subscription not open.')
 
-        rv = pymqe.MQCLOSE(self.__queue_manager.getHandle(), self.__sub_handle, sub_close_options)
-        if rv[0]:
-            raise MQMIError(rv[-2], rv[-1])
-
-        self.__sub_handle = None
-        self.__sub_desc = None
-        self.__open_opts = None
+        close_error = None
+        try:
+            rv = pymqe.MQCLOSE(self.__queue_manager.getHandle(), self.__sub_handle, sub_close_options)
+            if rv[0]:
+                raise MQMIError(rv[-2], rv[-1])
+        except Exception as e:
+            close_error = e
+        finally:
+            self.__sub_handle = None
+            self.__sub_desc = None
+            self.__open_opts = None
 
         if close_sub_queue:
-            self.sub_queue.close(close_sub_queue_options)
+            try:
+                self.sub_queue.close(close_sub_queue_options)
+            except MQMIError as e:
+                close_error = close_error or e
+
+        if close_error:
+            raise close_error
+
 
     def __del__(self):
         """ Close the Subscription, if it has been opened.

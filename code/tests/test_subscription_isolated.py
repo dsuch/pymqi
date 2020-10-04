@@ -88,7 +88,7 @@ class TestSubscriptionIsolated(BaseIsolatedTest):
             with Subscription(self.qmgr_mock, sub_desc=SD()):
                 self.assertSubscribed()
         
-        self.mocked_mqclose.assert_has_calls([call(123, 125, ANY)], any_order=True)
+        self.assertSubscriptionAndSubQueueAreClosed()
     
     def test_subscription_raises_app_exception_first(self):
         from pymqi import SD, Subscription
@@ -116,8 +116,7 @@ class TestSubscriptionIsolated(BaseIsolatedTest):
         self.assertEqual(2, mq_error.comp)
         self.assertEqual(3, mq_error.reason)
         
-        self.mocked_mqclose.assert_has_calls([call(123, 125, ANY)], any_order=True)
-        # FIXME code not closing sub queue if first close fails
+        self.assertSubscriptionAndSubQueueAreClosed()
 
 if __name__ == "__main__":
     unittest.main()
