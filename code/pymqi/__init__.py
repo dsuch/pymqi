@@ -2432,7 +2432,6 @@ class Subscription:
         self.topic_name = topic_name
         self.topic_string = topic_string
         self.__sub_handle = None
-        self.__open_opts = None
 
         if self.__sub_desc:
             self.sub(sub_desc=self.__sub_desc)
@@ -2537,7 +2536,6 @@ class Subscription:
         finally:
             self.__sub_handle = None
             self.__sub_desc = None
-            self.__open_opts = None
 
         if close_sub_queue:
             try:
