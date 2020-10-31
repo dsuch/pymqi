@@ -12,7 +12,7 @@ jobs:
         environment: ['macos-latest', 'windows-latest', 'ubuntu-latest']
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
         python-architecture: ['x86', 'x64']
-        mq-client-version: [9.1.5.0]
+        mq-client-version: [9.2.0.0]
         exclude:
           # Windows runner does not have libraries required for build with python2.7
           - environment: windows-latest
