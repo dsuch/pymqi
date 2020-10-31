@@ -15,7 +15,7 @@ jobs:
         # macos-latest: has some issues in SeyfSV/setup-mqclient@master action
         #environment: ['ubuntu-latest', 'macos-latest', 'windows-latest']
         python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
-        mq-client-version: [9.1.5.0]
+        mq-client-version: [9.2.0.0]
 
     services:
       mq:
