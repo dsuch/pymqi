@@ -43,7 +43,8 @@ class TestQueueManager(unittest.TestCase):
         # connecting with queue manager name needs MQSERVER set properly
         qmgr = pymqi.QueueManager(self.qm_name)
         self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()
+        if qmgr.is_connected:
+            qmgr.disconnect()
 
     # As the connect method provides no way to supply user & password, this
     # cannot work if the queue manager requires it
@@ -59,7 +60,8 @@ class TestQueueManager(unittest.TestCase):
         self.assertFalse(qmgr.is_connected)
         qmgr.connect(self.qm_name)
         self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()
+        if qmgr.is_connected:
+            qmgr.disconnect()
 
     def test_connect_tcp_client(self):
         qmgr = pymqi.QueueManager(None)
@@ -67,7 +69,17 @@ class TestQueueManager(unittest.TestCase):
             self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
             password=self.password)
         self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()
+        if qmgr.is_connected:
+            qmgr.disconnect()
+
+    def test_connect_tcp_client_without_cred(self):
+        qmgr = pymqi.QueueManager(None)
+        with self.assertRaises(pymqi.MQMIError) as ex_ctx:
+            qmgr.connect_tcp_client(
+                self.qm_name, pymqi.cd(), self.channel, self.conn_info)
+            self.assertEqual(ex_ctx.exception.reason, pymqi.CMQC.MQRC_NOT_AUTHORIZED)
+        if qmgr.is_connected:
+            qmgr.disconnect()
 
     def test_connect_tcp_client_conection_list(self):
         qmgr = pymqi.QueueManager(None)
@@ -76,7 +88,8 @@ class TestQueueManager(unittest.TestCase):
             self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
             password=self.password)
         self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()
+        if qmgr.is_connected:
+            qmgr.disconnect()
 
     # This test overlaps with
     # test_mq80.test_successful_connect_without_optional_credentials,
@@ -91,7 +104,8 @@ class TestQueueManager(unittest.TestCase):
             self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=None,
             password=None)
         self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()
+        if qmgr.is_connected:
+            qmgr.disconnect()
 
     def test_disconnect(self):
         qmgr = pymqi.QueueManager(None)
@@ -99,8 +113,9 @@ class TestQueueManager(unittest.TestCase):
             self.qm_name, pymqi.cd(), self.channel, self.conn_info, user=self.user,
             password=self.password)
         self.assertTrue(qmgr.is_connected)
-        qmgr.disconnect()
-        self.assertFalse(qmgr.is_connected)
+        if qmgr.is_connected:
+            qmgr.disconnect()
+            self.assertFalse(qmgr.is_connected)
 
     def test_get_handle_unconnected(self):
         qmgr = pymqi.QueueManager(None)
@@ -137,6 +152,7 @@ class TestQueueManager(unittest.TestCase):
         attribute_value = qmgr.inquire(attribute)
         self.assertEqual(len(attribute_value), pymqi.CMQC.MQ_Q_MGR_NAME_LENGTH)
         self.assertEqual(attribute_value.strip(), expected_value)
+
 
 if __name__ == '__main__':
     unittest.main()

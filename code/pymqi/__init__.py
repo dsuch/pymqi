@@ -1627,7 +1627,7 @@ class QueueManager(object):
     # Backward compatibility
     connectWithOptions = connect_with_options
 
-    def connect_tcp_client(self, name, cd, channel, conn_name, user, password):
+    def connect_tcp_client(self, name, cd, channel, conn_name, user=None, password=None):
         # type: (str, CD, str, str, str, str) -> None
         """ Connect immediately to the remote Queue Manager 'name', using
         a TCP Client connection, with channnel 'channel' and the
