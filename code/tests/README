@@ -1,0 +1,51 @@
+
+How to run PyMQI's test suite
+=============================
+
+* The test suite itself requires at least Python 2.5 because of its reliance
+  on the 'uuid' module which has been introduced in 2.5
+
+* Install tox
+  ```
+  $ sudo pip install tox
+  ```
+
+* Set a proper configuration by modifying the defaults in config.py or override 
+  these properties with environment variables, see config.py, if necessary.
+
+* Prepare the test environment:
+  * Using create_mq_objects.py (needs a local MQ
+  server installation to access the MQ command executables) or create the
+  objects by hand, consistent with the configuration.
+  * Using Docker image (ibmcom/mq) provided by IBM. 
+  For minimal setup this command can be used:
+    ```
+    $ docker run \
+      --env LICENSE=accept \
+      --env MQ_QMGR_NAME=MQTEST \
+      --publish 8886:1414 \
+      ibmcom/mq
+    ```
+
+* Use tox to execute the tests:
+ * With local MQ:
+   ```
+   $ tox -e local
+   ```
+ * With Docker image:
+   ```
+   $ tox -e docker
+   ```
+
+* Use py.test to execute the tests:
+ * Directly:
+    ```
+   $ py.test
+   ```
+   Note that you need an inplace build of pymqe.so if you want to run the tests
+   on the checkout rather than e.g. a test installation
+   (`python setup.py build_ext --inplace`).
+
+* [Delete the test environment with delete_mq_objects.py]
+
+* (That's all)

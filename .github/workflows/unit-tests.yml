@@ -1,0 +1,119 @@
+name: unit-tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  pymqi_test_job:
+    strategy:
+      matrix:
+        environment: ['ubuntu-latest']
+        # windows-latest: runner does allow to run ibmcom/mq linux container
+        # macos-latest: runner does not have docker
+        # macos-latest: has some issues in SeyfSV/setup-mqclient@master action
+        #environment: ['ubuntu-latest', 'macos-latest', 'windows-latest']
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        mq-client-version: [9.2.0.0]
+
+    services:
+      mq:
+        image: ibmcom/mq
+        env:
+          LICENSE: accept
+          MQ_QMGR_NAME: MQTEST
+        ports:
+          - 8886:1414
+        volumes:
+          - mqm_volume:/mnt/mqm
+          - pki_volume:/etc/mqm/pki
+        options: --name mq --health-cmd "dspmq -m MQTEST" --health-interval 5s --health-timeout 5s --health-retries 10
+
+    runs-on: ${{ matrix.environment}}
+    steps:
+      - name: Extract pki_volume path
+        id: pki_volume_path
+        run: |
+          echo "::set-output name=volume_path::$(docker volume inspect --format '{{ .Mountpoint }}' pki_volume)"
+
+      - name: Extract mqm_volume path
+        id: mqm_volume_path
+        run: |
+          echo "::set-output name=volume_path::$(docker volume inspect --format '{{ .Mountpoint }}' mqm_volume)"
+
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Cache MQ Client
+        uses: actions/cache@v1
+        with:
+          path: ${{ github.workspace }}/setup-mqclient
+          key: mqclient-${{ runner.os }}-${{ matrix.mq-client-version }}
+
+      - name: Install MQ Client
+        id: setup-mqclient
+        uses: SeyfSV/setup-mqclient@v0.1.4
+        with:
+          mq-client-version: ${{ matrix.mq-client-version }}
+
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install pymqi dependencies
+        run: |
+          pip install tox
+
+      - name: Prepare to TLS test
+        run: |
+          mkdir ./keys
+          runmqakm -keydb -create -db ./keys/mqtest.kdb -pw Secret13 -stash
+          runmqakm -cert -create -db ./keys/mqtest.kdb -type kdb -pw Secret13 \
+          -label mqtest -dn CN=mqtest -size 2048 -x509version 3 -expire 365 -fips -sig_alg SHA256WithRSA
+          runmqakm -keydb -create -db ./keys/client.kdb -pw Secret13 -stash
+          runmqakm -cert -create -db ./keys/client.kdb -type kdb -pw Secret13 \
+          -label client -dn CN=client -size 2048 -x509version 3 -expire 365 -fips -sig_alg SHA256WithRSA
+          runmqakm -cert -extract -db ./keys/mqtest.kdb -pw Secret13 \
+          -label mqtest -target ./keys/mqtest.pem
+          runmqakm -cert -add -db ./keys/client.kdb -pw Secret13 \
+          -label mqtest -file ./keys/mqtest.pem
+          runmqakm -cert -extract -db ./keys/client.kdb -pw Secret13 \
+          -label client -target ./keys/client.pem
+          runmqakm -cert -add -db ./keys/mqtest.kdb -pw Secret13 \
+          -label client -file ./keys/client.pem
+          sudo cp -r ./keys ${{ steps.pki_volume_path.outputs['volume_path'] }}
+          sudo chown -R `id -u`:1001 ${{ steps.pki_volume_path.outputs['volume_path'] }}/keys
+          sudo chmod -R g+r ${{ steps.pki_volume_path.outputs['volume_path'] }}/keys
+
+      - name: Test pymqi with tox
+        id: test-tox
+        env:
+          PYMQI_TEST_TLS_SKIP: 0
+          PYMQI_TEST_TLS_KEY_REPO_LOCATION_QMGR: /etc/mqm/pki/keys
+          PYMQI_TEST_TLS_KEY_REPO_LOCATION_CLIENT: ./keys
+        run: |
+          tox -e docker
+
+      - name: Copy MQ Server logs
+        if: failure()
+        run: |
+          sudo cp -r ${{ steps.mqm_volume_path.outputs['volume_path'] }}/data/qmgrs/MQTEST/errors ./errors
+          sudo chmod o+x ./errors
+          sudo chmod -R o+r ./errors
+
+      - name: Upload MQ Server logs
+        if: failure()
+        uses: actions/upload-artifact@v1
+        with:
+          name: mq-server-logs
+          path: ./errors
+
+      - name: Upload MQ Client logs
+        if: failure()
+        uses: actions/upload-artifact@v1
+        with:
+          name: mq-client-logs
+          path: ${{ steps.setup-mqclient.outputs.mq-file-path }}/errors
+

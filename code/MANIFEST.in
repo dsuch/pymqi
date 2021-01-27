@@ -1,0 +1,3 @@
+include pymqi/*.py
+include pymqi/*.c
+include requirements.txt

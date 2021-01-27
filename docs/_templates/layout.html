@@ -1,0 +1,34 @@
+{% extends "!layout.html" %}
+
+{% block sidebartoc %}
+
+<style type="text/css">
+hr {
+  position: relative;
+  padding: 0;
+  margin: 8px auto;
+  border: none;
+  border-top: 1px solid #666666;
+  border-bottom: 1px solid #aaaaaa;
+  font-size: 1px;
+  line-height: 0;
+  overflow: visible;
+  width:85%
+}
+
+img {
+  vertical-align:middle
+}
+
+</style>
+
+<ul>
+    <li><img src="_static/rss-icon.png" alt="RSS icon" />&nbsp;<a href="https://zato.io/blog" title="Blog">Blog</a></li>
+    <li><img src="_static/twitter.png" alt="Twitter icon" />&nbsp;<a href="https://twitter.com/zatosource" title="Twitter">Twitter</a></li>
+    <li><img src="_static/linkedin.png" alt="LinkedIn icon" />&nbsp;<a href="http://www.linkedin.com/groups?gid=5015554" title="Project's LinkedIn group">LinkedIn</a></li>
+</ul>
+
+<hr/>
+
+{% include "localtoc.html" %}
+{% endblock %}

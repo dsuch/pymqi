@@ -1,0 +1,52 @@
+name: install-tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  pymqi_test_job:
+    strategy:
+      matrix:
+        environment: ['macos-latest', 'windows-latest', 'ubuntu-latest']
+        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        python-architecture: ['x86', 'x64']
+        mq-client-version: [9.2.0.0]
+        exclude:
+          # Windows runner does not have libraries required for build with python2.7
+          - environment: windows-latest
+            python-version: 2.7
+          # actions/setup-python does not have x86 versions for ubuntu and macos
+          - environment: ubuntu-latest
+            python-architecture: 'x86'
+          - environment: macos-latest
+            python-architecture: 'x86'
+    runs-on: ${{ matrix.environment}}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+
+      - name: Cache MQ Client
+        uses: actions/cache@v1
+        with:
+          path: ${{ github.workspace }}/setup-mqclient
+          key: mqclient-${{ runner.os }}-${{ matrix.mq-client-version }}
+
+      - name: Install MQ Client
+        id: setup-mqclient
+        uses: SeyfSV/setup-mqclient@v0.1.4
+        with:
+          mq-client-version: ${{ matrix.mq-client-version }}
+
+      - name: Setup python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: ${{ matrix.python-architecture }}
+
+      - name: Install pymqi
+        env:
+          MQ_FILE_PATH: ${{ steps.setup-mqclient.outputs.mq-file-path }}
+        run: |
+          python setup.py install --verbose
