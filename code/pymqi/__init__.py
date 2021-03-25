@@ -931,7 +931,7 @@ class CD(MQOpts):
             ['MCASecurityId', b'', '40s'],
             ['RemoteSecurityId', b'', '40s'],
             # Version 6
-            ['SSLCipherSpec', b'', '32s'],
+            ['SSLCipherSpec', b'', '38s'],
             ['SSLPeerNamePtr', 0, 'P'],
             ['SSLPeerNameLength', py23long(0), MQLONG_TYPE],
             ['SSLClientAuth', py23long(0), MQLONG_TYPE],
