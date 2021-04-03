@@ -2710,17 +2710,18 @@ class _Method:
                         else:
                             parameter = CFIL(Parameter=key,
                                             Values=[value])
-                    elif (isinstance(value, list)
-                          and isinstance(value[0], int)):
-                        parameter = CFIL(Parameter=key,
-                                         Values=value)
-                    # the aurec commands always expecting the user ids 
-                    # to be specified as list even when we have a single id. 
-                    # so we need the support of CFSL
-                    elif (isinstance(value, list)
-                          and isinstance(value[0], (str,bytes))):
-                        parameter = CFSL(Parameter=key,
-                                         Strings=value)
+                    elif (isinstance(value, list)):
+                        if isinstance(value[0], int):
+                            parameter = CFIL(Parameter=key, Values=value)
+                        elif isinstance(value[0], (str, bytes)):
+                            _value = []
+                            for item in value:
+                                if is_unicode(item):
+                                    item = item.encode(bytes_encoding)
+                                _value.append(item)
+                            value = _value
+                            
+                            parameter = CFSL(Parameter=key, Strings=value)
 
                     message = message + parameter.pack()
             elif isinstance(args_dict, list):

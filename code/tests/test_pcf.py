@@ -355,6 +355,27 @@ class TestPCF(Tests):
         results = self.pcf.MQCMD_INQUIRE_CONNECTION(attrs, [fltr])
 
         self.assertGreater(len(results), 0)
+    
+    @skipIf(sys_version_info < (3, 7),
+            'Python pre 3.7 issues: https://github.com/dsuch/pymqi/issues/207#issuecomment-645422229')
+    def test_mqcfsl_old(self):
+        """Test lists CFIL and CFSL with old style."""
+        queue_name = '{prefix}TEST_MQCFSL_OLD'.format(prefix=self.prefix)
+        principal_entities = [self.user]
+        auth_entities = [pymqi.CMQCFC.MQAUTH_BROWSE]
+
+        self.create_queue(queue_name)
+
+        args = {pymqi.CMQCFC.MQCACF_AUTH_PROFILE_NAME: queue_name,
+                pymqi.CMQCFC.MQIACF_OBJECT_TYPE: pymqi.CMQC.MQOT_Q,
+                pymqi.CMQCFC.MQIACF_AUTH_ADD_AUTHS: auth_entities,
+                pymqi.CMQCFC.MQCACF_PRINCIPAL_ENTITY_NAMES: principal_entities}
+
+        try:
+            self.pcf.MQCMD_SET_AUTH_REC(args)
+        finally:
+            self.delete_queue(queue_name)
+            
 
     @data(pymqi.CMQCFC.MQIACF_ALL, [pymqi.CMQCFC.MQIACF_ALL],
           pymqi.CMQC.MQCA_Q_DESC, [pymqi.CMQC.MQCA_Q_DESC],

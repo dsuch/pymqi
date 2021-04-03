@@ -18,8 +18,8 @@ password = 'password'
 qmgr = pymqi.connect(queue_manager, channel, conn_info, user, password)
 pcf = pymqi.PCFExecute(qmgr)
 
-group_entity ={128L: ['swww02']}
-auth_entity = {128L: [pymqi.CMQCFC.MQAUTH_BROWSE]}
+group_entity = [b'swww02']
+auth_entity = [pymqi.CMQCFC.MQAUTH_BROWSE]
 
 args = {pymqi.CMQCFC.MQCACF_AUTH_PROFILE_NAME: 'Q1',
         pymqi.CMQCFC.MQIACF_OBJECT_TYPE: pymqi.CMQC.MQOT_Q,
