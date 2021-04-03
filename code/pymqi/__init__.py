@@ -2691,7 +2691,7 @@ class _Method:
                                          String=value)
                     elif (isinstance(value, ByteString)):
                         parameter = CFBS(Parameter=key,
-                                         String=value.value.encode(bytes_encoding))
+                                         String=value.value)
                     elif isinstance(value, int):
                         # Backward compatibility for MQAI behaviour
                         # for single value instead of list
@@ -3021,11 +3021,11 @@ class ByteString(object):
     """ A simple wrapper around string values, suitable for passing into PyMQI
     calls wherever IBM's docs state a 'byte string' object should be passed in.
     """
-    def __init__(self, value):
+    def __init__(self, value): # type: (bytes) -> None
         self.value = value
         self.pymqi_byte_string = True
 
-    def __len__(self):
+    def __len__(self): # type: () -> int
         return len(self.value)
 
 def connect(queue_manager, channel=None, conn_info=None, user=None, password=None, disconnect_on_exit=True,
