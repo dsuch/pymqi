@@ -30,4 +30,3 @@ args = {pymqi.CMQCFC.MQCACF_AUTH_PROFILE_NAME: 'Q1',
 result = pcf.MQCMD_SET_AUTH_REC(args)
 
 qmgr.disconnect()
-
