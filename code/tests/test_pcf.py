@@ -17,6 +17,7 @@ from test_setup import main  # noqa
 
 import pymqi
 
+
 @ddt
 class TestPCF(Tests):
     """Class for MQ PCF testing."""
@@ -101,6 +102,7 @@ class TestPCF(Tests):
         for result in results:
             self.assertTrue(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH] > 0,
                             'Found Queue with depth {}'.format(result[pymqi.CMQC.MQIA_CURRENT_Q_DEPTH]))
+
     def test_mqcfsf(self):
         """Test string filter MQCFSF.
 
@@ -168,7 +170,6 @@ class TestPCF(Tests):
             attrs.append(pymqi.CFST(Parameter=pymqi.CMQC.MQCA_NAMELIST_NAME,
                                     String='{}NAMELIST'.format(self.prefix).encode()))
             self.pcf.MQCMD_DELETE_NAMELIST(attrs)
-
 
     @data([], [1], [1, 2, 3, 4, 5])
     def test_arbitrary_message_with_mqcfil(self, value):
@@ -330,7 +331,6 @@ class TestPCF(Tests):
     def test_unpack_cfbf(self):
         """Test unpack of PCF message with MQCFBF structure."""
 
-
     def test_unpack_cfif(self):
         """Test unpack of PCF message with MQCFIF structure."""
         with open(os.path.join(self.messages_dir, "pcf_with_cfif.dat"), "rb") as file:
@@ -346,7 +346,7 @@ class TestPCF(Tests):
     def test_mqcfbs_old(self):
         """Test byte string MQCFBS with old style."""
         attrs = {
-            pymqi.CMQCFC.MQBACF_GENERIC_CONNECTION_ID: pymqi.ByteString(''),
+            pymqi.CMQCFC.MQBACF_GENERIC_CONNECTION_ID: pymqi.ByteString(b''),
             pymqi.CMQCFC.MQIACF_CONN_INFO_TYPE: pymqi.CMQCFC.MQIACF_CONN_INFO_CONN,
             pymqi.CMQCFC.MQIACF_CONNECTION_ATTRS: [pymqi.CMQCFC.MQIACF_ALL]
         }
@@ -355,6 +355,28 @@ class TestPCF(Tests):
         results = self.pcf.MQCMD_INQUIRE_CONNECTION(attrs, [fltr])
 
         self.assertGreater(len(results), 0)
+
+    @skipIf(sys_version_info < (3, 7),
+            'Python pre 3.7 issues: https://github.com/dsuch/pymqi/issues/207#issuecomment-645422229')
+    @data(([pymqi.CMQCFC.MQAUTH_BROWSE], ['test1']),
+          ([pymqi.CMQCFC.MQAUTH_BROWSE, pymqi.CMQCFC.MQAUTH_INPUT], ['test1', b'test2']),
+          ([pymqi.CMQCFC.MQAUTH_BROWSE, pymqi.CMQCFC.MQAUTH_INPUT], [b'test1', 'test2']))
+    def test_mqcfsl_old(self, value):
+        """Test lists CFIL and CFSL with old style."""
+        queue_name = '{prefix}{queue_name}'.format(prefix=self.prefix, queue_name=self.id().upper())[:48]
+        auth_entities, principal_entities = value
+
+        self.create_queue(queue_name)
+
+        args = {pymqi.CMQCFC.MQCACF_AUTH_PROFILE_NAME: queue_name,
+                pymqi.CMQCFC.MQIACF_OBJECT_TYPE: pymqi.CMQC.MQOT_Q,
+                pymqi.CMQCFC.MQIACF_AUTH_ADD_AUTHS: auth_entities,
+                pymqi.CMQCFC.MQCACF_PRINCIPAL_ENTITY_NAMES: principal_entities}
+
+        try:
+            self.pcf.MQCMD_SET_AUTH_REC(args)
+        finally:
+            self.delete_queue(queue_name)
 
     @data(pymqi.CMQCFC.MQIACF_ALL, [pymqi.CMQCFC.MQIACF_ALL],
           pymqi.CMQC.MQCA_Q_DESC, [pymqi.CMQC.MQCA_Q_DESC],
@@ -424,6 +446,7 @@ class TestPCF(Tests):
         self.assertTrue(self.qmgr)
         self.assertFalse(pcf.reply_queue)
         self.assertFalse(pcf.reply_queue_name)
+
 
 if __name__ == "__main__":
     main(module="test_pcf")

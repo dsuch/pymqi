@@ -2691,7 +2691,7 @@ class _Method:
                                          String=value)
                     elif (isinstance(value, ByteString)):
                         parameter = CFBS(Parameter=key,
-                                         String=value.value.encode(bytes_encoding))
+                                         String=value.value)
                     elif isinstance(value, int):
                         # Backward compatibility for MQAI behaviour
                         # for single value instead of list
@@ -2710,10 +2710,18 @@ class _Method:
                         else:
                             parameter = CFIL(Parameter=key,
                                             Values=[value])
-                    elif (isinstance(value, list)
-                          and isinstance(value[0], int)):
-                        parameter = CFIL(Parameter=key,
-                                         Values=value)
+                    elif (isinstance(value, list)):
+                        if isinstance(value[0], int):
+                            parameter = CFIL(Parameter=key, Values=value)
+                        elif isinstance(value[0], (str, bytes)):
+                            _value = []
+                            for item in value:
+                                if is_unicode(item):
+                                    item = item.encode(bytes_encoding)
+                                _value.append(item)
+                            value = _value
+                            
+                            parameter = CFSL(Parameter=key, Strings=value)
 
                     message = message + parameter.pack()
             elif isinstance(args_dict, list):
@@ -3021,11 +3029,11 @@ class ByteString(object):
     """ A simple wrapper around string values, suitable for passing into PyMQI
     calls wherever IBM's docs state a 'byte string' object should be passed in.
     """
-    def __init__(self, value):
+    def __init__(self, value): # type: (bytes) -> None
         self.value = value
         self.pymqi_byte_string = True
 
-    def __len__(self):
+    def __len__(self): # type: () -> int
         return len(self.value)
 
 def connect(queue_manager, channel=None, conn_info=None, user=None, password=None, disconnect_on_exit=True,
