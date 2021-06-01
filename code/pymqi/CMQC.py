@@ -1,3 +1,4 @@
+import platform
 from struct import calcsize
 
 
@@ -492,7 +493,14 @@ MQFB_SELECTOR_MISMATCH = 504
 MQFB_SYSTEM_LAST = 65535
 MQFB_APPL_FIRST = 65536
 MQFB_APPL_LAST = 999999999
-MQENC_NATIVE = 0x00000222
+
+if platform.system() in ['AIX']:
+    MQENC_NATIVE = 0x00000111
+elif platform.system() in ['Windows', 'Linux']:
+    MQENC_NATIVE = 0x00000222
+else:
+    MQENC_NATIVE = 0x00000333
+
 MQENC_INTEGER_MASK = 0x0000000F
 MQENC_DECIMAL_MASK = 0x000000F0
 MQENC_FLOAT_MASK = 0x00000F00
