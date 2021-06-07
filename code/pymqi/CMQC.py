@@ -499,7 +499,7 @@ if platform.system() in ['AIX']:
 elif platform.system() in ['Windows', 'Linux']:
     MQENC_NATIVE = 0x00000222
 else:
-    MQENC_NATIVE = 0x00000333
+    MQENC_NATIVE = 0x00000311
 
 MQENC_INTEGER_MASK = 0x0000000F
 MQENC_DECIMAL_MASK = 0x000000F0
