@@ -14,7 +14,7 @@ jobs:
         # macos-latest: runner does not have docker
         # macos-latest: has some issues in SeyfSV/setup-mqclient@master action
         #environment: ['ubuntu-latest', 'macos-latest', 'windows-latest']
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9]
+        python-version: [2.7.x, 3.5.x, 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x]
         mq-client-version: [9.2.0.0]
 
     services:
@@ -58,7 +58,7 @@ jobs:
           mq-client-version: ${{ matrix.mq-client-version }}
 
       - name: Setup python ${{ matrix.python-version }}
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2.2.2
         with:
           python-version: ${{ matrix.python-version }}
 
