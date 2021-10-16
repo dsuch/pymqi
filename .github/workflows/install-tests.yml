@@ -9,10 +9,11 @@ jobs:
   pymqi_test_job:
     strategy:
       matrix:
-        environment: ['macos-latest', 'windows-latest', 'ubuntu-latest']
+        environment: ['windows-latest', 'ubuntu-latest']
+        # macos does not have redistributable client archive
         python-version: [2.7.x, 3.5.x, 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x]
         python-architecture: ['x86', 'x64']
-        mq-client-version: [9.2.0.0]
+        mq-client-version: [9.2.3.0]
         exclude:
           # Windows runner does not have libraries required for build with python2.7
           - environment: windows-latest
@@ -20,8 +21,8 @@ jobs:
           # actions/setup-python does not have x86 versions for ubuntu and macos
           - environment: ubuntu-latest
             python-architecture: 'x86'
-          - environment: macos-latest
-            python-architecture: 'x86'
+          # - environment: macos-latest
+          #   python-architecture: 'x86'
     runs-on: ${{ matrix.environment}}
     steps:
       - name: Checkout source
