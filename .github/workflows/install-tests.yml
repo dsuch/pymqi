@@ -9,8 +9,7 @@ jobs:
   pymqi_test_job:
     strategy:
       matrix:
-        environment: ['windows-latest', 'ubuntu-latest']
-        # macos does not have redistributable client archive
+        environment: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         python-version: [2.7.x, 3.5.x, 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x]
         python-architecture: ['x86', 'x64']
         mq-client-version: [9.2.3.0]
@@ -21,22 +20,22 @@ jobs:
           # actions/setup-python does not have x86 versions for ubuntu and macos
           - environment: ubuntu-latest
             python-architecture: 'x86'
-          # - environment: macos-latest
-          #   python-architecture: 'x86'
+          - environment: macos-latest
+            python-architecture: 'x86'
     runs-on: ${{ matrix.environment}}
     steps:
       - name: Checkout source
         uses: actions/checkout@v2
 
       - name: Cache MQ Client
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/setup-mqclient
           key: mqclient-${{ runner.os }}-${{ matrix.mq-client-version }}
 
       - name: Install MQ Client
         id: setup-mqclient
-        uses: SeyfSV/setup-mqclient@v0.1.4
+        uses: SeyfSV/setup-mqclient@v0.2
         with:
           mq-client-version: ${{ matrix.mq-client-version }}
 

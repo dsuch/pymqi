@@ -46,14 +46,14 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Cache MQ Client
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: ${{ github.workspace }}/setup-mqclient
           key: mqclient-${{ runner.os }}-${{ matrix.mq-client-version }}
 
       - name: Install MQ Client
         id: setup-mqclient
-        uses: SeyfSV/setup-mqclient@v0.1.4
+        uses: SeyfSV/setup-mqclient@v0.2
         with:
           mq-client-version: ${{ matrix.mq-client-version }}
 
