@@ -8,67 +8,9 @@ def py23long(x):
     # however "builtins" is in the "futures" package which should not be dependency of pymqi.
     return x + 0 * 0xffffffffffffffff
 
-MQBMHO_LENGTH_1 = 12
-MQBMHO_CURRENT_LENGTH = 12
-MQBO_LENGTH_1 = 12
-MQBO_CURRENT_LENGTH = 12
-MQCIH_LENGTH_1 = 164
-MQCIH_LENGTH_2 = 180
-MQCIH_CURRENT_LENGTH = 180
-MQCNO_LENGTH_1 = 12
-MQCMHO_LENGTH_1 = 12
-MQCMHO_CURRENT_LENGTH = 12
-MQDH_LENGTH_1 = 48
-MQDH_CURRENT_LENGTH = 48
-MQDLH_LENGTH_1 = 172
-MQDLH_CURRENT_LENGTH = 172
-MQDMHO_LENGTH_1 = 12
-MQDMHO_CURRENT_LENGTH = 12
-MQDMPO_LENGTH_1 = 12
-MQDMPO_CURRENT_LENGTH = 12
-MQGMO_LENGTH_1 = 72
-MQGMO_LENGTH_2 = 80
-MQGMO_LENGTH_3 = 100
-MQGMO_LENGTH_4 = 112
-MQGMO_CURRENT_LENGTH = 112
-MQIIH_LENGTH_1 = 84
-MQIIH_CURRENT_LENGTH = 84
-MQMD_LENGTH_1 = 324
-MQMD_LENGTH_2 = 364
-MQMD_CURRENT_LENGTH = 364
-MQMDE_LENGTH_2 = 72
-MQMDE_CURRENT_LENGTH = 72
-MQMD1_LENGTH_1 = 324
-MQMD1_CURRENT_LENGTH = 324
-MQMD2_LENGTH_1 = 324
-MQMD2_LENGTH_2 = 364
-MQMD2_CURRENT_LENGTH = 364
-MQMHBO_LENGTH_1 = 12
-MQMHBO_CURRENT_LENGTH = 12
-MQOD_LENGTH_1 = 168
-MQPD_LENGTH_1 = 24
-MQPD_CURRENT_LENGTH = 24
-MQPMO_LENGTH_1 = 128
-MQRFH_LENGTH_1 = 32
-MQRFH_CURRENT_LENGTH = 32
-MQRFH2_LENGTH_2 = 36
-MQRFH2_CURRENT_LENGTH = 36
-MQRMH_LENGTH_1 = 108
-MQRMH_CURRENT_LENGTH = 108
-MQSMPO_LENGTH_1 = 20
-MQSMPO_CURRENT_LENGTH = 20
-MQSRO_LENGTH_1 = 16
-MQSRO_CURRENT_LENGTH = 16
-MQSTS_LENGTH_1 = 224
-MQTM_LENGTH_1 = 684
-MQTM_CURRENT_LENGTH = 684
-MQTMC2_LENGTH_1 = 684
-MQTMC2_LENGTH_2 = 732
-MQTMC2_CURRENT_LENGTH = 732
-MQWIH_LENGTH_1 = 120
-MQWIH_CURRENT_LENGTH = 120
-MQXQH_LENGTH_1 = 428
-MQXQH_CURRENT_LENGTH = 428
+# NEW CMQC for PyMQI
+# Built from MQ Client 9.2.0.1 LTS CMQC.h
+
 
 # 64bit
 if calcsize("P") == 8:
@@ -80,35 +22,41 @@ if calcsize("P") == 8:
     MQCBC_CURRENT_LENGTH = 64
     MQCBD_LENGTH_1 = 168
     MQCBD_CURRENT_LENGTH = 168
+    MQCTLO_LENGTH_1 = 24
+    MQCTLO_CURRENT_LENGTH = 24
     MQSCO_LENGTH_1 = 536
     MQSCO_LENGTH_2 = 544
     MQSCO_LENGTH_3 = 560
     MQSCO_LENGTH_4 = 568
     MQSCO_LENGTH_5 = 632
     MQSCO_CURRENT_LENGTH = 632
+    MQCSP_LENGTH_1 = 56
+    MQCSP_CURRENT_LENGTH = 56
+    MQCNO_LENGTH_1 = 12
     MQCNO_LENGTH_2 = 24
     MQCNO_LENGTH_3 = 152
     MQCNO_LENGTH_4 = 168
     MQCNO_LENGTH_5 = 200
     MQCNO_LENGTH_6 = 224
-    MQCNO_CURRENT_LENGTH = 224
-    MQCSP_LENGTH_1 = 56
-    MQCSP_CURRENT_LENGTH = 56
-    MQCTLO_LENGTH_1 = 24
-    MQCTLO_CURRENT_LENGTH = 24
+    MQCNO_LENGTH_7 = 256
+    MQCNO_CURRENT_LENGTH = 256
     MQIMPO_LENGTH_1 = 64
     MQIMPO_CURRENT_LENGTH = 64
+    MQOD_LENGTH_1 = 168
     MQOD_LENGTH_2 = 208
     MQOD_LENGTH_3 = 344
     MQOD_LENGTH_4 = 424
     MQOD_CURRENT_LENGTH = 424
+    MQPMO_LENGTH_1 = 128
     MQPMO_LENGTH_2 = 160
     MQPMO_LENGTH_3 = 184
     MQPMO_CURRENT_LENGTH = 184
     MQSD_LENGTH_1 = 344
     MQSD_CURRENT_LENGTH = 344
+    MQSTS_LENGTH_1 = 224
     MQSTS_LENGTH_2 = 280
     MQSTS_CURRENT_LENGTH = 280
+# 32bit
 else:
     MQAIR_LENGTH_1 = 320
     MQAIR_LENGTH_2 = 576
@@ -118,54 +66,139 @@ else:
     MQCBC_CURRENT_LENGTH = 52
     MQCBD_LENGTH_1 = 156
     MQCBD_CURRENT_LENGTH = 156
+    MQCTLO_LENGTH_1 = 20
+    MQCTLO_CURRENT_LENGTH = 20
     MQSCO_LENGTH_1 = 532
     MQSCO_LENGTH_2 = 540
     MQSCO_LENGTH_3 = 556
     MQSCO_LENGTH_4 = 560
     MQSCO_LENGTH_5 = 624
     MQSCO_CURRENT_LENGTH = 624
+    MQCSP_LENGTH_1 = 48
+    MQCSP_CURRENT_LENGTH = 48
+    MQCNO_LENGTH_1 = 12
     MQCNO_LENGTH_2 = 20
     MQCNO_LENGTH_3 = 148
     MQCNO_LENGTH_4 = 156
     MQCNO_LENGTH_5 = 188
     MQCNO_LENGTH_6 = 208
-    MQCNO_CURRENT_LENGTH = 208
-    MQCSP_LENGTH_1 = 48
-    MQCSP_CURRENT_LENGTH = 48
-    MQCTLO_LENGTH_1 = 20
-    MQCTLO_CURRENT_LENGTH = 20
+    MQCNO_LENGTH_7 = 240
+    MQCNO_CURRENT_LENGTH = 240
     MQIMPO_LENGTH_1 = 60
     MQIMPO_CURRENT_LENGTH = 60
+    MQOD_LENGTH_1 = 168
     MQOD_LENGTH_2 = 200
     MQOD_LENGTH_3 = 336
     MQOD_LENGTH_4 = 400
     MQOD_CURRENT_LENGTH = 400
+    MQPMO_LENGTH_1 = 128
     MQPMO_LENGTH_2 = 152
     MQPMO_LENGTH_3 = 176
     MQPMO_CURRENT_LENGTH = 176
     MQSD_LENGTH_1 = 312
     MQSD_CURRENT_LENGTH = 312
+    MQSTS_LENGTH_1 = 224
     MQSTS_LENGTH_2 = 272
     MQSTS_CURRENT_LENGTH = 272
 
+
+
+
+
+##################################################################
+# Values related to MQAIR Structure                              #
+##################################################################
+
+# Structure Identifier
 MQAIR_STRUC_ID = b"AIR "
+
+# Structure Identifier (array form)
+MQAIR_STRUC_ID_ARRAY = [b"A", b"I", b"R", b" "]
+
+# Structure Version Number
 MQAIR_VERSION_1 = 1
-MQAIR_CURRENT_VERSION = 1
+MQAIR_VERSION_2 = 2
+MQAIR_CURRENT_VERSION = 2
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Authentication Information Type
+MQAIT_ALL = 0
 MQAIT_CRL_LDAP = 1
+MQAIT_OCSP = 2
+MQAIT_IDPW_OS = 3
+MQAIT_IDPW_LDAP = 4
+
+
+##################################################################
+# Values related to MQBMHO Structure                             #
+##################################################################
+
+# Structure Identifier
 MQBMHO_STRUC_ID = b"BMHO"
+
+# Structure Identifier (array form)
+MQBMHO_STRUC_ID_ARRAY = [b"B", b"M", b"H", b"O"]
+
+# Structure Version Number
 MQBMHO_VERSION_1 = 1
 MQBMHO_CURRENT_VERSION = 1
+
+# Structure Length
+MQBMHO_LENGTH_1 = 12
+MQBMHO_CURRENT_LENGTH = 12
+
+# Buffer to Message Handle Options
 MQBMHO_NONE = 0x00000000
 MQBMHO_DELETE_PROPERTIES = 0x00000001
+
+
+##################################################################
+# Values related to MQBO Structure                               #
+##################################################################
+
+# Structure Identifier
 MQBO_STRUC_ID = b"BO  "
+
+# Structure Identifier (array form)
+MQBO_STRUC_ID_ARRAY = [b"B", b"O", b" ", b" "]
+
+# Structure Version Number
 MQBO_VERSION_1 = 1
 MQBO_CURRENT_VERSION = 1
+
+# Structure Length
+MQBO_LENGTH_1 = 12
+MQBO_CURRENT_LENGTH = 12
+
+# Begin Options
 MQBO_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQCBC Structure - Callback Context           #
+##################################################################
+
+# Structure Identifier
 MQCBC_STRUC_ID = b"CBC "
+
+# Structure Identifier (array form)
+MQCBC_STRUC_ID_ARRAY = [b"C", b"B", b"C", b" "]
+
+# Structure Version Number
 MQCBC_VERSION_1 = 1
-MQCBC_CURRENT_VERSION = 1
+MQCBC_VERSION_2 = 2
+MQCBC_CURRENT_VERSION = 2
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Flags
 MQCBCF_NONE = 0x00000000
 MQCBCF_READA_BUFFER_EMPTY = 0x00000001
+
+# Callback Type
 MQCBCT_START_CALL = 1
 MQCBCT_STOP_CALL = 2
 MQCBCT_REGISTER_CALL = 3
@@ -173,28 +206,84 @@ MQCBCT_DEREGISTER_CALL = 4
 MQCBCT_EVENT_CALL = 5
 MQCBCT_MSG_REMOVED = 6
 MQCBCT_MSG_NOT_REMOVED = 7
+MQCBCT_MC_EVENT_CALL = 8
+
+# Consumer State
 MQCS_NONE = 0
 MQCS_SUSPENDED_TEMPORARY = 1
 MQCS_SUSPENDED_USER_ACTION = 2
 MQCS_SUSPENDED = 3
 MQCS_STOPPED = 4
+
+# Reconnect Delay
+MQRD_NO_RECONNECT = (-1)
+MQRD_NO_DELAY = 0
+
+
+##################################################################
+# Values Related to MQCBD Structure - Callback Descriptor        #
+##################################################################
+
+# Structure Identifier
 MQCBD_STRUC_ID = b"CBD "
+
+# Structure Identifier (array form)
+MQCBD_STRUC_ID_ARRAY = [b"C", b"B", b"D", b" "]
+
+# Structure Version Number
 MQCBD_VERSION_1 = 1
 MQCBD_CURRENT_VERSION = 1
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Callback Options
 MQCBDO_NONE = 0x00000000
 MQCBDO_START_CALL = 0x00000001
 MQCBDO_STOP_CALL = 0x00000004
 MQCBDO_REGISTER_CALL = 0x00000100
 MQCBDO_DEREGISTER_CALL = 0x00000200
 MQCBDO_FAIL_IF_QUIESCING = 0x00002000
+MQCBDO_EVENT_CALL = 0x00004000
+MQCBDO_MC_EVENT_CALL = 0x00008000
+
+# This is the type of the Callback Function
 MQCBT_MESSAGE_CONSUMER = 0x00000001
 MQCBT_EVENT_HANDLER = 0x00000002
+
+# Buffer size values
 MQCBD_FULL_MSG_LENGTH = (-1)
+
+
+##################################################################
+# Values Related to MQCHARV Structure                            #
+##################################################################
+
+# Variable String Length
 MQVS_NULL_TERMINATED = (-1)
+
+
+##################################################################
+# Values Related to MQCIH Structure                              #
+##################################################################
+
+# Structure Identifier
 MQCIH_STRUC_ID = b"CIH "
+
+# Structure Identifier (array form)
+MQCIH_STRUC_ID_ARRAY = [b"C", b"I", b"H", b" "]
+
+# Structure Version Number
 MQCIH_VERSION_1 = 1
 MQCIH_VERSION_2 = 2
 MQCIH_CURRENT_VERSION = 2
+
+# Structure Length
+MQCIH_LENGTH_1 = 164
+MQCIH_LENGTH_2 = 180
+MQCIH_CURRENT_LENGTH = 180
+
+# Flags
 MQCIH_NONE = 0x00000000
 MQCIH_PASS_EXPIRATION = 0x00000001
 MQCIH_UNLIMITED_EXPIRATION = 0x00000000
@@ -202,6 +291,8 @@ MQCIH_REPLY_WITHOUT_NULLS = 0x00000002
 MQCIH_REPLY_WITH_NULLS = 0x00000000
 MQCIH_SYNC_ON_RETURN = 0x00000004
 MQCIH_NO_SYNC_ON_RETURN = 0x00000000
+
+# Return Codes
 MQCRC_OK = 0
 MQCRC_CICS_EXEC_ERROR = 1
 MQCRC_MQ_API_ERROR = 2
@@ -212,6 +303,8 @@ MQCRC_SECURITY_ERROR = 6
 MQCRC_PROGRAM_NOT_AVAILABLE = 7
 MQCRC_BRIDGE_TIMEOUT = 8
 MQCRC_TRANSID_NOT_AVAILABLE = 9
+
+# Unit-of-Work Controls
 MQCUOWC_ONLY = 0x00000111
 MQCUOWC_CONTINUE = 0x00010000
 MQCUOWC_FIRST = 0x00000011
@@ -219,21 +312,40 @@ MQCUOWC_MIDDLE = 0x00000010
 MQCUOWC_LAST = 0x00000110
 MQCUOWC_COMMIT = 0x00000100
 MQCUOWC_BACKOUT = 0x00001100
+
+# Get Wait Interval
 MQCGWI_DEFAULT = (-2)
+
+# Link Types
 MQCLT_PROGRAM = 1
 MQCLT_TRANSACTION = 2
+
+# Output Data Length
 MQCODL_AS_INPUT = (-1)
+
+# ADS Descriptors
 MQCADSD_NONE = 0x00000000
 MQCADSD_SEND = 0x00000001
 MQCADSD_RECV = 0x00000010
 MQCADSD_MSGFORMAT = 0x00000100
+
+# Conversational Task Options
 MQCCT_YES = 0x00000001
 MQCCT_NO = 0x00000000
+
+# Task End Status
 MQCTES_NOSYNC = 0x00000000
 MQCTES_COMMIT = 0x00000100
 MQCTES_BACKOUT = 0x00001100
 MQCTES_ENDTASK = 0x00010000
+
+# Facility
 MQCFAC_NONE = b"\0\0\0\0\0\0\0\0"
+
+# Facility (array form)
+MQCFAC_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+
+# Functions
 MQCFUNC_MQCONN = b"CONN"
 MQCFUNC_MQGET = b"GET "
 MQCFUNC_MQINQ = b"INQ "
@@ -241,24 +353,151 @@ MQCFUNC_MQOPEN = b"OPEN"
 MQCFUNC_MQPUT = b"PUT "
 MQCFUNC_MQPUT1 = b"PUT1"
 MQCFUNC_NONE = b"    "
+
+# Functions (array form)
+MQCFUNC_MQCONN_ARRAY = [b"C", b"O", b"N", b"N"]
+MQCFUNC_MQGET_ARRAY = [b"G", b"E", b"T", b" "]
+MQCFUNC_MQINQ_ARRAY = [b"I", b"N", b"Q", b" "]
+MQCFUNC_MQOPEN_ARRAY = [b"O", b"P", b"E", b"N"]
+MQCFUNC_MQPUT_ARRAY = [b"P", b"U", b"T", b" "]
+MQCFUNC_MQPUT1_ARRAY = [b"P", b"U", b"T", b"1"]
+MQCFUNC_NONE_ARRAY = [b" ", b" ", b" ", b" "]
+
+# Start Codes
 MQCSC_START = b"S   "
 MQCSC_STARTDATA = b"SD  "
 MQCSC_TERMINPUT = b"TD  "
 MQCSC_NONE = b"    "
+
+# Start Codes (array form)
+MQCSC_START_ARRAY = [b"S", b" ", b" ", b" "]
+MQCSC_STARTDATA_ARRAY = [b"S", b"D", b" ", b" "]
+MQCSC_TERMINPUT_ARRAY = [b"T", b"D", b" ", b" "]
+MQCSC_NONE_ARRAY = [b" ", b" ", b" ", b" "]
+
+
+##################################################################
+# Values Related to MQCMHO Structure                             #
+##################################################################
+
+# Structure Identifier
 MQCMHO_STRUC_ID = b"CMHO"
+
+# Structure Identifier (array form)
+MQCMHO_STRUC_ID_ARRAY = [b"C", b"M", b"H", b"O"]
+
+# Structure Version Number
 MQCMHO_VERSION_1 = 1
 MQCMHO_CURRENT_VERSION = 1
+
+# Structure Length
+MQCMHO_LENGTH_1 = 12
+MQCMHO_CURRENT_LENGTH = 12
+
+# Create Message Handle Options
 MQCMHO_DEFAULT_VALIDATION = 0x00000000
 MQCMHO_NO_VALIDATION = 0x00000001
 MQCMHO_VALIDATE = 0x00000002
 MQCMHO_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQCTLO Structure                             #
+##################################################################
+
+# Structure Identifier
+MQCTLO_STRUC_ID = b"CTLO"
+
+# Structure Version Number
+MQCTLO_VERSION_1 = 1
+MQCTLO_CURRENT_VERSION = 1
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Consumer Control Options
+MQCTLO_NONE = 0x00000000
+MQCTLO_THREAD_AFFINITY = 0x00000001
+MQCTLO_FAIL_IF_QUIESCING = 0x00002000
+
+
+##################################################################
+# Values Related to MQSCO Structure                              #
+##################################################################
+
+# Structure Identifier
+MQSCO_STRUC_ID = b"SCO "
+
+# Structure Identifier (array form)
+MQSCO_STRUC_ID_ARRAY = [b"S", b"C", b"O", b" "]
+
+# Structure Version Number
+MQSCO_VERSION_1 = 1
+MQSCO_VERSION_2 = 2
+MQSCO_VERSION_3 = 3
+MQSCO_VERSION_4 = 4
+MQSCO_VERSION_5 = 5
+MQSCO_CURRENT_VERSION = 5
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# SuiteB Type
+MQ_SUITE_B_NOT_AVAILABLE = 0
+MQ_SUITE_B_NONE = 1
+MQ_SUITE_B_128_BIT = 2
+MQ_SUITE_B_192_BIT = 4
+
+# Key Reset Count
+MQSCO_RESET_COUNT_DEFAULT = 0
+
+# Certificate Validation Policy Type
+MQ_CERT_VAL_POLICY_DEFAULT = 0
+MQ_CERT_VAL_POLICY_ANY = 0
+MQ_CERT_VAL_POLICY_RFC5280 = 1
+
+
+##################################################################
+# Values Related to MQCSP Structure                              #
+##################################################################
+
+# Structure Identifier
+MQCSP_STRUC_ID = b"CSP "
+
+# Structure Identifier (array form)
+MQCSP_STRUC_ID_ARRAY = [b"C", b"S", b"P", b" "]
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Authentication Types
+MQCSP_AUTH_NONE = 0
+MQCSP_AUTH_USER_ID_AND_PWD = 1
+
+##################################################################
+# Values Related to MQCNO Structure                              #
+##################################################################
+
+# Structure Identifier
 MQCNO_STRUC_ID = b"CNO "
+
+# Structure Identifier (array form)
+MQCNO_STRUC_ID_ARRAY = [b"C", b"N", b"O", b" "]
+
+# Structure Version Number
 MQCNO_VERSION_1 = 1
 MQCNO_VERSION_2 = 2
 MQCNO_VERSION_3 = 3
 MQCNO_VERSION_4 = 4
 MQCNO_VERSION_5 = 5
-MQCNO_CURRENT_VERSION = 5
+MQCNO_VERSION_6 = 6
+MQCNO_VERSION_7 = 7
+MQCNO_CURRENT_VERSION = 7
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Connect Options
 MQCNO_STANDARD_BINDING = 0x00000000
 MQCNO_FASTPATH_BINDING = 0x00000001
 MQCNO_SERIALIZE_CONN_TAG_Q_MGR = 0x00000002
@@ -270,6 +509,8 @@ MQCNO_HANDLE_SHARE_BLOCK = 0x00000040
 MQCNO_HANDLE_SHARE_NO_BLOCK = 0x00000080
 MQCNO_SHARED_BINDING = 0x00000100
 MQCNO_ISOLATED_BINDING = 0x00000200
+MQCNO_LOCAL_BINDING = 0x00000400
+MQCNO_CLIENT_BINDING = 0x00000800
 MQCNO_ACCOUNTING_MQI_ENABLED = 0x00001000
 MQCNO_ACCOUNTING_MQI_DISABLED = 0x00002000
 MQCNO_ACCOUNTING_Q_ENABLED = 0x00004000
@@ -278,13 +519,16 @@ MQCNO_NO_CONV_SHARING = 0x00010000
 MQCNO_ALL_CONVS_SHARE = 0x00040000
 MQCNO_CD_FOR_OUTPUT_ONLY = 0x00080000
 MQCNO_USE_CD_SELECTION = 0x00100000
-MQCNO_NONE = 0x00000000
-
+MQCNO_GENERATE_CONN_TAG = 0x00200000
 MQCNO_RECONNECT_AS_DEF = 0x00000000
 MQCNO_RECONNECT = 0x01000000
 MQCNO_RECONNECT_DISABLED = 0x02000000
 MQCNO_RECONNECT_Q_MGR = 0x04000000
+MQCNO_ACTIVITY_TRACE_ENABLED = 0x08000000
+MQCNO_ACTIVITY_TRACE_DISABLED = 0x10000000
+MQCNO_NONE = 0x00000000
 
+# Queue Manager Connection Tag
 MQCT_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
             b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
             b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
@@ -293,43 +537,157 @@ MQCT_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
             b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
             b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
             b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+            
+# Queue Manager Connection Tag (array form)
+MQCT_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+
+# Connection Identifier
 MQCONNID_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0"\
                 b"\0\0\0\0\0\0\0\0\0\0\0\0"
-MQCSP_STRUC_ID = b"CSP "
-MQCSP_VERSION_1 = 1
-MQCSP_CURRENT_VERSION = 1
-MQCSP_AUTH_NONE = 0
-MQCSP_AUTH_USER_ID_AND_PWD = 1
-MQCTLO_STRUC_ID = b"CTLO"
-MQCTLO_VERSION_1 = 1
-MQCTLO_CURRENT_VERSION = 1
-MQCTLO_NONE = 0x00000000
-MQCTLO_THREAD_AFFINITY = 0x00000001
-MQCTLO_FAIL_IF_QUIESCING = 0x00002000
+                
+# Connection Identifier (array form)
+MQCONNID_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                       b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                       b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+
+# Application Name
+MQAN_NONE = b"                            "
+
+# Application Name (array form)
+MQAN_NONE_ARRAY = [b" ", b" ", b" ", b" ", b" ", b" ", b" ", b" ",
+                   b" ", b" ", b" ", b" ", b" ", b" ", b" ", b" ",
+                   b" ", b" ", b" ", b" ", b" ", b" ", b" ", b" ",
+                   b" ", b" ", b" ", b" "]
+
+
+##################################################################
+# Values Related to MQDH Structure                               #
+##################################################################
+
+# Structure Identifier
 MQDH_STRUC_ID = b"DH  "
+
+# Structure Identifier (array form)
+MQDH_STRUC_ID_ARRAY = [b"D", b"H", b" ", b" "]
+
+# Structure Version Number
 MQDH_VERSION_1 = 1
 MQDH_CURRENT_VERSION = 1
+
+# Structure Length
+MQDH_LENGTH_1 = 48
+MQDH_CURRENT_LENGTH = 48
+
+# Flags
 MQDHF_NEW_MSG_IDS = 0x00000001
 MQDHF_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQDLH Structure                              #
+##################################################################
+
+# Structure Identifier
 MQDLH_STRUC_ID = b"DLH "
+
+# Structure Identifier (array form)
+MQDLH_STRUC_ID_ARRAY = [b"D", b"L", b"H", b" "]
+
+# Structure Version Number
 MQDLH_VERSION_1 = 1
 MQDLH_CURRENT_VERSION = 1
+
+# Structure Length
+MQDLH_LENGTH_1 = 172
+MQDLH_CURRENT_LENGTH = 172
+
+
+##################################################################
+# Values Related to MQDMHO Structure                             #
+##################################################################
+
+# Structure Identifier
 MQDMHO_STRUC_ID = b"DMHO"
+
+# Structure Identifier (array form)
+MQDMHO_STRUC_ID_ARRAY = [b"D", b"M", b"H", b"O"]
+
+# Structure Version Number
 MQDMHO_VERSION_1 = 1
 MQDMHO_CURRENT_VERSION = 1
+
+# Structure Length
+MQDMHO_LENGTH_1 = 12
+MQDMHO_CURRENT_LENGTH = 12
+
+# Delete Message Handle Options
 MQDMHO_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQDMPO Structure                             #
+##################################################################
+
+# Structure Identifier
 MQDMPO_STRUC_ID = b"DMPO"
+
+# Structure Identifier (array form)
+MQDMPO_STRUC_ID_ARRAY = [b"D", b"M", b"P", b"O"]
+
+# Structure Version Number
 MQDMPO_VERSION_1 = 1
 MQDMPO_CURRENT_VERSION = 1
+
+# Structure Length
+MQDMPO_LENGTH_1 = 12
+MQDMPO_CURRENT_LENGTH = 12
+
+# Delete Message Property Options
 MQDMPO_DEL_FIRST = 0x00000000
 MQDMPO_DEL_PROP_UNDER_CURSOR = 0x00000001
 MQDMPO_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQGMO Structure                              #
+##################################################################
+
+# Structure Identifier
 MQGMO_STRUC_ID = b"GMO "
+
+# Structure Identifier (array form)
+MQGMO_STRUC_ID_ARRAY = [b"G", b"M", b"O", b" "]
+
+# Structure Version Number
 MQGMO_VERSION_1 = 1
 MQGMO_VERSION_2 = 2
 MQGMO_VERSION_3 = 3
 MQGMO_VERSION_4 = 4
 MQGMO_CURRENT_VERSION = 4
+
+# Structure Length
+MQGMO_LENGTH_1 = 72
+MQGMO_LENGTH_2 = 80
+MQGMO_LENGTH_3 = 100
+MQGMO_LENGTH_4 = 112
+MQGMO_CURRENT_LENGTH = 112
+
+# Get Message Options
 MQGMO_WAIT = 0x00000001
 MQGMO_NO_WAIT = 0x00000000
 MQGMO_SET_SIGNAL = 0x00000008
@@ -361,12 +719,20 @@ MQGMO_PROPERTIES_IN_HANDLE = 0x08000000
 MQGMO_PROPERTIES_COMPATIBILITY = 0x10000000
 MQGMO_PROPERTIES_AS_Q_DEF = 0x00000000
 MQGMO_NONE = 0x00000000
+MQGMO_BROWSE_HANDLE = MQGMO_BROWSE_FIRST | MQGMO_UNMARKED_BROWSE_MSG | MQGMO_MARK_BROWSE_HANDLE
+MQGMO_BROWSE_CO_OP = MQGMO_BROWSE_FIRST | MQGMO_UNMARKED_BROWSE_MSG | MQGMO_MARK_BROWSE_CO_OP
+
+# Wait Interval
 MQWI_UNLIMITED = (-1)
+
+# Signal Values
 MQEC_MSG_ARRIVED = 2
 MQEC_WAIT_INTERVAL_EXPIRED = 3
 MQEC_WAIT_CANCELED = 4
 MQEC_Q_MGR_QUIESCING = 5
 MQEC_CONNECTION_QUIESCING = 6
+
+# Match Options
 MQMO_MATCH_MSG_ID = 0x00000001
 MQMO_MATCH_CORREL_ID = 0x00000002
 MQMO_MATCH_GROUP_ID = 0x00000004
@@ -374,20 +740,99 @@ MQMO_MATCH_MSG_SEQ_NUMBER = 0x00000008
 MQMO_MATCH_OFFSET = 0x00000010
 MQMO_MATCH_MSG_TOKEN = 0x00000020
 MQMO_NONE = 0x00000000
+
+# Group Status
+MQGS_NOT_IN_GROUP = ord(" ")
+MQGS_MSG_IN_GROUP = ord("G")
+MQGS_LAST_MSG_IN_GROUP = ord("L")
+
+# Segment Status
+MQSS_NOT_A_SEGMENT = ord(" ")
+MQSS_SEGMENT = ord("S")
+MQSS_LAST_SEGMENT = ord("L")
+
+# Segmentation
+MQSEG_INHIBITED = ord(" ")
+MQSEG_ALLOWED = ord("A")
+
+# Message Token
 MQMTOK_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+
+# Message Token (array form)
+MQMTOK_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                     b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+                     
+# Returned Length
 MQRL_UNDEFINED = (-1)
+
+
+##################################################################
+# Values Related to MQIIH Structure                              #
+##################################################################
+
+# Structure Identifier
 MQIIH_STRUC_ID = b"IIH "
+
+# Structure Identifier (array form)
+MQIIH_STRUC_ID_ARRAY = [b"I", b"I", b"H", b" "]
+
+# Structure Version Number
 MQIIH_VERSION_1 = 1
 MQIIH_CURRENT_VERSION = 1
+
+# Flags
 MQIIH_NONE = 0x00000000
 MQIIH_PASS_EXPIRATION = 0x00000001
 MQIIH_UNLIMITED_EXPIRATION = 0x00000000
 MQIIH_REPLY_FORMAT_NONE = 0x00000008
+MQIIH_IGNORE_PURG = 0x00000010
+MQIIH_CM0_REQUEST_RESPONSE = 0x00000020
+
+# Authenticator
 MQIAUT_NONE = b"        "
+
+# Authenticator (array form)
+MQIAUT_NONE_ARRAY = [b" ", b" ", b" ", b" ", b" ", b" ", b" ", b" "]
+
+# Transaction Instance Identifier
 MQITII_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+
+# Transaction Instance Identifier (array form)
+MQITII_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                     b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+
+# Transaction States
+MQITS_IN_CONVERSATION = b"C"
+MQITS_NOT_IN_CONVERSATION = b" "
+MQITS_ARCHITECTED = b"A"
+
+# Commit Modes
+MQICM_COMMIT_THEN_SEND = b"0"
+MQICM_SEND_THEN_COMMIT = b"1"
+
+# Security Scopes
+MQISS_CHECK = b"C"
+MQISS_FULL = b"F"
+
+
+##################################################################
+# Values Related to MQIMPO Structure                             #
+##################################################################
+
+# Structure Identifier
 MQIMPO_STRUC_ID = b"IMPO"
+
+# Structure Identifier (array form)
+MQIMPO_STRUC_ID_ARRAY = [b"I", b"M", b"P", b"O"]
+
+# Structure Version Number
 MQIMPO_VERSION_1 = 1
 MQIMPO_CURRENT_VERSION = 1
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Inquire Message Property Options
 MQIMPO_CONVERT_TYPE = 0x00000002
 MQIMPO_QUERY_LENGTH = 0x00000004
 MQIMPO_INQ_FIRST = 0x00000000
@@ -395,10 +840,29 @@ MQIMPO_INQ_NEXT = 0x00000008
 MQIMPO_INQ_PROP_UNDER_CURSOR = 0x00000010
 MQIMPO_CONVERT_VALUE = 0x00000020
 MQIMPO_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQMD Structure                               #
+##################################################################
+
+# Structure Identifier
 MQMD_STRUC_ID = b"MD  "
+
+# Structure Identifier (array form)
+MQMD_STRUC_ID_ARRAY = [b"M", b"D", b" ", b" "]
+
+# Structure Version Number
 MQMD_VERSION_1 = 1
 MQMD_VERSION_2 = 2
 MQMD_CURRENT_VERSION = 2
+
+# Structure Length
+MQMD_LENGTH_1 = 324
+MQMD_LENGTH_2 = 364
+MQMD_CURRENT_LENGTH = 364
+
+# Report Options
 MQRO_EXCEPTION = 0x01000000
 MQRO_EXCEPTION_WITH_DATA = 0x03000000
 MQRO_EXCEPTION_WITH_FULL_DATA = 0x07000000
@@ -422,9 +886,13 @@ MQRO_DEAD_LETTER_Q = 0x00000000
 MQRO_DISCARD_MSG = 0x08000000
 MQRO_PASS_DISCARD_AND_EXPIRY = 0x00004000
 MQRO_NONE = 0x00000000
+
+# Report Options Masks
 MQRO_REJECT_UNSUP_MASK = 0x101C0000
-MQRO_ACCEPT_UNSUP_MASK = (-270532353)
+MQRO_ACCEPT_UNSUP_MASK = 0xEFE000FF
 MQRO_ACCEPT_UNSUP_IF_XMIT_MASK = 0x0003FF00
+
+# Message Types
 MQMT_SYSTEM_FIRST = 1
 MQMT_REQUEST = 1
 MQMT_REPLY = 2
@@ -435,7 +903,11 @@ MQMT_MQE_FIELDS = 113
 MQMT_SYSTEM_LAST = 65535
 MQMT_APPL_FIRST = 65536
 MQMT_APPL_LAST = 999999999
+
+# Expiry
 MQEI_UNLIMITED = (-1)
+
+# Feedback Values
 MQFB_NONE = 0
 MQFB_SYSTEM_FIRST = 1
 MQFB_QUIT = 256
@@ -489,33 +961,59 @@ MQFB_PUBLICATIONS_ON_REQUEST = 501
 MQFB_SUBSCRIBER_IS_PUBLISHER = 502
 MQFB_MSG_SCOPE_MISMATCH = 503
 MQFB_SELECTOR_MISMATCH = 504
+MQFB_NOT_A_GROUPUR_MSG = 505
+MQFB_IMS_NACK_1A_REASON_FIRST = 600
+MQFB_IMS_NACK_1A_REASON_LAST = 855
 MQFB_SYSTEM_LAST = 65535
 MQFB_APPL_FIRST = 65536
 MQFB_APPL_LAST = 999999999
+
+# Encoding
 MQENC_NATIVE = 0x00000222
+
+# Encoding Masks
 MQENC_INTEGER_MASK = 0x0000000F
 MQENC_DECIMAL_MASK = 0x000000F0
 MQENC_FLOAT_MASK = 0x00000F00
-MQENC_RESERVED_MASK = (-4096)
+MQENC_RESERVED_MASK = 0xFFFFF000
+
+# Encodings for Binary Integers
 MQENC_INTEGER_UNDEFINED = 0x00000000
 MQENC_INTEGER_NORMAL = 0x00000001
 MQENC_INTEGER_REVERSED = 0x00000002
+
+# Encodings for Packed Decimal Integers
 MQENC_DECIMAL_UNDEFINED = 0x00000000
 MQENC_DECIMAL_NORMAL = 0x00000010
 MQENC_DECIMAL_REVERSED = 0x00000020
+
+# Encodings for Floating Point Numbers
 MQENC_FLOAT_UNDEFINED = 0x00000000
 MQENC_FLOAT_IEEE_NORMAL = 0x00000100
 MQENC_FLOAT_IEEE_REVERSED = 0x00000200
 MQENC_FLOAT_S390 = 0x00000300
 MQENC_FLOAT_TNS = 0x00000400
+
+# Encodings for Multicast
+MQENC_NORMAL = MQENC_FLOAT_IEEE_NORMAL | MQENC_DECIMAL_NORMAL | MQENC_INTEGER_NORMAL
+MQENC_REVERSED = MQENC_FLOAT_IEEE_REVERSED | MQENC_DECIMAL_REVERSED | MQENC_INTEGER_REVERSED
+MQENC_S390 = MQENC_FLOAT_S390 | MQENC_DECIMAL_NORMAL | MQENC_INTEGER_NORMAL
+MQENC_TNS = MQENC_FLOAT_TNS | MQENC_DECIMAL_NORMAL | MQENC_INTEGER_NORMAL
+MQENC_AS_PUBLISHED = (-1)
+
+# Coded Character Set Identifiers
 MQCCSI_UNDEFINED = 0
 MQCCSI_DEFAULT = 0
 MQCCSI_Q_MGR = 0
 MQCCSI_INHERIT = (-2)
 MQCCSI_EMBEDDED = (-1)
 MQCCSI_APPL = (-3)
-MQFMT_NONE = b"        "
+MQCCSI_AS_PUBLISHED = (-4)
+
+# Formats
+MQFMT_NONE = b"         "
 MQFMT_ADMIN = b"MQADMIN "
+MQFMT_AMQP = b"MQAMQP  "
 MQFMT_CHANNEL_COMPLETED = b"MQCHCOM "
 MQFMT_CICS = b"MQCICS  "
 MQFMT_COMMAND_1 = b"MQCMD1  "
@@ -536,26 +1034,103 @@ MQFMT_STRING = b"MQSTR   "
 MQFMT_TRIGGER = b"MQTRIG  "
 MQFMT_WORK_INFO_HEADER = b"MQHWIH  "
 MQFMT_XMIT_Q_HEADER = b"MQXMIT  "
+
+# Formats (array form)
+MQFMT_NONE_ARRAY = [b" ", b" ", b" ", b" ", b" ", b" ", b" ", b" "]
+MQFMT_ADMIN_ARRAY = [b"M", b"Q", b"A", b"D", b"M", b"I", b"N", b" "]
+MQFMT_AMQP_ARRAY = [b"M", b"Q", b"A", b"M", b"Q", b"P", b" ", b" "]
+MQFMT_CHANNEL_COMPLETED_ARRAY = [b"M", b"Q", b"C", b"H", b"C", b"O", b"M", b" "]
+MQFMT_CICS_ARRAY = [b"M", b"Q", b"C", b"I", b"C", b"S", b" ", b" "]
+MQFMT_COMMAND_1_ARRAY = [b"M", b"Q", b"C", b"M", b"D", b"1", b" ", b" "]
+MQFMT_COMMAND_2_ARRAY = [b"M", b"Q", b"C", b"M", b"D", b"2", b" ", b" "]
+MQFMT_DEAD_LETTER_HEADER_ARRAY = [b"M", b"Q", b"D", b"E", b"A", b"D", b" ", b" "]
+MQFMT_DIST_HEADER_ARRAY = [b"M", b"Q", b"H", b"D", b"I", b"S", b"T", b" "]
+MQFMT_EMBEDDED_PCF_ARRAY = [b"M", b"Q", b"H", b"E", b"P", b"C", b"F", b" "]
+MQFMT_EVENT_ARRAY = [b"M", b"Q", b"E", b"V", b"E", b"N", b"T", b" "]
+MQFMT_IMS_ARRAY = [b"M", b"Q", b"I", b"M", b"S", b" ", b" ", b" "]
+MQFMT_IMS_VAR_STRING_ARRAY = [b"M", b"Q", b"I", b"M", b"S", b"V", b"S", b" "]
+MQFMT_MD_EXTENSION_ARRAY = [b"M", b"Q", b"H", b"M", b"D", b"E", b" ", b" "]
+MQFMT_PCF_ARRAY = [b"M", b"Q", b"P", b"C", b"F", b" ", b" ", b" "]
+MQFMT_REF_MSG_HEADER_ARRAY = [b"M", b"Q", b"H", b"R", b"E", b"F", b" ", b" "]
+MQFMT_RF_HEADER_ARRAY = [b"M", b"Q", b"H", b"R", b"F", b" ", b" ", b" "]
+MQFMT_RF_HEADER_1_ARRAY = [b"M", b"Q", b"H", b"R", b"F", b" ", b" ", b" "]
+MQFMT_RF_HEADER_2_ARRAY = [b"M", b"Q", b"H", b"R", b"F", b"2", b" ", b" "]
+MQFMT_STRING_ARRAY = [b"M", b"Q", b"S", b"T", b"R", b" ", b" ", b" "]
+MQFMT_TRIGGER_ARRAY = [b"M", b"Q", b"T", b"R", b"I", b"G", b" ", b" "]
+MQFMT_WORK_INFO_HEADER_ARRAY = [b"M", b"Q", b"H", b"W", b"I", b"H", b" ", b" "]
+MQFMT_XMIT_Q_HEADER_ARRAY = [b"M", b"Q", b"X", b"M", b"I", b"T", b" ", b" "]
+
+# Priority
 MQPRI_PRIORITY_AS_Q_DEF = (-1)
 MQPRI_PRIORITY_AS_PARENT = (-2)
 MQPRI_PRIORITY_AS_PUBLISHED = (-3)
 MQPRI_PRIORITY_AS_TOPIC_DEF = (-1)
+
+# Persistence Values
 MQPER_PERSISTENCE_AS_PARENT = (-1)
 MQPER_NOT_PERSISTENT = 0
 MQPER_PERSISTENT = 1
 MQPER_PERSISTENCE_AS_Q_DEF = 2
 MQPER_PERSISTENCE_AS_TOPIC_DEF = 2
+
+# Put Response Values
 MQPRT_RESPONSE_AS_PARENT = 0
 MQPRT_SYNC_RESPONSE = 1
 MQPRT_ASYNC_RESPONSE = 2
+
+# Message Identifier
 MQMI_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+
+# Message Identifier (array form)
+MQMI_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+                   
+# Correlation Identifier
 MQCI_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0"\
             b"\0\0\0\0\0\0\0\0\0\0\0\0"
+            
 MQCI_NEW_SESSION = b"\x41\x4D\x51\x21\x4E\x45\x57\x5F"\
                    b"\x53\x45\x53\x53\x49\x4F\x4E\x5F"\
                    b"\x43\x4F\x52\x52\x45\x4C\x49\x44"
+                   
+# Correlation Identifier (array form)
+MQCI_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+
+MQCI_NEW_SESSION_ARRAY = [b"\x41", b"\x4D", b"\x51", b"\x21",
+                          b"\x4E", b"\x45", b"\x57", b"\x5F",
+                          b"\x53", b"\x45", b"\x53", b"\x53",
+                          b"\x49", b"\x4F", b"\x4E", b"\x5F",
+                          b"\x43", b"\x4F", b"\x52", b"\x52",
+                          b"\x45", b"\x4C", b"\x49", b"\x44"]
+
+# Accounting Token
 MQACT_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
              b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+             
+# Accounting Token (array form)
+MQACT_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+                   
+# Accounting Token Types
+MQACTT_UNKNOWN = b"\x00"
+MQACTT_CICS_LUOW_ID = b"\x01"
+MQACTT_OS2_DEFAULT = b"\x04"
+MQACTT_DOS_DEFAULT = b"\x05"
+MQACTT_UNIX_NUMERIC_ID = b"\x06"
+MQACTT_OS400_ACCOUNT_TOKEN = b"\x08"
+MQACTT_WINDOWS_DEFAULT = b"\x09"
+MQACTT_NT_SECURITY_ID = b"\x0B"
+MQACTT_AZUREAD_SECURITY_ID = b"\x0C"
+MQACTT_MS_ACC_AUTH_SECURITY_ID = b"\x0D"
+MQACTT_USER = b"\x19"
+
+# Put Application Types
 MQAT_UNKNOWN = (-1)
 MQAT_NO_CONTEXT = 0
 MQAT_CICS = 1
@@ -593,10 +1168,22 @@ MQAT_WLM = 31
 MQAT_BATCH = 32
 MQAT_RRS_BATCH = 33
 MQAT_SIB = 34
-MQAT_DEFAULT = 6
+MQAT_SYSTEM_EXTENSION = 35
+MQAT_MCAST_PUBLISH = 36
+MQAT_AMQP = 37
+MQAT_DEFAULT = 11
 MQAT_USER_FIRST = 65536
 MQAT_USER_LAST = 999999999
+
+# Group Identifier
 MQGI_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+
+# Group Identifier (array form)
+MQGI_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                   b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+                   
+# Message Flags
 MQMF_SEGMENTATION_INHIBITED = 0x00000000
 MQMF_SEGMENTATION_ALLOWED = 0x00000001
 MQMF_MSG_IN_GROUP = 0x00000008
@@ -604,28 +1191,107 @@ MQMF_LAST_MSG_IN_GROUP = 0x00000010
 MQMF_SEGMENT = 0x00000002
 MQMF_LAST_SEGMENT = 0x00000004
 MQMF_NONE = 0x00000000
+
+# Message Flags Masks
 MQMF_REJECT_UNSUP_MASK = 0x00000FFF
-MQMF_ACCEPT_UNSUP_MASK = (-1048576)
+MQMF_ACCEPT_UNSUP_MASK = 0xFFF00000
 MQMF_ACCEPT_UNSUP_IF_XMIT_MASK = 0x000FF000
+
+# Original Length
 MQOL_UNDEFINED = (-1)
+
+
+
+##################################################################
+# Values Related to MQMDE Structure                              #
+##################################################################
+
+# Structure Identifier
 MQMDE_STRUC_ID = b"MDE "
+
+# Structure Identifier (array form)
+MQMDE_STRUC_ID_ARRAY = [b"M", b"D", b"E", b" "]
+
+# Structure Version Number
 MQMDE_VERSION_2 = 2
 MQMDE_CURRENT_VERSION = 2
+
+# Structure Length
+MQMDE_LENGTH_2 = 72
+MQMDE_CURRENT_LENGTH = 72
+
+# Flags
 MQMDEF_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQMD1 Structure                              #
+##################################################################
+
+# Structure Length
+MQMD1_LENGTH_1 = 324
+MQMD1_CURRENT_LENGTH = 324
+
+
+##################################################################
+# Values Related to MQMD2 Structure                              #
+##################################################################
+
+# Structure Length
+MQMD2_LENGTH_1 = 324
+MQMD2_LENGTH_2 = 364
+MQMD2_CURRENT_LENGTH = 364
+
+
+##################################################################
+# Values Related to MQMHBO Structure                             #
+##################################################################
+
+# Structure Identifier
 MQMHBO_STRUC_ID = b"MHBO"
+
+# Structure Identifier (array form)
+MQMHBO_STRUC_ID_ARRAY = [b"M", b"H", b"B", b"O"]
+
+# Structure Version Number
 MQMHBO_VERSION_1 = 1
 MQMHBO_CURRENT_VERSION = 1
+
+# Structure Length
+MQMHBO_LENGTH_1 = 12
+MQMHBO_CURRENT_LENGTH = 12
+
+# Message Handle to buffer Options
 MQMHBO_PROPERTIES_IN_MQRFH2 = 0x00000001
 MQMHBO_DELETE_PROPERTIES = 0x00000002
 MQMHBO_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQOD Structure                               #
+##################################################################
+
+# Structure Identifier
 MQOD_STRUC_ID = b"OD  "
+
+# Structure Identifier (array form)
+MQOD_STRUC_ID_ARRAY = [b"O", b"D", b" ", b" "]
+
+# Structure Version Number
 MQOD_VERSION_1 = 1
 MQOD_VERSION_2 = 2
 MQOD_VERSION_3 = 3
 MQOD_VERSION_4 = 4
 MQOD_CURRENT_VERSION = 4
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Obsolete DB2 Messages Options on Inquire Group
 MQOM_NO = 0
 MQOM_YES = 1
+
+# Object Types
 MQOT_NONE = 0
 MQOT_Q = 1
 MQOT_NAMELIST = 2
@@ -635,10 +1301,13 @@ MQOT_Q_MGR = 5
 MQOT_CHANNEL = 6
 MQOT_AUTH_INFO = 7
 MQOT_TOPIC = 8
+MQOT_COMM_INFO = 9
 MQOT_CF_STRUC = 10
 MQOT_LISTENER = 11
 MQOT_SERVICE = 12
 MQOT_RESERVED_1 = 999
+
+# Extended Object Types
 MQOT_ALL = 1001
 MQOT_ALIAS_Q = 1002
 MQOT_MODEL_Q = 1003
@@ -653,18 +1322,48 @@ MQOT_SAVED_CHANNEL = 1012
 MQOT_SVRCONN_CHANNEL = 1013
 MQOT_CLNTCONN_CHANNEL = 1014
 MQOT_SHORT_CHANNEL = 1015
+MQOT_CHLAUTH = 1016
+MQOT_REMOTE_Q_MGR_NAME = 1017
+MQOT_PROT_POLICY = 1019
+MQOT_TT_CHANNEL = 1020
+MQOT_AMQP_CHANNEL = 1021
+MQOT_AUTH_REC = 1022
+
+
+##################################################################
+# Values Related to MQPD Structure                               #
+##################################################################
+
+# Structure Identifier
 MQPD_STRUC_ID = b"PD  "
+
+# Structure Identifier (array form)
+MQPD_STRUC_ID_ARRAY = [b"P", b"D", b" ", b" "]
+
+# Structure Version Number
 MQPD_VERSION_1 = 1
 MQPD_CURRENT_VERSION = 1
+
+# Structure Length
+MQPD_LENGTH_1 = 24
+MQPD_CURRENT_LENGTH = 24
+
+# Property Descriptor Options
 MQPD_NONE = 0x00000000
+
+# Property Support Options
 MQPD_SUPPORT_OPTIONAL = 0x00000001
 MQPD_SUPPORT_REQUIRED = 0x00100000
 MQPD_SUPPORT_REQUIRED_IF_LOCAL = 0x00000400
-MQPD_REJECT_UNSUP_MASK = (-1048576)
+MQPD_REJECT_UNSUP_MASK = 0xFFF00000
 MQPD_ACCEPT_UNSUP_IF_XMIT_MASK = 0x000FFC00
 MQPD_ACCEPT_UNSUP_MASK = 0x000003FF
+
+# Property Context
 MQPD_NO_CONTEXT = 0x00000000
 MQPD_USER_CONTEXT = 0x00000001
+
+# Property Copy Options
 MQCOPY_NONE = 0x00000000
 MQCOPY_ALL = 0x00000001
 MQCOPY_FORWARD = 0x00000002
@@ -672,16 +1371,28 @@ MQCOPY_PUBLISH = 0x00000004
 MQCOPY_REPLY = 0x00000008
 MQCOPY_REPORT = 0x00000010
 MQCOPY_DEFAULT = 0x00000016
-MQSD_STRUC_ID = b"SD  "
-MQSD_VERSION_1 = 1
-MQSD_CURRENT_VERSION = 1
-MQSID_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
-             b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+
+
+##################################################################
+# Values Related to MQPMO Structure                              #
+##################################################################
+
+# Structure Identifier
 MQPMO_STRUC_ID = b"PMO "
+
+# Structure Identifier (array form)
+MQPMO_STRUC_ID_ARRAY = [b"P", b"M", b"O", b" "]
+
+# Structure Version Number
 MQPMO_VERSION_1 = 1
 MQPMO_VERSION_2 = 2
 MQPMO_VERSION_3 = 3
 MQPMO_CURRENT_VERSION = 3
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Put Message Options
 MQPMO_SYNCPOINT = 0x00000002
 MQPMO_NO_SYNCPOINT = 0x00000004
 MQPMO_DEFAULT_CONTEXT = 0x00000020
@@ -698,6 +1409,7 @@ MQPMO_LOGICAL_ORDER = 0x00008000
 MQPMO_ASYNC_RESPONSE = 0x00010000
 MQPMO_SYNC_RESPONSE = 0x00020000
 MQPMO_RESOLVE_LOCAL_Q = 0x00040000
+MQPMO_WARN_IF_NO_SUBS_MATCHED = 0x00080000
 MQPMO_RETAIN = 0x00200000
 MQPMO_MD_FOR_OUTPUT_ONLY = 0x00800000
 MQPMO_SCOPE_QMGR = 0x04000000
@@ -706,453 +1418,303 @@ MQPMO_NOT_OWN_SUBS = 0x10000000
 MQPMO_RESPONSE_AS_Q_DEF = 0x00000000
 MQPMO_RESPONSE_AS_TOPIC_DEF = 0x00000000
 MQPMO_NONE = 0x00000000
+
+# Put Message Options for Publish Mask
 MQPMO_PUB_OPTIONS_MASK = 0x00200000
+
+# Put Message Record Fields
 MQPMRF_MSG_ID = 0x00000001
 MQPMRF_CORREL_ID = 0x00000002
 MQPMRF_GROUP_ID = 0x00000004
 MQPMRF_FEEDBACK = 0x00000008
 MQPMRF_ACCOUNTING_TOKEN = 0x00000010
 MQPMRF_NONE = 0x00000000
+
+# Action
 MQACTP_NEW = 0
 MQACTP_FORWARD = 1
 MQACTP_REPLY = 2
 MQACTP_REPORT = 3
+
+
+##################################################################
+# Values Related to MQRFH Structure                              #
+##################################################################
+
+# Structure Identifier
 MQRFH_STRUC_ID = b"RFH "
+
+# Structure Identifier (array form)
+MQRFH_STRUC_ID_ARRAY = [b"R", b"F", b"H", b" "]
+
+# Structure Version Number
 MQRFH_VERSION_1 = 1
 MQRFH_VERSION_2 = 2
+
+# Structure Length
 MQRFH_STRUC_LENGTH_FIXED = 32
 MQRFH_STRUC_LENGTH_FIXED_2 = 36
+MQRFH_LENGTH_1 = 32
+MQRFH_CURRENT_LENGTH = 32
+
+# Flags
 MQRFH_NONE = 0x00000000
 MQRFH_NO_FLAGS = 0
+MQRFH_FLAGS_RESTRICTED_MASK = 0xFFFF0000
+
+# MQRFH2 flags in the restricted mask are reserved for MQ use:
+
+# 0x80000000 - MQRFH_INTERNAL - This flag indicates the RFH2 header
+# was created by IBM MQ for internal use.
+
+# Names for Name/Value String
 MQNVS_APPL_TYPE = b"OPT_APP_GRP "
 MQNVS_MSG_TYPE = b"OPT_MSG_TYPE "
+
+
+##################################################################
+# Values Related to MQRFH2 Structure                             #
+##################################################################
+
+# Structure Length
+MQRFH2_LENGTH_2 = 36
+MQRFH2_CURRENT_LENGTH = 36
+
+
+##################################################################
+# Values Related to MQRMH Structure                              #
+##################################################################
+
+# Structure Identifier
 MQRMH_STRUC_ID = b"RMH "
+
+# Structure Identifier (array form)
+MQRMH_STRUC_ID_ARRAY = [b"R", b"M", b"H", b" "]
+
+# Structure Version Number
 MQRMH_VERSION_1 = 1
 MQRMH_CURRENT_VERSION = 1
+
+# Structure Length
+MQRMH_LENGTH_1 = 108
+MQRMH_CURRENT_LENGTH = 108
+
+# Flags
 MQRMHF_LAST = 0x00000001
 MQRMHF_NOT_LAST = 0x00000000
+
+# Object Instance Identifier
 MQOII_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-MQSCO_STRUC_ID = b"SCO "
-MQSCO_VERSION_1 = py23long(1)
-MQSCO_VERSION_2 = py23long(2)
-MQSCO_VERSION_3 = py23long(3)
-MQSCO_VERSION_4 = py23long(4)
-MQSCO_VERSION_5 = py23long(5)
-MQSCO_CURRENT_VERSION = 2
-MQSCO_RESET_COUNT_DEFAULT = 0
+
+# Object Instance Identifier (array form)
+MQOII_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                    b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                    b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+                    
+
+##################################################################
+# Values Related to MQSD Structure                               #
+##################################################################
+
+# Structure Identifier
+MQSD_STRUC_ID = b"SD  "
+
+# Structure Identifier (array form)
+MQSD_STRUC_ID_ARRAY = [b"S", b"D", b" ", b" "]
+
+# Structure Version Number
+MQSD_VERSION_1 = 1
+MQSD_CURRENT_VERSION = 1
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+# Security Identifier
+MQSID_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
+             b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+             
+# Security Identifier (array form)
+MQSID_NONE_ARRAY = [b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                    b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                    b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                    b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0",
+                    b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0", b"\0"]
+                    
+# Security Identifier Types
+MQSIDT_NONE = b"\x00"
+MQSIDT_NT_SECURITY_ID = b"\x01"
+MQSIDT_WAS_SECURITY_ID = b"\x02"
+
+
+##################################################################
+# Values Related to MQSMPO Structure                             #
+##################################################################
+
+# Structure Identifier
 MQSMPO_STRUC_ID = b"SMPO"
+
+# Structure Identifier (array form)
+MQSMPO_STRUC_ID_ARRAY = [b"S", b"M", b"P", b"O"]
+
+# Structure Version Number
 MQSMPO_VERSION_1 = 1
 MQSMPO_CURRENT_VERSION = 1
+
+# Structure Length
+MQSMPO_LENGTH_1 = 20
+MQSMPO_CURRENT_LENGTH = 20
+
+# Set Message Property Options
 MQSMPO_SET_FIRST = 0x00000000
 MQSMPO_SET_PROP_UNDER_CURSOR = 0x00000001
 MQSMPO_SET_PROP_AFTER_CURSOR = 0x00000002
 MQSMPO_APPEND_PROPERTY = 0x00000004
 MQSMPO_SET_PROP_BEFORE_CURSOR = 0x00000008
 MQSMPO_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQSRO Structure                              #
+##################################################################
+
+# Structure Identifier
 MQSRO_STRUC_ID = b"SRO "
+
+# Structure Identifier (array form)
+MQSRO_STRUC_ID_ARRAY = [b"S", b"R", b"O", b" "]
+
+# Structure Version Number
 MQSRO_VERSION_1 = 1
 MQSRO_CURRENT_VERSION = 1
+
+# Structure Length
+MQSRO_LENGTH_1 = 16
+MQSRO_CURRENT_LENGTH = 16
+
+# Subscription Request Options
 MQSRO_NONE = 0x00000000
 MQSRO_FAIL_IF_QUIESCING = 0x00002000
+
+
+##################################################################
+# Values Related to MQSTS Structure                              #
+##################################################################
+
+# Structure Identifier
 MQSTS_STRUC_ID = b"STAT"
+
+# Structure Identifier (array form)
+MQSTS_STRUC_ID_ARRAY = [b"S", b"T", b"A", b"T"]
+
+# Structure Version Number
 MQSTS_VERSION_1 = 1
-MQSTS_CURRENT_VERSION = 1
+MQSTS_VERSION_2 = 2
+MQSTS_CURRENT_VERSION = 2
+
+# Structure Length - Moved to if statement at top
+# due to 32/64 bit differences
+
+
+##################################################################
+# Values Related to MQTM Structure                               #
+##################################################################
+
+# Structure Identifier
 MQTM_STRUC_ID = b"TM  "
+
+# Structure Identifier (array form)
+MQTM_STRUC_ID_ARRAY = [b"T", b"M", b" ", b" "]
+
+# Structure Version Number
 MQTM_VERSION_1 = 1
 MQTM_CURRENT_VERSION = 1
+
+# Structure Length
+MQTM_LENGTH_1 = 684
+MQTM_CURRENT_LENGTH = 684
+
+
+##################################################################
+# Values Related to MQTMC2 Structure                             #
+##################################################################
+
+# Structure Identifier
 MQTMC_STRUC_ID = b"TMC "
+
+# Structure Identifier (array form)
+MQTMC_STRUC_ID_ARRAY = [b"T", b"M", b"C", b" "]
+
+# Structure Version Number
 MQTMC_VERSION_1 = b"   1"
 MQTMC_VERSION_2 = b"   2"
 MQTMC_CURRENT_VERSION = b"   2"
+
+# Structure Version Number (array form)
+MQTMC_VERSION_1_ARRAY = [b" ", b" ", b" ", b"1"]
+MQTMC_VERSION_2_ARRAY = [b" ", b" ", b" ", b"2"]
+MQTMC_CURRENT_VERSION_ARRAY = [b" ", b" ", b" ", b"2"]
+
+# Structure Length
+MQTMC2_LENGTH_1 = 684
+MQTMC2_LENGTH_2 = 732
+MQTMC2_CURRENT_LENGTH = 732
+
+
+##################################################################
+# Values Related to MQWIH Structure                              #
+##################################################################
+
+# Structure Identifier
 MQWIH_STRUC_ID = b"WIH "
+
+# Structure Identifier (array form)
+MQWIH_STRUC_ID_ARRAY = [b"W", b"I", b"H", b" "]
+
+# Structure Version Number
 MQWIH_VERSION_1 = 1
 MQWIH_CURRENT_VERSION = 1
+
+# Structure Length
+MQWIH_LENGTH_1 = 120
+MQWIH_CURRENT_LENGTH = 120
+
+# Flags
 MQWIH_NONE = 0x00000000
+
+
+##################################################################
+# Values Related to MQXQH Structure                              #
+##################################################################
+
+# Structure Identifier
 MQXQH_STRUC_ID = b"XQH "
+
+# Structure Identifier (array form)
+MQXQH_STRUC_ID_ARRAY = [b"X", b"Q", b"H", b" "]
+
+# Structure Version Number
 MQXQH_VERSION_1 = 1
 MQXQH_CURRENT_VERSION = 1
-MQHO_UNUSABLE_HOBJ = (-1)
-MQHO_NONE = 0
-MQCO_IMMEDIATE = 0x00000000
-MQCO_NONE = 0x00000000
-MQCO_DELETE = 0x00000001
-MQCO_DELETE_PURGE = 0x00000002
-MQCO_KEEP_SUB = 0x00000004
-MQCO_REMOVE_SUB = 0x00000008
-MQCO_QUIESCE = 0x00000020
-MQOP_START = 0x00000001
-MQOP_START_WAIT = 0x00000002
-MQOP_STOP = 0x00000004
-MQOP_REGISTER = 0x00000100
-MQOP_DEREGISTER = 0x00000200
-MQOP_SUSPEND = 0x00010000
-MQOP_RESUME = 0x00020000
-MQHM_UNUSABLE_HMSG = (-1)
-MQHM_NONE = 0
-MQBA_FIRST = 6001
-MQBA_LAST = 8000
-MQCA_ADMIN_TOPIC_NAME = 2105
-MQCA_ALTERATION_DATE = 2027
-MQCA_ALTERATION_TIME = 2028
-MQCA_APPL_ID = 2001
-MQCA_AUTH_INFO_CONN_NAME = 2053
-MQCA_AUTH_INFO_DESC = 2046
-MQCA_AUTH_INFO_NAME = 2045
-MQCA_AUTO_REORG_CATALOG = 2091
-MQCA_AUTO_REORG_START_TIME = 2090
-MQCA_BACKOUT_REQ_Q_NAME = 2019
-MQCA_BASE_OBJECT_NAME = 2002
-MQCA_BASE_Q_NAME = 2002
-MQCA_BATCH_INTERFACE_ID = 2068
-MQCA_CERT_LABEL = 2121
-MQCA_CF_STRUC_DESC = 2052
-MQCA_CF_STRUC_NAME = 2039
-MQCA_CHANNEL_AUTO_DEF_EXIT = 2026
-MQCA_CHILD = 2101
-MQCA_CHINIT_SERVICE_PARM = 2076
-MQCA_CICS_FILE_NAME = 2060
-MQCA_CLUSTER_DATE = 2037
-MQCA_CLUSTER_NAME = 2029
-MQCA_CLUSTER_NAMELIST = 2030
-MQCA_CLUSTER_Q_MGR_NAME = 2031
-MQCA_CLUSTER_TIME = 2038
-MQCA_CLUSTER_WORKLOAD_DATA = 2034
-MQCA_CLUSTER_WORKLOAD_EXIT = 2033
-MQCA_COMMAND_INPUT_Q_NAME = 2003
-MQCA_COMMAND_REPLY_Q_NAME = 2067
-MQCA_CREATION_DATE = 2004
-MQCA_CREATION_TIME = 2005
-MQCA_DEAD_LETTER_Q_NAME = 2006
-MQCA_DEF_XMIT_Q_NAME = 2025
-MQCA_DNS_GROUP = 2071
-MQCA_ENV_DATA = 2007
-MQCA_FIRST = 2001
-MQCA_IGQ_USER_ID = 2041
-MQCA_INITIATION_Q_NAME = 2008
-MQCA_LAST = 4000
-MQCA_LAST_USED = 2108
-MQCA_LDAP_PASSWORD = 2048
-MQCA_LDAP_USER_NAME = 2047
-MQCA_LU_GROUP_NAME = 2072
-MQCA_LU_NAME = 2073
-MQCA_LU62_ARM_SUFFIX = 2074
-MQCA_MODEL_DURABLE_Q = 2096
-MQCA_MODEL_NON_DURABLE_Q = 2097
-MQCA_MONITOR_Q_NAME = 2066
-MQCA_NAMELIST_DESC = 2009
-MQCA_NAMELIST_NAME = 2010
-MQCA_NAMES = 2020
-MQCA_PARENT = 2102
-MQCA_PASS_TICKET_APPL = 2086
-MQCA_PROCESS_DESC = 2011
-MQCA_PROCESS_NAME = 2012
-MQCA_Q_DESC = 2013
-MQCA_Q_MGR_DESC = 2014
-MQCA_Q_MGR_IDENTIFIER = 2032
-MQCA_Q_MGR_NAME = 2015
-MQCA_Q_NAME = 2016
-MQCA_QSG_NAME = 2040
-MQCA_REMOTE_Q_MGR_NAME = 2017
-MQCA_REMOTE_Q_NAME = 2018
-MQCA_REPOSITORY_NAME = 2035
-MQCA_REPOSITORY_NAMELIST = 2036
-MQCA_RESUME_DATE = 2098
-MQCA_RESUME_TIME = 2099
-MQCA_SERVICE_DESC = 2078
-MQCA_SERVICE_NAME = 2077
-MQCA_SERVICE_START_ARGS = 2080
-MQCA_SERVICE_START_COMMAND = 2079
-MQCA_SERVICE_STOP_ARGS = 2082
-MQCA_SERVICE_STOP_COMMAND = 2081
-MQCA_STDERR_DESTINATION = 2084
-MQCA_STDOUT_DESTINATION = 2083
-MQCA_SSL_CRL_NAMELIST = 2050
-MQCA_SSL_CRYPTO_HARDWARE = 2051
-MQCA_SSL_KEY_LIBRARY = 2069
-MQCA_SSL_KEY_MEMBER = 2070
-MQCA_SSL_KEY_REPOSITORY = 2049
-MQCA_STORAGE_CLASS = 2022
-MQCA_STORAGE_CLASS_DESC = 2042
-MQCA_SYSTEM_LOG_Q_NAME = 2065
-MQCA_TCP_NAME = 2075
-MQCA_TOPIC_DESC = 2093
-MQCA_TOPIC_NAME = 2092
-MQCA_TOPIC_STRING_FILTER = 2108
-MQCA_TOPIC_STRING = 2094
-MQCA_TPIPE_NAME = 2085
-MQCA_TRIGGER_CHANNEL_NAME = 2064
-MQCA_TRIGGER_DATA = 2023
-MQCA_TRIGGER_PROGRAM_NAME = 2062
-MQCA_TRIGGER_TERM_ID = 2063
-MQCA_TRIGGER_TRANS_ID = 2061
-MQCA_USER_DATA = 2021
-MQCA_USER_LIST = 4000
-MQCA_VERSION = 2120
-MQCA_XCF_GROUP_NAME = 2043
-MQCA_XCF_MEMBER_NAME = 2044
-MQCA_XMIT_Q_NAME = 2024
-MQIA_ACCOUNTING_CONN_OVERRIDE = 136
-MQIA_ACCOUNTING_INTERVAL = 135
-MQIA_ACCOUNTING_MQI = 133
-MQIA_ACCOUNTING_Q = 134
-MQIA_ACTIVE_CHANNELS = 100
-MQIA_ACTIVITY_RECORDING = 138
-MQIA_ADOPTNEWMCA_CHECK = 102
-MQIA_ADOPTNEWMCA_TYPE = 103
-MQIA_ADOPTNEWMCA_INTERVAL = 104
-MQIA_APPL_TYPE = 1
-MQIA_ARCHIVE = 60
-MQIA_AUTH_INFO_TYPE = 66
-MQIA_AUTHORITY_EVENT = 47
-MQIA_AUTO_REORG_INTERVAL = 174
-MQIA_AUTO_REORGANIZATION = 173
-MQIA_BACKOUT_THRESHOLD = 22
-MQIA_BASE_TYPE = 193
-MQIA_BATCH_INTERFACE_AUTO = 86
-MQIA_BRIDGE_EVENT = 74
-MQIA_CF_LEVEL = 70
-MQIA_CF_RECOVER = 71
-MQIA_CHANNEL_AUTO_DEF = 55
-MQIA_CHANNEL_AUTO_DEF_EVENT = 56
-MQIA_CHANNEL_EVENT = 73
-MQIA_CHECK_CLIENT_BINDING = 258
-MQIA_CHINIT_ADAPTERS = 101
-MQIA_CHINIT_CONTROL = 119
-MQIA_CHINIT_DISPATCHERS = 105
-MQIA_CHINIT_TRACE_AUTO_START = 117
-MQIA_CHINIT_TRACE_TABLE_SIZE = 118
-MQIA_CLUSTER_Q_TYPE = 59
-MQIA_CLUSTER_WORKLOAD_LENGTH = 58
-MQIA_CLWL_MRU_CHANNELS = 97
-MQIA_CLWL_Q_RANK = 95
-MQIA_CLWL_Q_PRIORITY = 96
-MQIA_CLWL_USEQ = 98
-MQIA_CMD_SERVER_AUTO = 87
-MQIA_CMD_SERVER_CONTROL = 120
-MQIA_CMD_SERVER_CONVERT_MSG = 88
-MQIA_CMD_SERVER_DLQ_MSG = 89
-MQIA_CODED_CHAR_SET_ID = 2
-MQIA_COMMAND_EVENT = 99
-MQIA_COMMAND_LEVEL = 31
-MQIA_CONFIGURATION_EVENT = 51
-MQIA_CPI_LEVEL = 27
-MQIA_CURRENT_Q_DEPTH = 3
-MQIA_DEF_BIND = 61
-MQIA_DEF_INPUT_OPEN_OPTION = 4
-MQIA_DEF_PERSISTENCE = 5
-MQIA_DEF_PRIORITY = 6
-MQIA_DEF_PUT_RESPONSE_TYPE = 184
-MQIA_DEF_READ_AHEAD = 188
-MQIA_DEFINITION_TYPE = 7
-MQIA_DIST_LISTS = 34
-MQIA_DNS_WLM = 106
-MQIA_DURABLE_SUB = 175
-MQIA_EXPIRY_INTERVAL = 39
-MQIA_FIRST = 1
-MQIA_HARDEN_GET_BACKOUT = 8
-MQIA_HIGH_Q_DEPTH = 36
-MQIA_IGQ_PUT_AUTHORITY = 65
-MQIA_INDEX_TYPE = 57
-MQIA_INHIBIT_EVENT = 48
-MQIA_INHIBIT_GET = 9
-MQIA_INHIBIT_PUB = 181
-MQIA_INHIBIT_PUT = 10
-MQIA_INHIBIT_SUB = 182
-MQIA_INTRA_GROUP_QUEUING = 64
-MQIA_IP_ADDRESS_VERSION = 93
-MQIA_LAST = 2000
-MQIA_LAST_USED = 219
-MQIA_LISTENER_PORT_NUMBER = 85
-MQIA_LISTENER_TIMER = 107
-MQIA_LOGGER_EVENT = 94
-MQIA_LU62_CHANNELS = 108
-MQIA_LOCAL_EVENT = 49
-MQIA_MSG_MARK_BROWSE_INTERVAL = 68
-MQIA_MASTER_ADMIN = 186
-MQIA_MAX_CHANNELS = 109
-MQIA_MAX_CLIENTS = 172
-MQIA_MAX_GLOBAL_LOCKS = 83
-MQIA_MAX_HANDLES = 11
-MQIA_MAX_LOCAL_LOCKS = 84
-MQIA_MAX_MSG_LENGTH = 13
-MQIA_MAX_OPEN_Q = 80
-MQIA_MAX_PRIORITY = 14
-MQIA_MAX_PROPERTIES_LENGTH = 192
-MQIA_MAX_Q_DEPTH = 15
-MQIA_MAX_Q_TRIGGERS = 90
-MQIA_MAX_RECOVERY_TASKS = 171
-MQIA_MAX_UNCOMMITTED_MSGS = 33
-MQIA_MONITOR_INTERVAL = 81
-MQIA_MONITORING_AUTO_CLUSSDR = 124
-MQIA_MONITORING_CHANNEL = 122
-MQIA_MONITORING_Q = 123
-MQIA_MSG_DELIVERY_SEQUENCE = 16
-MQIA_MSG_DEQ_COUNT = 38
-MQIA_MSG_ENQ_COUNT = 37
-MQIA_NAME_COUNT = 19
-MQIA_NAMELIST_TYPE = 72
-MQIA_NPM_CLASS = 78
-MQIA_NPM_DELIVERY = 196
-MQIA_OPEN_INPUT_COUNT = 17
-MQIA_OPEN_OUTPUT_COUNT = 18
-MQIA_OUTBOUND_PORT_MAX = 140
-MQIA_OUTBOUND_PORT_MIN = 110
-MQIA_PAGESET_ID = 62
-MQIA_PERFORMANCE_EVENT = 53
-MQIA_PLATFORM = 32
-MQIA_PM_DELIVERY = 195
-MQIA_PROPERTY_CONTROL = 190
-MQIA_PROXY_SUB = 199
-MQIA_PUB_COUNT = 215
-MQIA_PUB_SCOPE = 219
-MQIA_PUBSUB_MAXMSG_RETRY_COUNT = 206
-MQIA_PUBSUB_MODE = 187
-MQIA_PUBSUB_NP_MSG = 203
-MQIA_PUBSUB_NP_RESP = 205
-MQIA_PUBSUB_SYNC_PT = 207
-MQIA_Q_DEPTH_HIGH_EVENT = 43
-MQIA_Q_DEPTH_HIGH_LIMIT = 40
-MQIA_Q_DEPTH_LOW_EVENT = 44
-MQIA_Q_DEPTH_LOW_LIMIT = 41
-MQIA_Q_DEPTH_MAX_EVENT = 42
-MQIA_Q_SERVICE_INTERVAL = 54
-MQIA_Q_SERVICE_INTERVAL_EVENT = 46
-MQIA_Q_TYPE = 20
-MQIA_Q_USERS = 82
-MQIA_QMOPT_CONS_COMMS_MSGS = 155
-MQIA_QMOPT_CONS_CRITICAL_MSGS = 154
-MQIA_QMOPT_CONS_ERROR_MSGS = 153
-MQIA_QMOPT_CONS_INFO_MSGS = 151
-MQIA_QMOPT_CONS_REORG_MSGS = 156
-MQIA_QMOPT_CONS_SYSTEM_MSGS = 157
-MQIA_QMOPT_CONS_WARNING_MSGS = 152
-MQIA_QMOPT_CSMT_ON_ERROR = 150
-MQIA_QMOPT_INTERNAL_DUMP = 170
-MQIA_QMOPT_LOG_COMMS_MSGS = 162
-MQIA_QMOPT_LOG_CRITICAL_MSGS = 161
-MQIA_QMOPT_LOG_ERROR_MSGS = 160
-MQIA_QMOPT_LOG_INFO_MSGS = 158
-MQIA_QMOPT_LOG_REORG_MSGS = 163
-MQIA_QMOPT_LOG_SYSTEM_MSGS = 164
-MQIA_QMOPT_LOG_WARNING_MSGS = 159
-MQIA_QMOPT_TRACE_COMMS = 166
-MQIA_QMOPT_TRACE_CONVERSION = 168
-MQIA_QMOPT_TRACE_REORG = 167
-MQIA_QMOPT_TRACE_MQI_CALLS = 165
-MQIA_QMOPT_TRACE_SYSTEM = 169
-MQIA_QSG_DISP = 63
-MQIA_READ_AHEAD = 189
-MQIA_RECEIVE_TIMEOUT = 111
-MQIA_RECEIVE_TIMEOUT_MIN = 113
-MQIA_RECEIVE_TIMEOUT_TYPE = 112
-MQIA_REMOTE_EVENT = 50
-MQIA_RETENTION_INTERVAL = 21
-MQIA_SCOPE = 45
-MQIA_SECURITY_CASE = 141
-MQIA_SERVICE_CONTROL = 139
-MQIA_SERVICE_TYPE = 121
-MQIA_SHAREABILITY = 23
-MQIA_SHARED_Q_Q_MGR_NAME = 77
-MQIA_SSL_EVENT = 75
-MQIA_SSL_FIPS_REQUIRED = 92
-MQIA_SSL_RESET_COUNT = 76
-MQIA_SSL_TASKS = 69
-MQIA_START_STOP_EVENT = 52
-MQIA_STATISTICS_CHANNEL = 129
-MQIA_STATISTICS_AUTO_CLUSSDR = 130
-MQIA_STATISTICS_INTERVAL = 131
-MQIA_STATISTICS_MQI = 127
-MQIA_STATISTICS_Q = 128
-MQIA_SUB_COUNT = 204
-MQIA_SUB_SCOPE = 218
-MQIA_SYNCPOINT = 30
-MQIA_TCP_CHANNELS = 114
-MQIA_TCP_KEEP_ALIVE = 115
-MQIA_TCP_STACK_TYPE = 116
-MQIA_TIME_SINCE_RESET = 35
-MQIA_TOPIC_DEF_PERSISTENCE = 185
-MQIA_TOPIC_TYPE = 208
-MQIA_TRACE_ROUTE_RECORDING = 137
-MQIA_TREE_LIFE_TIME = 183
-MQIA_TRIGGER_CONTROL = 24
-MQIA_TRIGGER_DEPTH = 29
-MQIA_TRIGGER_INTERVAL = 25
-MQIA_TRIGGER_MSG_PRIORITY = 26
-MQIA_TRIGGER_TYPE = 28
-MQIA_TRIGGER_RESTART = 91
-MQIA_USAGE = 12
-MQIA_USER_LIST = 2000
-MQIA_WILDCARD_OPERATION = 216
-MQIAV_NOT_APPLICABLE = (-1)
-MQIAV_UNDEFINED = (-2)
-MQGA_FIRST = 8001
-MQGA_LAST = 9000
-MQOO_BIND_AS_Q_DEF = 0x00000000
-MQOO_READ_AHEAD_AS_Q_DEF = 0x00000000
-MQOO_INPUT_AS_Q_DEF = 0x00000001
-MQOO_INPUT_SHARED = 0x00000002
-MQOO_INPUT_EXCLUSIVE = 0x00000004
-MQOO_BROWSE = 0x00000008
-MQOO_OUTPUT = 0x00000010
-MQOO_INQUIRE = 0x00000020
-MQOO_SET = 0x00000040
-MQOO_SAVE_ALL_CONTEXT = 0x00000080
-MQOO_PASS_IDENTITY_CONTEXT = 0x00000100
-MQOO_PASS_ALL_CONTEXT = 0x00000200
-MQOO_SET_IDENTITY_CONTEXT = 0x00000400
-MQOO_SET_ALL_CONTEXT = 0x00000800
-MQOO_ALTERNATE_USER_AUTHORITY = 0x00001000
-MQOO_FAIL_IF_QUIESCING = 0x00002000
-MQOO_BIND_ON_OPEN = 0x00004000
-MQOO_BIND_NOT_FIXED = 0x00008000
-MQOO_CO_OP = 0x00020000
-MQOO_NO_READ_AHEAD = 0x00080000
-MQOO_READ_AHEAD = 0x00100000
-MQOO_RESOLVE_NAMES = 0x00010000
-MQOO_RESOLVE_LOCAL_Q = 0x00040000
-MQTYPE_AS_SET = 0x00000000
-MQTYPE_NULL = 0x00000002
-MQTYPE_BOOLEAN = 0x00000004
-MQTYPE_BYTE_STRING = 0x00000008
-MQTYPE_INT8 = 0x00000010
-MQTYPE_INT16 = 0x00000020
-MQTYPE_INT32 = 0x00000040
-MQTYPE_LONG = 0x00000040
-MQTYPE_INT64 = 0x00000080
-MQTYPE_FLOAT32 = 0x00000100
-MQTYPE_FLOAT64 = 0x00000200
-MQTYPE_STRING = 0x00000400
-MQVL_NULL_TERMINATED = (-1)
-MQVL_EMPTY_STRING = 0
-MQSTAT_TYPE_ASYNC_ERROR = 0x00000000
-MQSO_NONE = 0x00000000
-MQSO_NON_DURABLE = 0x00000000
-MQSO_READ_AHEAD_AS_Q_DEF = 0x00000000
-MQSO_ALTER = 0x00000001
-MQSO_CREATE = 0x00000002
-MQSO_RESUME = 0x00000004
-MQSO_DURABLE = 0x00000008
-MQSO_GROUP_SUB = 0x00000010
-MQSO_MANAGED = 0x00000020
-MQSO_SET_IDENTITY_CONTEXT = 0x00000040
-MQSO_FIXED_USERID = 0x00000100
-MQSO_ANY_USERID = 0x00000200
-MQSO_PUBLICATIONS_ON_REQUEST = 0x00000800
-MQSO_NEW_PUBLICATIONS_ONLY = 0x00001000
-MQSO_FAIL_IF_QUIESCING = 0x00002000
-MQSO_ALTERNATE_USER_AUTHORITY = 0x00040000
-MQSO_WILDCARD_CHAR = 0x00100000
-MQSO_WILDCARD_TOPIC = 0x00200000
-MQSO_SET_CORREL_ID = 0x00400000
-MQSO_SCOPE_QMGR = 0x04000000
-MQSO_NO_READ_AHEAD = 0x08000000
-MQSO_READ_AHEAD = 0x10000000
-MQSR_ACTION_PUBLICATION = 1
+
+# Structure Length
+MQXQH_LENGTH_1 = 428
+MQXQH_CURRENT_LENGTH = 428
+
+
+##################################################################
+# Values Related to All Functions                                #
+##################################################################
+
+# Connection Handles
 MQHC_DEF_HCONN = 0
 MQHC_UNUSABLE_HCONN = (-1)
 MQHC_UNASSOCIATED_HCONN = (-3)
+
+# String Lengths
+MQ_OPERATOR_MESSAGE_LENGTH = 4
 MQ_ABEND_CODE_LENGTH = 4
 MQ_ACCOUNTING_TOKEN_LENGTH = 32
+MQ_APPL_DESC_LENGTH = 64
 MQ_APPL_IDENTITY_DATA_LENGTH = 32
 MQ_APPL_NAME_LENGTH = 28
 MQ_APPL_ORIGIN_DATA_LENGTH = 4
@@ -1162,6 +1724,7 @@ MQ_ATTENTION_ID_LENGTH = 4
 MQ_AUTH_INFO_CONN_NAME_LENGTH = 264
 MQ_AUTH_INFO_DESC_LENGTH = 64
 MQ_AUTH_INFO_NAME_LENGTH = 48
+MQ_AUTH_INFO_OCSP_URL_LENGTH = 256
 MQ_AUTHENTICATOR_LENGTH = 8
 MQ_AUTO_REORG_CATALOG_LENGTH = 44
 MQ_AUTO_REORG_TIME_LENGTH = 4
@@ -1176,13 +1739,19 @@ MQ_CHANNEL_NAME_LENGTH = 20
 MQ_CHANNEL_TIME_LENGTH = 8
 MQ_CHINIT_SERVICE_PARM_LENGTH = 32
 MQ_CICS_FILE_NAME_LENGTH = 8
+MQ_AMQP_CLIENT_ID_LENGTH = 256
+MQ_CLIENT_ID_LENGTH = 23
+MQ_CLIENT_USER_ID_LENGTH = 1024
 MQ_CLUSTER_NAME_LENGTH = 48
+MQ_COMM_INFO_DESC_LENGTH = 64
+MQ_COMM_INFO_NAME_LENGTH = 48
 MQ_CONN_NAME_LENGTH = 264
 MQ_CONN_TAG_LENGTH = 128
 MQ_CONNECTION_ID_LENGTH = 24
 MQ_CORREL_ID_LENGTH = 24
 MQ_CREATION_DATE_LENGTH = 12
 MQ_CREATION_TIME_LENGTH = 8
+MQ_CSP_PASSWORD_LENGTH = 256
 MQ_DATE_LENGTH = 12
 MQ_DISTINGUISHED_NAME_LENGTH = 1024
 MQ_DNS_GROUP_NAME_LENGTH = 18
@@ -1196,7 +1765,15 @@ MQ_FACILITY_LIKE_LENGTH = 4
 MQ_FORMAT_LENGTH = 8
 MQ_FUNCTION_LENGTH = 4
 MQ_GROUP_ID_LENGTH = 24
+MQ_APPL_FUNCTION_NAME_LENGTH = 10
+MQ_INSTALLATION_DESC_LENGTH = 64
+MQ_INSTALLATION_NAME_LENGTH = 16
+MQ_INSTALLATION_PATH_LENGTH = 256
+MQ_JAAS_CONFIG_LENGTH = 1024
 MQ_LDAP_PASSWORD_LENGTH = 32
+MQ_LDAP_BASE_DN_LENGTH = 1024
+MQ_LDAP_FIELD_LENGTH = 128
+MQ_LDAP_CLASS_LENGTH = 128
 MQ_LISTENER_NAME_LENGTH = 48
 MQ_LISTENER_DESC_LENGTH = 64
 MQ_LOCAL_ADDRESS_LENGTH = 48
@@ -1205,12 +1782,14 @@ MQ_LU_NAME_LENGTH = 8
 MQ_LUWID_LENGTH = 16
 MQ_MAX_EXIT_NAME_LENGTH = 128
 MQ_MAX_MCA_USER_ID_LENGTH = 64
+MQ_MAX_LDAP_MCA_USER_ID_LENGTH = 1024
 MQ_MAX_PROPERTY_NAME_LENGTH = 4095
 MQ_MAX_USER_ID_LENGTH = 64
 MQ_MCA_JOB_NAME_LENGTH = 28
 MQ_MCA_NAME_LENGTH = 20
 MQ_MCA_USER_DATA_LENGTH = 32
-MQ_MCA_USER_ID_LENGTH = 12
+MQ_MCA_USER_ID_LENGTH = 64
+MQ_LDAP_MCA_USER_ID_LENGTH = 1024
 MQ_MFS_MAP_NAME_LENGTH = 8
 MQ_MODE_NAME_LENGTH = 8
 MQ_MSG_HEADER_LENGTH = 4000
@@ -1249,6 +1828,7 @@ MQ_SERVICE_STEP_LENGTH = 8
 MQ_SHORT_CONN_NAME_LENGTH = 20
 MQ_SHORT_DNAME_LENGTH = 256
 MQ_SSL_CIPHER_SPEC_LENGTH = 32
+MQ_SSL_CIPHER_SUITE_LENGTH = 32
 MQ_SSL_CRYPTO_HARDWARE_LENGTH = 256
 MQ_SSL_HANDSHAKE_STAGE_LENGTH = 32
 MQ_SSL_KEY_LIBRARY_LENGTH = 44
@@ -1277,12 +1857,22 @@ MQ_TRIGGER_PROGRAM_NAME_LENGTH = 8
 MQ_TRIGGER_TERM_ID_LENGTH = 4
 MQ_TRIGGER_TRANS_ID_LENGTH = 4
 MQ_USER_ID_LENGTH = 12
+MQ_VERSION_LENGTH = 8
 MQ_XCF_GROUP_NAME_LENGTH = 8
 MQ_XCF_MEMBER_NAME_LENGTH = 16
+MQ_SMDS_NAME_LENGTH = 4
+MQ_CHLAUTH_DESC_LENGTH = 64
+MQ_CUSTOM_LENGTH = 128
+MQ_SUITE_B_SIZE = 4
+MQ_CERT_LABEL_LENGTH = 64
+
+# Completion Codes
 MQCC_OK = 0
 MQCC_WARNING = 1
 MQCC_FAILED = 2
 MQCC_UNKNOWN = (-1)
+
+# Reason Codes
 MQRC_NONE = 0
 MQRC_APPL_FIRST = 900
 MQRC_APPL_LAST = 999
@@ -1420,6 +2010,7 @@ MQRC_SOURCE_LENGTH_ERROR = 2143
 MQRC_TARGET_LENGTH_ERROR = 2144
 MQRC_SOURCE_BUFFER_ERROR = 2145
 MQRC_TARGET_BUFFER_ERROR = 2146
+MQRC_INCOMPLETE_TRANSACTION = 2147
 MQRC_IIH_ERROR = 2148
 MQRC_PCF_ERROR = 2149
 MQRC_DBCS_ERROR = 2150
@@ -1446,8 +2037,8 @@ MQRC_STOPPED_BY_CLUSTER_EXIT = 2188
 MQRC_CLUSTER_RESOLUTION_ERROR = 2189
 MQRC_CONVERTED_STRING_TOO_BIG = 2190
 MQRC_TMC_ERROR = 2191
-MQRC_PAGESET_FULL = 2192
 MQRC_STORAGE_MEDIUM_FULL = 2192
+MQRC_PAGESET_FULL = 2192
 MQRC_PAGESET_ERROR = 2193
 MQRC_NAME_NOT_VALID_FOR_TYPE = 2194
 MQRC_UNEXPECTED_ERROR = 2195
@@ -1802,7 +2393,6 @@ MQRC_SUBSCRIPTION_CHANGE = 2581
 MQRC_SUBSCRIPTION_REFRESH = 2582
 MQRC_INSTALLATION_MISMATCH = 2583
 MQRC_NOT_PRIVILEGED = 2584
-
 MQRC_PROPERTIES_DISABLED = 2586
 MQRC_HMSG_NOT_AVAILABLE = 2587
 MQRC_EXIT_PROPS_NOT_SUPPORTED = 2588
@@ -1814,11 +2404,10 @@ MQRC_CERT_VAL_POLICY_ERROR = 2593
 MQRC_PASSWORD_PROTECTION_ERROR = 2594
 MQRC_CSP_ERROR = 2595
 MQRC_CERT_LABEL_NOT_ALLOWED = 2596
-
 MQRC_ADMIN_TOPIC_STRING_ERROR = 2598
 MQRC_AMQP_NOT_AVAILABLE = 2599
 MQRC_CCDT_URL_ERROR = 2600
-
+MQRC_Q_MGR_RECONNECT_REQUESTED = 2601
 MQRC_REOPEN_EXCL_INPUT_ERROR = 6100
 MQRC_REOPEN_INQUIRE_ERROR = 6101
 MQRC_REOPEN_SAVED_CONTEXT_ERR = 6102
@@ -1849,51 +2438,95 @@ MQRC_DISTRIBUTION_LIST_EMPTY = 6126
 MQRC_INCONSISTENT_OPEN_OPTIONS = 6127
 MQRC_WRONG_VERSION = 6128
 MQRC_REFERENCE_ERROR = 6129
+MQRC_XR_NOT_AVAILABLE = 6130
+MQRC_SUB_JOIN_NOT_ALTERABLE = 29440
+
+
+##################################################################
+# Values Related to Queue Attributes                             #
+##################################################################
+
+# Queue Types
 MQQT_LOCAL = 1
 MQQT_MODEL = 2
 MQQT_ALIAS = 3
 MQQT_REMOTE = 6
 MQQT_CLUSTER = 7
+
+# Cluster Queue Types
 MQCQT_LOCAL_Q = 1
 MQCQT_ALIAS_Q = 2
 MQCQT_REMOTE_Q = 3
 MQCQT_Q_MGR_ALIAS = 4
+
+# Extended Queue Types
 MQQT_ALL = 1001
+
+# Queue Definition Types
 MQQDT_PREDEFINED = 1
 MQQDT_PERMANENT_DYNAMIC = 2
 MQQDT_TEMPORARY_DYNAMIC = 3
 MQQDT_SHARED_DYNAMIC = 4
+
+# Inhibit Get Values
 MQQA_GET_INHIBITED = 1
 MQQA_GET_ALLOWED = 0
+
+# Inhibit Put Values
 MQQA_PUT_INHIBITED = 1
 MQQA_PUT_ALLOWED = 0
+
+# Queue Shareability
 MQQA_SHAREABLE = 1
 MQQA_NOT_SHAREABLE = 0
+
+# Back-Out Hardening
 MQQA_BACKOUT_HARDENED = 1
 MQQA_BACKOUT_NOT_HARDENED = 0
+
+# Message Delivery Sequence
 MQMDS_PRIORITY = 0
 MQMDS_FIFO = 1
+
+# Nonpersistent Message Class
 MQNPM_CLASS_NORMAL = 0
 MQNPM_CLASS_HIGH = 10
+
+# Trigger Controls
 MQTC_OFF = 0
 MQTC_ON = 1
+
+# Trigger Types
 MQTT_NONE = 0
 MQTT_FIRST = 1
 MQTT_EVERY = 2
 MQTT_DEPTH = 3
+
+# Trigger Restart
 MQTRIGGER_RESTART_NO = 0
 MQTRIGGER_RESTART_YES = 1
+
+# Queue Usages
 MQUS_NORMAL = 0
 MQUS_TRANSMISSION = 1
+
+# Distribution Lists
 MQDL_SUPPORTED = 1
 MQDL_NOT_SUPPORTED = 0
+
+# Index Types
 MQIT_NONE = 0
 MQIT_MSG_ID = 1
 MQIT_CORREL_ID = 2
 MQIT_MSG_TOKEN = 4
 MQIT_GROUP_ID = 5
+
+# Default Bindings
 MQBND_BIND_ON_OPEN = 0
 MQBND_BIND_NOT_FIXED = 1
+MQBND_BIND_ON_GROUP = 2
+
+# Queue Sharing Group Dispositions
 MQQSGD_ALL = (-1)
 MQQSGD_Q_MGR = 0
 MQQSGD_COPY = 1
@@ -1901,44 +2534,100 @@ MQQSGD_SHARED = 2
 MQQSGD_GROUP = 3
 MQQSGD_PRIVATE = 4
 MQQSGD_LIVE = 6
+
+# Reorganization Controls
 MQREORG_DISABLED = 0
 MQREORG_ENABLED = 1
+
+# Max queue file size values
+MQQFS_DEFAULT = (-1)
+
+# Read Ahead Values
 MQREADA_NO = 0
 MQREADA_YES = 1
 MQREADA_DISABLED = 2
 MQREADA_INHIBITED = 3
 MQREADA_BACKLOG = 4
+
+# Queue and Channel Property Control Values
 MQPROP_COMPATIBILITY = 0
 MQPROP_NONE = 1
 MQPROP_ALL = 2
 MQPROP_FORCE_MQRFH2 = 3
+MQPROP_V6COMPAT = 4
+
+
+##################################################################
+# Values Related to Namelist Attributes                          #
+##################################################################
+
+# Name Count
 MQNC_MAX_NAMELIST_NAME_COUNT = 256
+
+# Namelist Types
 MQNT_NONE = 0
 MQNT_Q = 1
 MQNT_CLUSTER = 2
 MQNT_AUTH_INFO = 4
 MQNT_ALL = 1001
+
+
+##################################################################
+# Values Related to CF-Structure Attributes                      #
+##################################################################
+
+# CF Recoverability
 MQCFR_YES = 1
 MQCFR_NO = 0
+
+# CF Automatic Recovery
+MQRECAUTO_NO = 0
+MQRECAUTO_YES = 1
+
+# CF Loss of Connectivity Action
+MQCFCONLOS_TERMINATE = 0
+MQCFCONLOS_TOLERATE = 1
+MQCFCONLOS_ASQMGR = 2
+
+
+##################################################################
+# Values Related to Service Attributes                           #
+##################################################################
+
+# Service Types
 MQSVC_TYPE_COMMAND = 0
 MQSVC_TYPE_SERVER = 1
+
+
+##################################################################
+# Values Related to QueueManager Attributes                      #
+##################################################################
+
+# Adopt New MCA Checks
 MQADOPT_CHECK_NONE = 0
 MQADOPT_CHECK_ALL = 1
 MQADOPT_CHECK_Q_MGR_NAME = 2
 MQADOPT_CHECK_NET_ADDR = 4
+MQADOPT_CHECK_CHANNEL_NAME = 8
+
+# Adopt New MCA Types
 MQADOPT_TYPE_NO = 0
 MQADOPT_TYPE_ALL = 1
 MQADOPT_TYPE_SVR = 2
 MQADOPT_TYPE_SDR = 4
 MQADOPT_TYPE_RCVR = 8
 MQADOPT_TYPE_CLUSRCVR = 16
-MQAUTO_START_NO = 0
-MQAUTO_START_YES = 1
+
+# Autostart
 MQCHAD_DISABLED = 0
 MQCHAD_ENABLED = 1
+
+# Cluster Workload
 MQCLWL_USEQ_LOCAL = 0
 MQCLWL_USEQ_ANY = 1
 MQCLWL_USEQ_AS_Q_MGR = (-3)
+
+# Command Levels
 MQCMDL_LEVEL_1 = 100
 MQCMDL_LEVEL_101 = 101
 MQCMDL_LEVEL_110 = 110
@@ -1960,22 +2649,59 @@ MQCMDL_LEVEL_530 = 530
 MQCMDL_LEVEL_531 = 531
 MQCMDL_LEVEL_600 = 600
 MQCMDL_LEVEL_700 = 700
+MQCMDL_LEVEL_701 = 701
+MQCMDL_LEVEL_710 = 710
+MQCMDL_LEVEL_711 = 711
+MQCMDL_LEVEL_750 = 750
+MQCMDL_LEVEL_800 = 800
+MQCMDL_LEVEL_801 = 801
+MQCMDL_LEVEL_802 = 802
+MQCMDL_LEVEL_900 = 900
+MQCMDL_LEVEL_901 = 901
+MQCMDL_LEVEL_902 = 902
+MQCMDL_LEVEL_903 = 903
+MQCMDL_LEVEL_904 = 904
+MQCMDL_LEVEL_905 = 905
+MQCMDL_LEVEL_910 = 910
+MQCMDL_LEVEL_911 = 911
+MQCMDL_LEVEL_912 = 912
+MQCMDL_LEVEL_913 = 913
+MQCMDL_LEVEL_914 = 914
+MQCMDL_LEVEL_915 = 915
+MQCMDL_LEVEL_920 = 920
+MQCMDL_CURRENT_LEVEL = 920
+
+# Command Server Options
 MQCSRV_CONVERT_NO = 0
 MQCSRV_CONVERT_YES = 1
 MQCSRV_DLQ_NO = 0
 MQCSRV_DLQ_YES = 1
+
+# DNS WLM
 MQDNSWLM_NO = 0
 MQDNSWLM_YES = 1
+
+# Expiration Scan Interval
 MQEXPI_OFF = 0
+
+# Intra-Group Queuing
 MQIGQ_DISABLED = 0
 MQIGQ_ENABLED = 1
+
+# Intra-Group Queuing Put Authority
 MQIGQPA_DEFAULT = 1
 MQIGQPA_CONTEXT = 2
 MQIGQPA_ONLY_IGQ = 3
 MQIGQPA_ALTERNATE_OR_IGQ = 4
+
+# IP Address Versions
 MQIPADDR_IPV4 = 0
 MQIPADDR_IPV6 = 1
+
+# Message Mark-Browse Interval
 MQMMBI_UNLIMITED = (-1)
+
+# Monitoring Values
 MQMON_NOT_AVAILABLE = (-1)
 MQMON_NONE = (-1)
 MQMON_Q_MGR = (-3)
@@ -1986,6 +2712,21 @@ MQMON_ENABLED = 1
 MQMON_LOW = 17
 MQMON_MEDIUM = 33
 MQMON_HIGH = 65
+
+# Application Function Types
+MQFUN_TYPE_UNKNOWN = 0
+MQFUN_TYPE_JVM = 1
+MQFUN_TYPE_PROGRAM = 2
+MQFUN_TYPE_PROCEDURE = 3
+MQFUN_TYPE_USERDEF = 4
+MQFUN_TYPE_COMMAND = 5
+
+# Application Activity Trace Detail
+MQACTV_DETAIL_LOW = 1
+MQACTV_DETAIL_MEDIUM = 2
+MQACTV_DETAIL_HIGH = 3
+
+# Platforms
 MQPL_MVS = 1
 MQPL_OS390 = 1
 MQPL_ZOS = 1
@@ -2002,300 +2743,800 @@ MQPL_OPEN_TP1 = 15
 MQPL_VM = 18
 MQPL_TPF = 23
 MQPL_VSE = 27
+MQPL_APPLIANCE = 28
+MQPL_NATIVE = 11
+
+# Maximum Properties Length
 MQPROP_UNRESTRICTED_LENGTH = (-1)
+
+# Pub/Sub Mode
 MQPSM_DISABLED = 0
 MQPSM_COMPAT = 1
 MQPSM_ENABLED = 2
+
+# Pub/Sub Clusters
+MQPSCLUS_DISABLED = 0
+MQPSCLUS_ENABLED = 1
+
+# Control Options
 MQQMOPT_DISABLED = 0
 MQQMOPT_ENABLED = 1
 MQQMOPT_REPLY = 2
+
+# Receive Timeout Types
 MQRCVTIME_MULTIPLY = 0
 MQRCVTIME_ADD = 1
 MQRCVTIME_EQUAL = 2
+
+# Recording Options
 MQRECORDING_DISABLED = 0
 MQRECORDING_Q = 1
 MQRECORDING_MSG = 2
+
+# Security Case
 MQSCYC_UPPER = 0
 MQSCYC_MIXED = 1
+
+# Shared Queue Queue Manager Name
 MQSQQM_USE = 0
 MQSQQM_IGNORE = 1
+
+# SSL FIPS Requirements
 MQSSL_FIPS_NO = 0
 MQSSL_FIPS_YES = 1
+
+# Syncpoint Availability
 MQSP_AVAILABLE = 1
 MQSP_NOT_AVAILABLE = 0
+
+# Service Controls
 MQSVC_CONTROL_Q_MGR = 0
 MQSVC_CONTROL_Q_MGR_START = 1
 MQSVC_CONTROL_MANUAL = 2
-MQSVC_STATUS_STOPPED = 0
-MQSVC_STATUS_STARTING = 1
-MQSVC_STATUS_RUNNING = 2
-MQSVC_STATUS_STOPPING = 3
-MQSVC_STATUS_RETRYING = 4
+
+# TCP Keepalive
 MQTCPKEEP_NO = 0
 MQTCPKEEP_YES = 1
+
+# TCP Stack Types
 MQTCPSTACK_SINGLE = 0
 MQTCPSTACK_MULTIPLE = 1
+
+# Channel Initiator Trace Autostart
 MQTRAXSTR_NO = 0
 MQTRAXSTR_YES = 1
+
+# Capability
+MQCAP_NOT_SUPPORTED = 0
+MQCAP_SUPPORTED = 1
+MQCAP_EXPIRED = 2
+
+# Media Image Scheduling
+MQMEDIMGSCHED_MANUAL = 0
+MQMEDIMGSCHED_AUTO = 1
+
+# Automatic Media Image Interval
+MQMEDIMGINTVL_OFF = 0
+
+# Automatic Media Image Log Length
+MQMEDIMGLOGLN_OFF = 0
+
+# Media Image Recoverability
+MQIMGRCOV_NO = 0
+MQIMGRCOV_YES = 1
+MQIMGRCOV_AS_Q_MGR = 2
+
+
+##################################################################
+# Values Related to Topic Attributes                             #
+##################################################################
+
+# Persistent/Non-persistent Message Delivery
 MQDLV_AS_PARENT = 0
 MQDLV_ALL = 1
 MQDLV_ALL_DUR = 2
 MQDLV_ALL_AVAIL = 3
+
+# Master Administration
 MQMASTER_NO = 0
 MQMASTER_YES = 1
+
+# Publish Scope
 MQSCOPE_ALL = 0
 MQSCOPE_AS_PARENT = 1
 MQSCOPE_QMGR = 4
+
+# Durable Subscriptions
 MQSUB_DURABLE_AS_PARENT = 0
 MQSUB_DURABLE_ALLOWED = 1
 MQSUB_DURABLE_INHIBITED = 2
+
+# Wildcards
 MQTA_BLOCK = 1
 MQTA_PASSTHRU = 2
+
+# Subscriptions Allowed
 MQTA_SUB_AS_PARENT = 0
 MQTA_SUB_INHIBITED = 1
 MQTA_SUB_ALLOWED = 2
+
+# Proxy Sub Propagation
 MQTA_PROXY_SUB_FORCE = 1
 MQTA_PROXY_SUB_FIRSTUSE = 2
+
+# Publications Allowed
 MQTA_PUB_AS_PARENT = 0
 MQTA_PUB_INHIBITED = 1
 MQTA_PUB_ALLOWED = 2
+
+# Topic Type
 MQTOPT_LOCAL = 0
 MQTOPT_CLUSTER = 1
 MQTOPT_ALL = 2
+
+# Multicast
+MQMC_AS_PARENT = 0
+MQMC_ENABLED = 1
+MQMC_DISABLED = 2
+MQMC_ONLY = 3
+
+# CommInfo Type
+MQCIT_MULTICAST = 1
+
+
+##################################################################
+# Values Related to Subscription Attributes                      #
+##################################################################
+
+# Destination Class
 MQDC_MANAGED = 1
 MQDC_PROVIDED = 2
+
+# Pub/Sub Message Properties
 MQPSPROP_NONE = 0
 MQPSPROP_COMPAT = 1
 MQPSPROP_RFH2 = 2
 MQPSPROP_MSGPROP = 3
+
+# Request Only
 MQRU_PUBLISH_ON_REQUEST = 1
 MQRU_PUBLISH_ALL = 2
+
+# Durable Subscriptions
 MQSUB_DURABLE_ALL = (-1)
 MQSUB_DURABLE_YES = 1
 MQSUB_DURABLE_NO = 2
+
+# Subscription Scope
 MQTSCOPE_QMGR = 1
 MQTSCOPE_ALL = 2
+
+# Variable User ID
 MQVU_FIXED_USER = 1
 MQVU_ANY_USER = 2
+
+# Wildcard Schema
 MQWS_DEFAULT = 0
 MQWS_CHAR = 1
 MQWS_TOPIC = 2
-MQRR_DEFAULT = MQCC_OK, MQRC_NONE
 
+
+##################################################################
+# Values Related to Channel Authentication Configuration         #
+# Attributes                                                     #
+##################################################################
+
+# User Source Options
 MQUSRC_MAP = 0
 MQUSRC_NOACCESS = 1
 MQUSRC_CHANNEL = 2
 
+# Warn Options
 MQWARN_YES = 1
 MQWARN_NO = 0
 
-# Manually added
+# DSBlock Options
+MQDSB_DEFAULT = 0
+MQDSB_8K = 1
+MQDSB_16K = 2
+MQDSB_32K = 3
+MQDSB_64K = 4
+MQDSB_128K = 5
+MQDSB_256K = 6
+MQDSB_512K = 7
+MQDSB_1024K = 8
+MQDSB_1M = 8
 
-MQGS_NOT_IN_GROUP = ord(' ')
-MQGS_MSG_IN_GROUP = ord('G')
-MQGS_LAST_MSG_IN_GROUP = ord('L')
-MQSS_NOT_A_SEGMENT = ord(' ')
-MQSS_SEGMENT = ord('S')
-MQSS_LAST_SEGMENT = ord('L')
-MQSEG_INHIBITED = ord(' ')
-MQSEG_ALLOWED = ord('A')
+# DSExpand Options
+MQDSE_DEFAULT = 0
+MQDSE_YES = 1
+MQDSE_NO = 2
 
+# OffldUse Options
+MQCFOFFLD_NONE = 0
+MQCFOFFLD_SMDS = 1
+MQCFOFFLD_DB2 = 2
+MQCFOFFLD_BOTH = 3
+
+# Use Dead Letter Queue Options
+MQUSEDLQ_AS_PARENT = 0
+MQUSEDLQ_NO = 1
+MQUSEDLQ_YES = 2
+
+
+##################################################################
+# Constants for MQ Extended Reach                                #
+##################################################################
+
+# General Constants
+MQ_MQTT_MAX_KEEP_ALIVE = 65536
+MQ_SSL_KEY_PASSPHRASE_LENGTH = 1024
+
+
+##################################################################
+# Values Related to MQCLOSE Function                             #
+##################################################################
+
+# Object Handle
+MQHO_UNUSABLE_HOBJ = (-1)
+MQHO_NONE = 0
+
+# Close Options
+MQCO_IMMEDIATE = 0x00000000
+MQCO_NONE = 0x00000000
+MQCO_DELETE = 0x00000001
+MQCO_DELETE_PURGE = 0x00000002
+MQCO_KEEP_SUB = 0x00000004
+MQCO_REMOVE_SUB = 0x00000008
+MQCO_QUIESCE = 0x00000020
+
+
+##################################################################
+# Values Related to MQCTL and MQCB Functions                     #
+##################################################################
+
+# Operation codes for MQCTL
+MQOP_START = 0x00000001
+MQOP_START_WAIT = 0x00000002
+MQOP_STOP = 0x00000004
+
+# Operation codes for MQCB
+MQOP_REGISTER = 0x00000100
+MQOP_DEREGISTER = 0x00000200
+
+# Operation codes for MQCTL and MQCB
+MQOP_SUSPEND = 0x00010000
+MQOP_RESUME = 0x00020000
+
+
+##################################################################
+# Values Related to MQDLTMH Function                             #
+##################################################################
+
+# Message handle
+MQHM_UNUSABLE_HMSG = (-1)
+MQHM_NONE = 0
+
+
+##################################################################
+# Values Related to MQINQ Function                               #
+##################################################################
+
+# Byte Attribute Selectors
+MQBA_FIRST = 6001
+MQBA_LAST = 8000
+
+# Character Attribute Selectors
+MQCA_ADMIN_TOPIC_NAME = 2105
+MQCA_ALTERATION_DATE = 2027
+MQCA_ALTERATION_TIME = 2028
+MQCA_AMQP_SSL_CIPHER_SUITES = 2137
+MQCA_AMQP_VERSION = 2136
+MQCA_APPL_ID = 2001
+MQCA_AUTH_INFO_CONN_NAME = 2053
+MQCA_AUTH_INFO_DESC = 2046
+MQCA_AUTH_INFO_NAME = 2045
+MQCA_AUTH_INFO_OCSP_URL = 2109
+MQCA_AUTO_REORG_CATALOG = 2091
+MQCA_AUTO_REORG_START_TIME = 2090
+MQCA_BACKOUT_REQ_Q_NAME = 2019
+MQCA_BASE_OBJECT_NAME = 2002
+MQCA_BASE_Q_NAME = 2002
+MQCA_BATCH_INTERFACE_ID = 2068
+MQCA_CERT_LABEL = 2121
+MQCA_CF_STRUC_DESC = 2052
+MQCA_CF_STRUC_NAME = 2039
+MQCA_CHANNEL_AUTO_DEF_EXIT = 2026
+MQCA_CHILD = 2101
+MQCA_CHINIT_SERVICE_PARM = 2076
+MQCA_CHLAUTH_DESC = 2118
+MQCA_CICS_FILE_NAME = 2060
+MQCA_CLUSTER_DATE = 2037
+MQCA_CLUSTER_NAME = 2029
+MQCA_CLUSTER_NAMELIST = 2030
+MQCA_CLUSTER_Q_MGR_NAME = 2031
+MQCA_CLUSTER_TIME = 2038
+MQCA_CLUSTER_WORKLOAD_DATA = 2034
+MQCA_CLUSTER_WORKLOAD_EXIT = 2033
+MQCA_CLUS_CHL_NAME = 2124
+MQCA_COMMAND_INPUT_Q_NAME = 2003
+MQCA_COMMAND_REPLY_Q_NAME = 2067
+MQCA_COMM_INFO_DESC = 2111
+MQCA_COMM_INFO_NAME = 2110
+MQCA_CONN_AUTH = 2125
+MQCA_CREATION_DATE = 2004
+MQCA_CREATION_TIME = 2005
+MQCA_CUSTOM = 2119
+MQCA_DEAD_LETTER_Q_NAME = 2006
+MQCA_DEF_XMIT_Q_NAME = 2025
+MQCA_DNS_GROUP = 2071
+MQCA_ENV_DATA = 2007
+MQCA_FIRST = 2001
+MQCA_IGQ_USER_ID = 2041
+MQCA_INITIATION_Q_NAME = 2008
+MQCA_INSTALLATION_DESC = 2115
+MQCA_INSTALLATION_NAME = 2116
+MQCA_INSTALLATION_PATH = 2117
+MQCA_LAST = 4000
+MQCA_LAST_USED = 2137
+MQCA_LDAP_BASE_DN_GROUPS = 2132
+MQCA_LDAP_BASE_DN_USERS = 2126
+MQCA_LDAP_FIND_GROUP_FIELD = 2135
+MQCA_LDAP_GROUP_ATTR_FIELD = 2134
+MQCA_LDAP_GROUP_OBJECT_CLASS = 2133
+MQCA_LDAP_PASSWORD = 2048
+MQCA_LDAP_SHORT_USER_FIELD = 2127
+MQCA_LDAP_USER_ATTR_FIELD = 2129
+MQCA_LDAP_USER_NAME = 2047
+MQCA_LDAP_USER_OBJECT_CLASS = 2128
+MQCA_LU62_ARM_SUFFIX = 2074
+MQCA_LU_GROUP_NAME = 2072
+MQCA_LU_NAME = 2073
+MQCA_MODEL_DURABLE_Q = 2096
+MQCA_MODEL_NON_DURABLE_Q = 2097
+MQCA_MONITOR_Q_NAME = 2066
+MQCA_NAMELIST_DESC = 2009
+MQCA_NAMELIST_NAME = 2010
+MQCA_NAMES = 2020
+MQCA_PARENT = 2102
+MQCA_PASS_TICKET_APPL = 2086
+MQCA_POLICY_NAME = 2112
+MQCA_PROCESS_DESC = 2011
+MQCA_PROCESS_NAME = 2012
+MQCA_QSG_CERT_LABEL = 2131
+MQCA_QSG_NAME = 2040
+MQCA_Q_DESC = 2013
+MQCA_Q_MGR_DESC = 2014
+MQCA_Q_MGR_IDENTIFIER = 2032
+MQCA_Q_MGR_NAME = 2015
+MQCA_Q_NAME = 2016
+MQCA_RECIPIENT_DN = 2114
+MQCA_REMOTE_Q_MGR_NAME = 2017
+MQCA_REMOTE_Q_NAME = 2018
+MQCA_REPOSITORY_NAME = 2035
+MQCA_REPOSITORY_NAMELIST = 2036
+MQCA_RESUME_DATE = 2098
+MQCA_RESUME_TIME = 2099
+MQCA_SERVICE_DESC = 2078
+MQCA_SERVICE_NAME = 2077
+MQCA_SERVICE_START_ARGS = 2080
+MQCA_SERVICE_START_COMMAND = 2079
+MQCA_SERVICE_STOP_ARGS = 2082
+MQCA_SERVICE_STOP_COMMAND = 2081
+MQCA_SIGNER_DN = 2113
+MQCA_SSL_CERT_ISSUER_NAME = 2130
+MQCA_SSL_CRL_NAMELIST = 2050
+MQCA_SSL_CRYPTO_HARDWARE = 2051
+MQCA_SSL_KEY_LIBRARY = 2069
+MQCA_SSL_KEY_MEMBER = 2070
+MQCA_SSL_KEY_REPOSITORY = 2049
+MQCA_STDERR_DESTINATION = 2084
+MQCA_STDOUT_DESTINATION = 2083
+MQCA_STORAGE_CLASS = 2022
+MQCA_STORAGE_CLASS_DESC = 2042
+MQCA_SYSTEM_LOG_Q_NAME = 2065
+MQCA_TCP_NAME = 2075
+MQCA_TOPIC_DESC = 2093
+MQCA_TOPIC_NAME = 2092
+MQCA_TOPIC_STRING = 2094
+MQCA_TOPIC_STRING_FILTER = 2108
+MQCA_TPIPE_NAME = 2085
+MQCA_TRIGGER_CHANNEL_NAME = 2064
+MQCA_TRIGGER_DATA = 2023
+MQCA_TRIGGER_PROGRAM_NAME = 2062
+MQCA_TRIGGER_TERM_ID = 2063
+MQCA_TRIGGER_TRANS_ID = 2061
+MQCA_USER_DATA = 2021
+MQCA_USER_LIST = 4000
+MQCA_VERSION = 2120
+MQCA_XCF_GROUP_NAME = 2043
+MQCA_XCF_MEMBER_NAME = 2044
+MQCA_XMIT_Q_NAME = 2024
+MQCA_XR_SSL_CIPHER_SUITES = 2123
+MQCA_XR_VERSION = 2122
+
+# Integer Attribute Selectors
+MQIA_ACCOUNTING_CONN_OVERRIDE = 136
+MQIA_ACCOUNTING_INTERVAL = 135
+MQIA_ACCOUNTING_MQI = 133
+MQIA_ACCOUNTING_Q = 134
+MQIA_ACTIVE_CHANNELS = 100
+MQIA_ACTIVITY_CONN_OVERRIDE = 239
+MQIA_ACTIVITY_RECORDING = 138
+MQIA_ACTIVITY_TRACE = 240
+MQIA_ADOPTNEWMCA_CHECK = 102
+MQIA_ADOPTNEWMCA_INTERVAL = 104
+MQIA_ADOPTNEWMCA_TYPE = 103
+MQIA_ADOPT_CONTEXT = 260
+MQIA_ADVANCED_CAPABILITY = 273
+MQIA_AMQP_CAPABILITY = 265
+MQIA_APPL_TYPE = 1
+MQIA_ARCHIVE = 60
+MQIA_AUTHENTICATION_FAIL_DELAY = 259
+MQIA_AUTHENTICATION_METHOD = 266
+MQIA_AUTHORITY_EVENT = 47
+MQIA_AUTH_INFO_TYPE = 66
+MQIA_AUTO_REORGANIZATION = 173
+MQIA_AUTO_REORG_INTERVAL = 174
+MQIA_BACKOUT_THRESHOLD = 22
+MQIA_BASE_TYPE = 193
+MQIA_BATCH_INTERFACE_AUTO = 86
+MQIA_BRIDGE_EVENT = 74
+MQIA_CERT_VAL_POLICY = 252
+MQIA_CF_CFCONLOS = 246
+MQIA_CF_LEVEL = 70
+MQIA_CF_OFFLDUSE = 229
+MQIA_CF_OFFLOAD = 224
+MQIA_CF_OFFLOAD_THRESHOLD1 = 225
+MQIA_CF_OFFLOAD_THRESHOLD2 = 226
+MQIA_CF_OFFLOAD_THRESHOLD3 = 227
+MQIA_CF_RECAUTO = 244
+MQIA_CF_RECOVER = 71
+MQIA_CF_SMDS_BUFFERS = 228
+MQIA_CHANNEL_AUTO_DEF = 55
+MQIA_CHANNEL_AUTO_DEF_EVENT = 56
+MQIA_CHANNEL_EVENT = 73
+MQIA_CHECK_CLIENT_BINDING = 258
+MQIA_CHECK_LOCAL_BINDING = 257
+MQIA_CHINIT_ADAPTERS = 101
+MQIA_CHINIT_CONTROL = 119
+MQIA_CHINIT_DISPATCHERS = 105
+MQIA_CHINIT_TRACE_AUTO_START = 117
+MQIA_CHINIT_TRACE_TABLE_SIZE = 118
+MQIA_CHLAUTH_RECORDS = 248
+MQIA_CLUSTER_OBJECT_STATE = 256
+MQIA_CLUSTER_PUB_ROUTE = 255
+MQIA_CLUSTER_Q_TYPE = 59
+MQIA_CLUSTER_WORKLOAD_LENGTH = 58
+MQIA_CLWL_MRU_CHANNELS = 97
+MQIA_CLWL_Q_PRIORITY = 96
+MQIA_CLWL_Q_RANK = 95
+MQIA_CLWL_USEQ = 98
+MQIA_CMD_SERVER_AUTO = 87
+MQIA_CMD_SERVER_CONTROL = 120
+MQIA_CMD_SERVER_CONVERT_MSG = 88
+MQIA_CMD_SERVER_DLQ_MSG = 89
+MQIA_CODED_CHAR_SET_ID = 2
+MQIA_COMMAND_EVENT = 99
+MQIA_COMMAND_LEVEL = 31
+MQIA_COMM_EVENT = 232
+MQIA_COMM_INFO_TYPE = 223
+MQIA_CONFIGURATION_EVENT = 51
+MQIA_CPI_LEVEL = 27
+MQIA_CURRENT_Q_DEPTH = 3
+MQIA_DEFINITION_TYPE = 7
+MQIA_DEF_BIND = 61
+MQIA_DEF_CLUSTER_XMIT_Q_TYPE = 250
+MQIA_DEF_INPUT_OPEN_OPTION = 4
+MQIA_DEF_PERSISTENCE = 5
+MQIA_DEF_PRIORITY = 6
+MQIA_DEF_PUT_RESPONSE_TYPE = 184
+MQIA_DEF_READ_AHEAD = 188
+MQIA_DISPLAY_TYPE = 262
+MQIA_DIST_LISTS = 34
+MQIA_DNS_WLM = 106
+MQIA_DURABLE_SUB = 175
+MQIA_ENCRYPTION_ALGORITHM = 237
+MQIA_EXPIRY_INTERVAL = 39
+MQIA_FIRST = 1
+MQIA_GROUP_UR = 221
+MQIA_HARDEN_GET_BACKOUT = 8
+MQIA_HIGH_Q_DEPTH = 36
+MQIA_IGQ_PUT_AUTHORITY = 65
+MQIA_INDEX_TYPE = 57
+MQIA_INHIBIT_EVENT = 48
+MQIA_INHIBIT_GET = 9
+MQIA_INHIBIT_PUB = 181
+MQIA_INHIBIT_PUT = 10
+MQIA_INHIBIT_SUB = 182
+MQIA_INTRA_GROUP_QUEUING = 64
+MQIA_IP_ADDRESS_VERSION = 93
+MQIA_KEY_REUSE_COUNT = 267
+MQIA_LAST = 2000
+MQIA_LAST_USED = 274
+MQIA_LDAP_AUTHORMD = 263
+MQIA_LDAP_NESTGRP = 264
+MQIA_LDAP_SECURE_COMM = 261
+MQIA_LISTENER_PORT_NUMBER = 85
+MQIA_LISTENER_TIMER = 107
+MQIA_LOCAL_EVENT = 49
+MQIA_LOGGER_EVENT = 94
+MQIA_LU62_CHANNELS = 108
+MQIA_MASTER_ADMIN = 186
+MQIA_MAX_CHANNELS = 109
+MQIA_MAX_CLIENTS = 172
+MQIA_MAX_GLOBAL_LOCKS = 83
+MQIA_MAX_HANDLES = 11
+MQIA_MAX_LOCAL_LOCKS = 84
+MQIA_MAX_MSG_LENGTH = 13
+MQIA_MAX_OPEN_Q = 80
+MQIA_MAX_PRIORITY = 14
+MQIA_MAX_PROPERTIES_LENGTH = 192
+MQIA_MAX_Q_DEPTH = 15
+MQIA_MAX_Q_FILE_SIZE = 274
+MQIA_MAX_Q_TRIGGERS = 90
+MQIA_MAX_RECOVERY_TASKS = 171
+MQIA_MAX_RESPONSES = 230
+MQIA_MAX_UNCOMMITTED_MSGS = 33
+MQIA_MCAST_BRIDGE = 233
+MQIA_MEDIA_IMAGE_INTERVAL = 269
+MQIA_MEDIA_IMAGE_LOG_LENGTH = 270
+MQIA_MEDIA_IMAGE_RECOVER_OBJ = 271
+MQIA_MEDIA_IMAGE_RECOVER_Q = 272
+MQIA_MEDIA_IMAGE_SCHEDULING = 268
+MQIA_MONITORING_AUTO_CLUSSDR = 124
+MQIA_MONITORING_CHANNEL = 122
+MQIA_MONITORING_Q = 123
+MQIA_MONITOR_INTERVAL = 81
+MQIA_MSG_DELIVERY_SEQUENCE = 16
+MQIA_MSG_DEQ_COUNT = 38
+MQIA_MSG_ENQ_COUNT = 37
+MQIA_MSG_MARK_BROWSE_INTERVAL = 68
+MQIA_MULTICAST = 176
+MQIA_NAMELIST_TYPE = 72
+MQIA_NAME_COUNT = 19
+MQIA_NPM_CLASS = 78
+MQIA_NPM_DELIVERY = 196
+MQIA_OPEN_INPUT_COUNT = 17
+MQIA_OPEN_OUTPUT_COUNT = 18
+MQIA_OUTBOUND_PORT_MAX = 140
+MQIA_OUTBOUND_PORT_MIN = 110
+MQIA_PAGESET_ID = 62
+MQIA_PERFORMANCE_EVENT = 53
+MQIA_PLATFORM = 32
+MQIA_PM_DELIVERY = 195
+MQIA_POLICY_VERSION = 238
+MQIA_PROPERTY_CONTROL = 190
+MQIA_PROT_POLICY_CAPABILITY = 251
+MQIA_PROXY_SUB = 199
+MQIA_PUBSUB_CLUSTER = 249
+MQIA_PUBSUB_MAXMSG_RETRY_COUNT = 206
+MQIA_PUBSUB_MODE = 187
+MQIA_PUBSUB_NP_MSG = 203
+MQIA_PUBSUB_NP_RESP = 205
+MQIA_PUBSUB_SYNC_PT = 207
+MQIA_PUB_COUNT = 215
+MQIA_PUB_SCOPE = 219
+MQIA_QMGR_CFCONLOS = 245
+MQIA_QMOPT_CONS_COMMS_MSGS = 155
+MQIA_QMOPT_CONS_CRITICAL_MSGS = 154
+MQIA_QMOPT_CONS_ERROR_MSGS = 153
+MQIA_QMOPT_CONS_INFO_MSGS = 151
+MQIA_QMOPT_CONS_REORG_MSGS = 156
+MQIA_QMOPT_CONS_SYSTEM_MSGS = 157
+MQIA_QMOPT_CONS_WARNING_MSGS = 152
+MQIA_QMOPT_CSMT_ON_ERROR = 150
+MQIA_QMOPT_INTERNAL_DUMP = 170
+MQIA_QMOPT_LOG_COMMS_MSGS = 162
+MQIA_QMOPT_LOG_CRITICAL_MSGS = 161
+MQIA_QMOPT_LOG_ERROR_MSGS = 160
+MQIA_QMOPT_LOG_INFO_MSGS = 158
+MQIA_QMOPT_LOG_REORG_MSGS = 163
+MQIA_QMOPT_LOG_SYSTEM_MSGS = 164
+MQIA_QMOPT_LOG_WARNING_MSGS = 159
+MQIA_QMOPT_TRACE_COMMS = 166
+MQIA_QMOPT_TRACE_CONVERSION = 168
+MQIA_QMOPT_TRACE_MQI_CALLS = 165
+MQIA_QMOPT_TRACE_REORG = 167
+MQIA_QMOPT_TRACE_SYSTEM = 169
+MQIA_QSG_DISP = 63
+MQIA_Q_DEPTH_HIGH_EVENT = 43
+MQIA_Q_DEPTH_HIGH_LIMIT = 40
+MQIA_Q_DEPTH_LOW_EVENT = 44
+MQIA_Q_DEPTH_LOW_LIMIT = 41
+MQIA_Q_DEPTH_MAX_EVENT = 42
+MQIA_Q_SERVICE_INTERVAL = 54
+MQIA_Q_SERVICE_INTERVAL_EVENT = 46
+MQIA_Q_TYPE = 20
+MQIA_Q_USERS = 82
+MQIA_READ_AHEAD = 189
+MQIA_RECEIVE_TIMEOUT = 111
+MQIA_RECEIVE_TIMEOUT_MIN = 113
+MQIA_RECEIVE_TIMEOUT_TYPE = 112
+MQIA_REMOTE_EVENT = 50
+MQIA_RESPONSE_RESTART_POINT = 231
+MQIA_RETENTION_INTERVAL = 21
+MQIA_REVERSE_DNS_LOOKUP = 254
+MQIA_SCOPE = 45
+MQIA_SECURITY_CASE = 141
+MQIA_SERVICE_CONTROL = 139
+MQIA_SERVICE_TYPE = 121
+MQIA_SHAREABILITY = 23
+MQIA_SHARED_Q_Q_MGR_NAME = 77
+MQIA_SIGNATURE_ALGORITHM = 236
+MQIA_SSL_EVENT = 75
+MQIA_SSL_FIPS_REQUIRED = 92
+MQIA_SSL_RESET_COUNT = 76
+MQIA_SSL_TASKS = 69
+MQIA_START_STOP_EVENT = 52
+MQIA_STATISTICS_AUTO_CLUSSDR = 130
+MQIA_STATISTICS_CHANNEL = 129
+MQIA_STATISTICS_INTERVAL = 131
+MQIA_STATISTICS_MQI = 127
+MQIA_STATISTICS_Q = 128
+MQIA_SUB_CONFIGURATION_EVENT = 242
+MQIA_SUB_COUNT = 204
+MQIA_SUB_SCOPE = 218
+MQIA_SUITE_B_STRENGTH = 247
+MQIA_SYNCPOINT = 30
+MQIA_TCP_CHANNELS = 114
+MQIA_TCP_KEEP_ALIVE = 115
+MQIA_TCP_STACK_TYPE = 116
+MQIA_TIME_SINCE_RESET = 35
+MQIA_TOLERATE_UNPROTECTED = 235
+MQIA_TOPIC_DEF_PERSISTENCE = 185
+MQIA_TOPIC_NODE_COUNT = 253
+MQIA_TOPIC_TYPE = 208
+MQIA_TRACE_ROUTE_RECORDING = 137
+MQIA_TREE_LIFE_TIME = 183
+MQIA_TRIGGER_CONTROL = 24
+MQIA_TRIGGER_DEPTH = 29
+MQIA_TRIGGER_INTERVAL = 25
+MQIA_TRIGGER_MSG_PRIORITY = 26
+MQIA_TRIGGER_RESTART = 91
+MQIA_TRIGGER_TYPE = 28
+MQIA_UR_DISP = 222
+MQIA_USAGE = 12
+MQIA_USER_LIST = 2000
+MQIA_USE_DEAD_LETTER_Q = 234
+MQIA_WILDCARD_OPERATION = 216
+MQIA_XR_CAPABILITY = 243
+
+# Integer Attribute Values
+MQIAV_NOT_APPLICABLE = (-1)
+MQIAV_UNDEFINED = (-2)
+
+# CommInfo Bridge
+MQMCB_DISABLED = 0
+MQMCB_ENABLED = 1
+
+# Key Reuse Count
+MQKEY_REUSE_DISABLED = 0
+MQKEY_REUSE_UNLIMITED = (-1)
+
+# Group Attribute Selectors
+MQGA_FIRST = 8001
+MQGA_LAST = 9000
+
+
+##################################################################
+# Values Related to MQINQMP Function                             #
+##################################################################
+
+# Not 100% sure on how to handle these in Python. Advice sought.
+
+#/* Inquire on all properties -  "%" */
+# #define MQPROP_INQUIRE_ALL     (MQPTR)(char*)"%",\
+#                                 0,\
+#                                 0,\
+#                                 1,\
+#                                MQCCSI_APPL
 #
-# MQCD defines courtesy of John OSullivan (mailto:jos@onebox.com)
-#
+# /* Inquire on all "usr" properties - "usr.%" */
+# #define MQPROP_INQUIRE_ALL_USR (MQPTR)(char*)"usr.%",\
+#                                 0,\
+#                                 0,\
+#                                 5,\
+#                                 MQCCSI_APPL
 
-#
-# ======================================================================
-#                                WARNING
-# ======================================================================
-# The following MQ constants are kept here only for compatibility with
-# PyMQI versions prior to 1.0 and they will be removed in the future. Any new
-# development should use the very same constants from pymqi.CMQXC which are
-# always up to date with current WebSphere MQ versions and which also take into
-# account differences in 32bit vs. 64bit modes.
-#
+##################################################################
+# Values Related to MQOPEN Function                              #
+##################################################################
 
-MQCD_VERSION_1 = py23long(1)
-MQCD_VERSION_2 = py23long(2)
-MQCD_VERSION_3 = py23long(3)
-MQCD_VERSION_4 = py23long(4)
-MQCD_VERSION_5 = py23long(5)
-MQCD_VERSION_6 = py23long(6)
-MQCD_VERSION_7 = py23long(7)
-MQCD_VERSION_8 = py23long(8)
-MQCD_VERSION_9 = py23long(9)
-MQCD_CURRENT_VERSION = py23long(9)
-
-MQCD_LENGTH_4 = py23long(1540)
-MQCD_LENGTH_5 = py23long(1552)
-MQCD_LENGTH_6 = py23long(1648)
-MQCD_CURRENT_LENGTH = py23long(1648)
-
-MQCHT_SENDER = py23long(1)
-MQCHT_SERVER = py23long(2)
-MQCHT_RECEIVER = py23long(3)
-MQCHT_REQUESTER = py23long(4)
-MQCHT_ALL = py23long(5)
-MQCHT_CLNTCONN = py23long(6)
-MQCHT_SVRCONN = py23long(7)
-MQCHT_CLUSRCVR = py23long(8)
-MQCHT_CLUSSDR = py23long(9)
-
-MQXPT_LOCAL = py23long(0)
-MQXPT_LU62 = py23long(1)
-MQXPT_TCP = py23long(2)
-MQXPT_NETBIOS = py23long(3)
-MQXPT_SPX = py23long(4)
-MQXPT_DECNET = py23long(5)
-MQXPT_UDP = py23long(6)
-
-MQPA_DEFAULT = py23long(1)
-MQPA_CONTEXT = py23long(2)
-MQPA_ONLY_MCA = py23long(3)
-MQPA_ALTERNATE_OR_MCA = py23long(4)
-
-MQCDC_SENDER_CONVERSION = py23long(1)
-MQCDC_NO_SENDER_CONVERSION = py23long(0)
-
-MQMCAT_PROCESS = py23long(1)
-MQMCAT_THREAD = py23long(2)
-
-MQNPMS_NORMAL = py23long(1)
-MQNPMS_FAST = py23long(2)
-
-MQCXP_STRUC_ID = b"CXP "
-
-MQCXP_STRUC_ID_ARRAY = [b'C', b'X', b'P', b' ']
-
-MQCXP_VERSION_1 = py23long(1)
-MQCXP_VERSION_2 = py23long(2)
-MQCXP_VERSION_3 = py23long(3)
-MQCXP_VERSION_4 = py23long(4)
-MQCXP_CURRENT_VERSION = py23long(4)
-
-MQXR2_PUT_WITH_DEF_ACTION = py23long(0)
-MQXR2_PUT_WITH_DEF_USERID = py23long(1)
-MQXR2_PUT_WITH_MSG_USERID = py23long(2)
-MQXR2_USE_AGENT_BUFFER = py23long(0)
-MQXR2_USE_EXIT_BUFFER = py23long(4)
-MQXR2_DEFAULT_CONTINUATION = py23long(0)
-MQXR2_CONTINUE_CHAIN = py23long(8)
-MQXR2_SUPPRESS_CHAIN = py23long(16)
-
-MQCF_NONE = py23long(0x00000000)
-MQCF_DIST_LISTS = py23long(0x00000001)
+# Open Options
+MQOO_BIND_AS_Q_DEF = 0x00000000
+MQOO_READ_AHEAD_AS_Q_DEF = 0x00000000
+MQOO_INPUT_AS_Q_DEF = 0x00000001
+MQOO_INPUT_SHARED = 0x00000002
+MQOO_INPUT_EXCLUSIVE = 0x00000004
+MQOO_BROWSE = 0x00000008
+MQOO_OUTPUT = 0x00000010
+MQOO_INQUIRE = 0x00000020
+MQOO_SET = 0x00000040
+MQOO_SAVE_ALL_CONTEXT = 0x00000080
+MQOO_PASS_IDENTITY_CONTEXT = 0x00000100
+MQOO_PASS_ALL_CONTEXT = 0x00000200
+MQOO_SET_IDENTITY_CONTEXT = 0x00000400
+MQOO_SET_ALL_CONTEXT = 0x00000800
+MQOO_ALTERNATE_USER_AUTHORITY = 0x00001000
+MQOO_FAIL_IF_QUIESCING = 0x00002000
+MQOO_BIND_ON_OPEN = 0x00004000
+MQOO_BIND_ON_GROUP = 0x00400000
+MQOO_BIND_NOT_FIXED = 0x00008000
+MQOO_CO_OP = 0x00020000
+MQOO_NO_READ_AHEAD = 0x00080000
+MQOO_READ_AHEAD = 0x00100000
+MQOO_NO_MULTICAST = 0x00200000
+MQOO_RESOLVE_LOCAL_Q = 0x00040000
+MQOO_RESOLVE_LOCAL_TOPIC = 0x00040000
 
 
-MQDXP_STRUC_ID = b"DXP "
+##################################################################
+# Values Related to MQSETMP Function                             #
+##################################################################
 
-MQDXP_STRUC_ID_ARRAY = [b'D', b'X', b'P', b' ']
+# Property data types
+MQTYPE_AS_SET = 0x00000000
+MQTYPE_NULL = 0x00000002
+MQTYPE_BOOLEAN = 0x00000004
+MQTYPE_BYTE_STRING = 0x00000008
+MQTYPE_INT8 = 0x00000010
+MQTYPE_INT16 = 0x00000020
+MQTYPE_INT32 = 0x00000040
+MQTYPE_LONG = 0x00000040
+MQTYPE_INT64 = 0x00000080
+MQTYPE_FLOAT32 = 0x00000100
+MQTYPE_FLOAT64 = 0x00000200
+MQTYPE_STRING = 0x00000400
 
-MQDXP_VERSION_1 = py23long(1)
-MQDXP_CURRENT_VERSION = py23long(1)
-
-MQXDR_OK = py23long(0)
-MQXDR_CONVERSION_FAILED = py23long(1)
-
-MQPXP_STRUC_ID = b"PXP "
-
-MQPXP_STRUC_ID_ARRAY = [b'P', b'X', b'P', b' ']
-
-MQPXP_VERSION_1 = py23long(1)
-MQPXP_CURRENT_VERSION = py23long(1)
-
-MQDT_APPL = py23long(1)
-MQDT_BROKER = py23long(2)
-
-
-MQWDR_STRUC_ID = b"WDR "
-
-MQWDR_STRUC_ID_ARRAY = [b'W', b'D', b'R', b' ']
-
-MQWDR_VERSION_1 = py23long(1)
-MQWDR_CURRENT_VERSION = py23long(1)
-
-MQWDR_LENGTH_1 = py23long(124)
-MQWDR_CURRENT_LENGTH = py23long(124)
-
-MQQMF_REPOSITORY_Q_MGR = py23long(0x00000002)
-MQQMF_CLUSSDR_USER_DEFINED = py23long(0x00000008)
-MQQMF_CLUSSDR_AUTO_DEFINED = py23long(0x00000010)
-MQQMF_AVAILABLE = py23long(0x00000020)
+# Property value lengths
+MQVL_NULL_TERMINATED = (-1)
+MQVL_EMPTY_STRING = 0
 
 
-MQWQR_STRUC_ID = b"WQR "
+##################################################################
+# Values Related to MQSTAT Function                              #
+##################################################################
 
-MQWQR_STRUC_ID_ARRAY = [b'W', b'Q', b'R', b' ']
-
-MQWQR_VERSION_1 = py23long(1)
-MQWQR_CURRENT_VERSION = py23long(1)
-
-MQWQR_LENGTH_1 = py23long(200)
-MQWQR_CURRENT_LENGTH = py23long(200)
-
-MQQF_LOCAL_Q = py23long(0x00000001)
-
-MQWXP_STRUC_ID = b"WXP "
-
-MQWXP_STRUC_ID_ARRAY = [b'W', b'X', b'P', b' ']
-
-MQWXP_VERSION_1 = py23long(1)
-MQWXP_CURRENT_VERSION = py23long(1)
-MQXT_CHANNEL_SEC_EXIT = py23long(11)
-MQXT_CHANNEL_MSG_EXIT = py23long(12)
-MQXT_CHANNEL_SEND_EXIT = py23long(13)
-MQXT_CHANNEL_RCV_EXIT = py23long(14)
-MQXT_CHANNEL_MSG_RETRY_EXIT = py23long(15)
-MQXT_CHANNEL_AUTO_DEF_EXIT = py23long(16)
-MQXT_CLUSTER_WORKLOAD_EXIT = py23long(20)
-MQXT_PUBSUB_ROUTING_EXIT = py23long(21)
-
-MQXR_INIT = py23long(11)
-MQXR_TERM = py23long(12)
-MQXR_MSG = py23long(13)
-MQXR_XMIT = py23long(14)
-MQXR_SEC_MSG = py23long(15)
-MQXR_INIT_SEC = py23long(16)
-MQXR_RETRY = py23long(17)
-MQXR_AUTO_CLUSSDR = py23long(18)
-MQXR_AUTO_RECEIVER = py23long(19)
-MQXR_CLWL_OPEN = py23long(20)
-MQXR_CLWL_PUT = py23long(21)
-MQXR_CLWL_MOVE = py23long(22)
-MQXR_CLWL_REPOS = py23long(23)
-MQXR_CLWL_REPOS_MOVE = py23long(24)
-MQXR_AUTO_SVRCONN = py23long(27)
-MQXR_AUTO_CLUSRCVR = py23long(28)
-
-MQXCC_OK = py23long(0)
-MQXCC_SUPPRESS_FUNCTION = py23long(-1)
-MQXCC_SKIP_FUNCTION = py23long(-2)
-MQXCC_SEND_AND_REQUEST_SEC_MSG = py23long(-3)
-MQXCC_SEND_SEC_MSG = py23long(-4)
-MQXCC_SUPPRESS_EXIT = py23long(-5)
-MQXCC_CLOSE_CHANNEL = py23long(-6)
-
-MQXUA_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
-
-MQXUA_NONE_ARRAY = [b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0',
-                    b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0']
+# Stat Options
+MQSTAT_TYPE_ASYNC_ERROR = 0
+MQSTAT_TYPE_RECONNECTION = 1
+MQSTAT_TYPE_RECONNECTION_ERROR = 2
 
 
-MQDCC_DEFAULT_CONVERSION = py23long(0x00000001)
-MQDCC_FILL_TARGET_BUFFER = py23long(0x00000002)
-MQDCC_SOURCE_ENC_NATIVE = py23long(0x00000020)
-MQDCC_SOURCE_ENC_NORMAL = py23long(0x00000010)
-MQDCC_SOURCE_ENC_REVERSED = py23long(0x00000020)
-MQDCC_SOURCE_ENC_UNDEFINED = py23long(0x00000000)
-MQDCC_TARGET_ENC_NATIVE = py23long(0x00000200)
-MQDCC_TARGET_ENC_NORMAL = py23long(0x00000100)
-MQDCC_TARGET_ENC_REVERSED = py23long(0x00000200)
-MQDCC_TARGET_ENC_UNDEFINED = py23long(0x00000000)
-MQDCC_NONE = py23long(0x00000000)
+##################################################################
+# Values Related to MQSUB Function                               #
+##################################################################
 
-MQDCC_SOURCE_ENC_MASK = py23long(0x000000f0)
-MQDCC_TARGET_ENC_MASK = py23long(0x00000f00)
-MQDCC_SOURCE_ENC_FACTOR = py23long(16)
-MQDCC_TARGET_ENC_FACTOR = py23long(256)
+# Subscribe Options
+MQSO_NONE = 0x00000000
+MQSO_NON_DURABLE = 0x00000000
+MQSO_READ_AHEAD_AS_Q_DEF = 0x00000000
+MQSO_ALTER = 0x00000001
+MQSO_CREATE = 0x00000002
+MQSO_RESUME = 0x00000004
+MQSO_DURABLE = 0x00000008
+MQSO_GROUP_SUB = 0x00000010
+MQSO_MANAGED = 0x00000020
+MQSO_SET_IDENTITY_CONTEXT = 0x00000040
+MQSO_NO_MULTICAST = 0x00000080
+MQSO_FIXED_USERID = 0x00000100
+MQSO_ANY_USERID = 0x00000200
+MQSO_PUBLICATIONS_ON_REQUEST = 0x00000800
+MQSO_NEW_PUBLICATIONS_ONLY = 0x00001000
+MQSO_FAIL_IF_QUIESCING = 0x00002000
+MQSO_ALTERNATE_USER_AUTHORITY = 0x00040000
+MQSO_WILDCARD_CHAR = 0x00100000
+MQSO_WILDCARD_TOPIC = 0x00200000
+MQSO_SET_CORREL_ID = 0x00400000
+MQSO_SCOPE_QMGR = 0x04000000
+MQSO_NO_READ_AHEAD = 0x08000000
+MQSO_READ_AHEAD = 0x10000000
 
-# ======================================================================
+
+##################################################################
+# Values Related to MQSUBRQ Function                             #
+##################################################################
+
+# Action
+MQSR_ACTION_PUBLICATION = 1
