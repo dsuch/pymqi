@@ -3540,3 +3540,205 @@ MQSO_READ_AHEAD = 0x10000000
 
 # Action
 MQSR_ACTION_PUBLICATION = 1
+
+##### LEGACY DEFINITIONS BELOW HERE - CANNOT REMOVE THESE WITHOUT TESTS FAILING
+
+#
+# MQCD defines courtesy of John OSullivan (mailto:jos@onebox.com)
+#
+
+#
+# ======================================================================
+#                                WARNING
+# ======================================================================
+# The following MQ constants are kept here only for compatibility with
+# PyMQI versions prior to 1.0 and they will be removed in the future. Any new
+# development should use the very same constants from pymqi.CMQXC which are
+# always up to date with current WebSphere MQ versions and which also take into
+# account differences in 32bit vs. 64bit modes.
+#
+
+MQCD_VERSION_1 = py23long(1)
+MQCD_VERSION_2 = py23long(2)
+MQCD_VERSION_3 = py23long(3)
+MQCD_VERSION_4 = py23long(4)
+MQCD_VERSION_5 = py23long(5)
+MQCD_VERSION_6 = py23long(6)
+MQCD_VERSION_7 = py23long(7)
+MQCD_VERSION_8 = py23long(8)
+MQCD_VERSION_9 = py23long(9)
+MQCD_CURRENT_VERSION = py23long(9)
+
+MQCD_LENGTH_4 = py23long(1540)
+MQCD_LENGTH_5 = py23long(1552)
+MQCD_LENGTH_6 = py23long(1648)
+MQCD_CURRENT_LENGTH = py23long(1648)
+
+MQCHT_SENDER = py23long(1)
+MQCHT_SERVER = py23long(2)
+MQCHT_RECEIVER = py23long(3)
+MQCHT_REQUESTER = py23long(4)
+MQCHT_ALL = py23long(5)
+MQCHT_CLNTCONN = py23long(6)
+MQCHT_SVRCONN = py23long(7)
+MQCHT_CLUSRCVR = py23long(8)
+MQCHT_CLUSSDR = py23long(9)
+
+MQXPT_LOCAL = py23long(0)
+MQXPT_LU62 = py23long(1)
+MQXPT_TCP = py23long(2)
+MQXPT_NETBIOS = py23long(3)
+MQXPT_SPX = py23long(4)
+MQXPT_DECNET = py23long(5)
+MQXPT_UDP = py23long(6)
+
+MQPA_DEFAULT = py23long(1)
+MQPA_CONTEXT = py23long(2)
+MQPA_ONLY_MCA = py23long(3)
+MQPA_ALTERNATE_OR_MCA = py23long(4)
+
+MQCDC_SENDER_CONVERSION = py23long(1)
+MQCDC_NO_SENDER_CONVERSION = py23long(0)
+
+MQMCAT_PROCESS = py23long(1)
+MQMCAT_THREAD = py23long(2)
+
+MQNPMS_NORMAL = py23long(1)
+MQNPMS_FAST = py23long(2)
+
+MQCXP_STRUC_ID = b"CXP "
+
+MQCXP_STRUC_ID_ARRAY = [b'C', b'X', b'P', b' ']
+
+MQCXP_VERSION_1 = py23long(1)
+MQCXP_VERSION_2 = py23long(2)
+MQCXP_VERSION_3 = py23long(3)
+MQCXP_VERSION_4 = py23long(4)
+MQCXP_CURRENT_VERSION = py23long(4)
+
+MQXR2_PUT_WITH_DEF_ACTION = py23long(0)
+MQXR2_PUT_WITH_DEF_USERID = py23long(1)
+MQXR2_PUT_WITH_MSG_USERID = py23long(2)
+MQXR2_USE_AGENT_BUFFER = py23long(0)
+MQXR2_USE_EXIT_BUFFER = py23long(4)
+MQXR2_DEFAULT_CONTINUATION = py23long(0)
+MQXR2_CONTINUE_CHAIN = py23long(8)
+MQXR2_SUPPRESS_CHAIN = py23long(16)
+
+MQCF_NONE = py23long(0x00000000)
+MQCF_DIST_LISTS = py23long(0x00000001)
+
+
+MQDXP_STRUC_ID = b"DXP "
+
+MQDXP_STRUC_ID_ARRAY = [b'D', b'X', b'P', b' ']
+
+MQDXP_VERSION_1 = py23long(1)
+MQDXP_CURRENT_VERSION = py23long(1)
+
+MQXDR_OK = py23long(0)
+MQXDR_CONVERSION_FAILED = py23long(1)
+
+MQPXP_STRUC_ID = b"PXP "
+
+MQPXP_STRUC_ID_ARRAY = [b'P', b'X', b'P', b' ']
+
+MQPXP_VERSION_1 = py23long(1)
+MQPXP_CURRENT_VERSION = py23long(1)
+
+MQDT_APPL = py23long(1)
+MQDT_BROKER = py23long(2)
+
+
+MQWDR_STRUC_ID = b"WDR "
+
+MQWDR_STRUC_ID_ARRAY = [b'W', b'D', b'R', b' ']
+
+MQWDR_VERSION_1 = py23long(1)
+MQWDR_CURRENT_VERSION = py23long(1)
+
+MQWDR_LENGTH_1 = py23long(124)
+MQWDR_CURRENT_LENGTH = py23long(124)
+
+MQQMF_REPOSITORY_Q_MGR = py23long(0x00000002)
+MQQMF_CLUSSDR_USER_DEFINED = py23long(0x00000008)
+MQQMF_CLUSSDR_AUTO_DEFINED = py23long(0x00000010)
+MQQMF_AVAILABLE = py23long(0x00000020)
+
+
+MQWQR_STRUC_ID = b"WQR "
+
+MQWQR_STRUC_ID_ARRAY = [b'W', b'Q', b'R', b' ']
+
+MQWQR_VERSION_1 = py23long(1)
+MQWQR_CURRENT_VERSION = py23long(1)
+
+MQWQR_LENGTH_1 = py23long(200)
+MQWQR_CURRENT_LENGTH = py23long(200)
+
+MQQF_LOCAL_Q = py23long(0x00000001)
+
+MQWXP_STRUC_ID = b"WXP "
+
+MQWXP_STRUC_ID_ARRAY = [b'W', b'X', b'P', b' ']
+
+MQWXP_VERSION_1 = py23long(1)
+MQWXP_CURRENT_VERSION = py23long(1)
+MQXT_CHANNEL_SEC_EXIT = py23long(11)
+MQXT_CHANNEL_MSG_EXIT = py23long(12)
+MQXT_CHANNEL_SEND_EXIT = py23long(13)
+MQXT_CHANNEL_RCV_EXIT = py23long(14)
+MQXT_CHANNEL_MSG_RETRY_EXIT = py23long(15)
+MQXT_CHANNEL_AUTO_DEF_EXIT = py23long(16)
+MQXT_CLUSTER_WORKLOAD_EXIT = py23long(20)
+MQXT_PUBSUB_ROUTING_EXIT = py23long(21)
+
+MQXR_INIT = py23long(11)
+MQXR_TERM = py23long(12)
+MQXR_MSG = py23long(13)
+MQXR_XMIT = py23long(14)
+MQXR_SEC_MSG = py23long(15)
+MQXR_INIT_SEC = py23long(16)
+MQXR_RETRY = py23long(17)
+MQXR_AUTO_CLUSSDR = py23long(18)
+MQXR_AUTO_RECEIVER = py23long(19)
+MQXR_CLWL_OPEN = py23long(20)
+MQXR_CLWL_PUT = py23long(21)
+MQXR_CLWL_MOVE = py23long(22)
+MQXR_CLWL_REPOS = py23long(23)
+MQXR_CLWL_REPOS_MOVE = py23long(24)
+MQXR_AUTO_SVRCONN = py23long(27)
+MQXR_AUTO_CLUSRCVR = py23long(28)
+
+MQXCC_OK = py23long(0)
+MQXCC_SUPPRESS_FUNCTION = py23long(-1)
+MQXCC_SKIP_FUNCTION = py23long(-2)
+MQXCC_SEND_AND_REQUEST_SEC_MSG = py23long(-3)
+MQXCC_SEND_SEC_MSG = py23long(-4)
+MQXCC_SUPPRESS_EXIT = py23long(-5)
+MQXCC_CLOSE_CHANNEL = py23long(-6)
+
+MQXUA_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+
+MQXUA_NONE_ARRAY = [b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0',
+                    b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0', b'\0']
+
+
+MQDCC_DEFAULT_CONVERSION = py23long(0x00000001)
+MQDCC_FILL_TARGET_BUFFER = py23long(0x00000002)
+MQDCC_SOURCE_ENC_NATIVE = py23long(0x00000020)
+MQDCC_SOURCE_ENC_NORMAL = py23long(0x00000010)
+MQDCC_SOURCE_ENC_REVERSED = py23long(0x00000020)
+MQDCC_SOURCE_ENC_UNDEFINED = py23long(0x00000000)
+MQDCC_TARGET_ENC_NATIVE = py23long(0x00000200)
+MQDCC_TARGET_ENC_NORMAL = py23long(0x00000100)
+MQDCC_TARGET_ENC_REVERSED = py23long(0x00000200)
+MQDCC_TARGET_ENC_UNDEFINED = py23long(0x00000000)
+MQDCC_NONE = py23long(0x00000000)
+
+MQDCC_SOURCE_ENC_MASK = py23long(0x000000f0)
+MQDCC_TARGET_ENC_MASK = py23long(0x00000f00)
+MQDCC_SOURCE_ENC_FACTOR = py23long(16)
+MQDCC_TARGET_ENC_FACTOR = py23long(256)
+
+# ======================================================================
