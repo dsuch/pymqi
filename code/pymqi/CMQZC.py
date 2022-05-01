@@ -1,6 +1,6 @@
 from struct import calcsize
 
-# CMQZC - Generated from 9.2.1 CD header file
+# CMQZC - Generated from 9.2.5 CD header file
 
 # 64bit
 if calcsize("P") == 8:
