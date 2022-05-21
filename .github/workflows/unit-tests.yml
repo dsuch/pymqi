@@ -13,10 +13,9 @@ jobs:
         # windows-latest: runner does allow to run ibmcom/mq linux container
         # macos-latest: runner does not have docker
         # macos-latest: has some issues in SeyfSV/setup-mqclient@master action
-        #environment: ['ubuntu-latest', 'macos-latest', 'windows-latest']
+        # environment: ['ubuntu-latest', 'macos-latest', 'windows-latest']
         python-version: [2.7.x, 3.5.x, 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x]
         mq-client-version: [9.2.3.0]
-
     services:
       mq:
         image: ibmcom/mq
@@ -116,4 +115,3 @@ jobs:
         with:
           name: mq-client-logs
           path: ${{ steps.setup-mqclient.outputs.mq-file-path }}/errors
-
