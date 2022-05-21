@@ -377,9 +377,19 @@ class TestPCF(Tests):
 
         args = {
             pymqi.CMQC.MQCA_NAMELIST_NAME: "{prefix}PCF.NAMELIST".format(prefix=self.prefix),
+            pymqi.CMQCFC.MQIACF_NAMELIST_ATTRS: [pymqi.CMQC.MQCA_NAMES]
         }
+        results = None
+        try:
+            results = self.pcf.MQCMD_INQUIRE_NAMELIST(args)
+        finally:
+            args = {
+                pymqi.CMQC.MQCA_NAMELIST_NAME: "{prefix}PCF.NAMELIST".format(prefix=self.prefix),
+            }
 
-        self.pcf.MQCMD_DELETE_NAMELIST(args)
+            self.pcf.MQCMD_DELETE_NAMELIST(args)
+        for name in names:
+            self.assertTrue(pymqi.ensure_bytes(name) in [x.strip() for x in results[0][pymqi.CMQC.MQCA_NAMES]])
 
     @data(pymqi.CMQCFC.MQIACF_ALL, [pymqi.CMQCFC.MQIACF_ALL],
           pymqi.CMQC.MQCA_Q_DESC, [pymqi.CMQC.MQCA_Q_DESC],
