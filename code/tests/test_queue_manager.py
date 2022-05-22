@@ -72,10 +72,6 @@ class TestQueueManager(unittest.TestCase):
         if qmgr.is_connected:
             qmgr.disconnect()
 
-    @unittest.skipIf(
-         config.MQ.QM.CONN_AUTH.SUPPORTED and
-         config.MQ.QM.CONN_AUTH.USE_PW == 'OPTIONAL',
-         'Test only viable with a user/password requiring queue manager')
     def test_connect_tcp_client_without_cred(self):
         qmgr = pymqi.QueueManager(None)
         with self.assertRaises(pymqi.MQMIError) as ex_ctx:
