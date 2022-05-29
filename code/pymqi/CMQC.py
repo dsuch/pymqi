@@ -15,22 +15,16 @@ def py23long(x):
 if calcsize("P") == 8:
     MQAIR_LENGTH_1 = 328
     MQAIR_LENGTH_2 = 584
-    MQAIR_CURRENT_LENGTH = 584
     MQCBC_LENGTH_1 = 56
     MQCBC_LENGTH_2 = 64
-    MQCBC_CURRENT_LENGTH = 64
     MQCBD_LENGTH_1 = 168
-    MQCBD_CURRENT_LENGTH = 168
     MQCTLO_LENGTH_1 = 24
-    MQCTLO_CURRENT_LENGTH = 24
     MQSCO_LENGTH_1 = 536
     MQSCO_LENGTH_2 = 544
     MQSCO_LENGTH_3 = 560
     MQSCO_LENGTH_4 = 568
     MQSCO_LENGTH_5 = 632
-    MQSCO_CURRENT_LENGTH = 632
     MQCSP_LENGTH_1 = 56
-    MQCSP_CURRENT_LENGTH = 56
     MQCNO_LENGTH_1 = 12
     MQCNO_LENGTH_2 = 24
     MQCNO_LENGTH_3 = 152
@@ -39,43 +33,31 @@ if calcsize("P") == 8:
     MQCNO_LENGTH_6 = 224
     MQCNO_LENGTH_7 = 256
     MQCNO_LENGTH_8 = 272
-    MQCNO_CURRENT_LENGTH = 272
     MQIMPO_LENGTH_1 = 64
-    MQIMPO_CURRENT_LENGTH = 64
     MQOD_LENGTH_1 = 168
     MQOD_LENGTH_2 = 208
     MQOD_LENGTH_3 = 344
     MQOD_LENGTH_4 = 424
-    MQOD_CURRENT_LENGTH = 424
     MQPMO_LENGTH_1 = 128
     MQPMO_LENGTH_2 = 160
     MQPMO_LENGTH_3 = 184
-    MQPMO_CURRENT_LENGTH = 184
     MQSD_LENGTH_1 = 344
-    MQSD_CURRENT_LENGTH = 344
     MQSTS_LENGTH_1 = 224
     MQSTS_LENGTH_2 = 280
-    MQSTS_CURRENT_LENGTH = 280
 # 32bit
 else:
     MQAIR_LENGTH_1 = 320
     MQAIR_LENGTH_2 = 576
-    MQAIR_CURRENT_LENGTH = 576
     MQCBC_LENGTH_1 = 48
     MQCBC_LENGTH_2 = 52
-    MQCBC_CURRENT_LENGTH = 52
     MQCBD_LENGTH_1 = 156
-    MQCBD_CURRENT_LENGTH = 156
     MQCTLO_LENGTH_1 = 20
-    MQCTLO_CURRENT_LENGTH = 20
     MQSCO_LENGTH_1 = 532
     MQSCO_LENGTH_2 = 540
     MQSCO_LENGTH_3 = 556
     MQSCO_LENGTH_4 = 560
     MQSCO_LENGTH_5 = 624
-    MQSCO_CURRENT_LENGTH = 624
     MQCSP_LENGTH_1 = 48
-    MQCSP_CURRENT_LENGTH = 48
     MQCNO_LENGTH_1 = 12
     MQCNO_LENGTH_2 = 20
     MQCNO_LENGTH_3 = 148
@@ -84,23 +66,17 @@ else:
     MQCNO_LENGTH_6 = 208
     MQCNO_LENGTH_7 = 240
     MQCNO_LENGTH_8 = 252
-    MQCNO_CURRENT_LENGTH = 252
     MQIMPO_LENGTH_1 = 60
-    MQIMPO_CURRENT_LENGTH = 60
     MQOD_LENGTH_1 = 168
     MQOD_LENGTH_2 = 200
     MQOD_LENGTH_3 = 336
     MQOD_LENGTH_4 = 400
-    MQOD_CURRENT_LENGTH = 400
     MQPMO_LENGTH_1 = 128
     MQPMO_LENGTH_2 = 152
     MQPMO_LENGTH_3 = 176
-    MQPMO_CURRENT_LENGTH = 176
     MQSD_LENGTH_1 = 312
-    MQSD_CURRENT_LENGTH = 312
     MQSTS_LENGTH_1 = 224
     MQSTS_LENGTH_2 = 272
-    MQSTS_CURRENT_LENGTH = 272
 
 
 
@@ -123,6 +99,7 @@ MQAIR_CURRENT_VERSION = 2
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQAIR_CURRENT_LENGTH = MQAIR_LENGTH_2
 
 # Authentication Information Type
 MQAIT_ALL = 0
@@ -227,6 +204,7 @@ MQCBC_CURRENT_VERSION = 2
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQCBC_CURRENT_LENGTH = MQCBC_LENGTH_2
 
 # Flags
 MQCBCF_NONE = 0x00000000
@@ -270,6 +248,7 @@ MQCBD_CURRENT_VERSION = 1
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQCBD_CURRENT_LENGTH = MQCBD_LENGTH_1
 
 # Callback Options
 MQCBDO_NONE = 0x00000000
@@ -448,6 +427,7 @@ MQCTLO_CURRENT_VERSION = 1
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQCTLO_CURRENT_LENGTH = MQCTLO_LENGTH_1
 
 # Consumer Control Options
 MQCTLO_NONE = 0x00000000
@@ -475,6 +455,7 @@ MQSCO_CURRENT_VERSION = 5
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQSCO_CURRENT_LENGTH = MQSCO_LENGTH_5
 
 # SuiteB Type
 MQ_SUITE_B_NOT_AVAILABLE = 0
@@ -503,6 +484,7 @@ MQCSP_STRUC_ID_ARRAY = [b"C", b"S", b"P", b" "]
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQCSP_CURRENT_LENGTH = MQCSP_LENGTH_1
 
 # Authentication Types
 MQCSP_AUTH_NONE = 0
@@ -531,6 +513,7 @@ MQCNO_CURRENT_VERSION = 8
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQCNO_CURRENT_LENGTH = MQCNO_LENGTH_8
 
 # Connect Options
 MQCNO_STANDARD_BINDING = 0x00000000
@@ -866,6 +849,7 @@ MQIMPO_CURRENT_VERSION = 1
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQIMPO_CURRENT_LENGTH = MQIMPO_LENGTH_1
 
 # Inquire Message Property Options
 MQIMPO_CONVERT_TYPE = 0x00000002
@@ -1321,6 +1305,7 @@ MQOD_CURRENT_VERSION = 4
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQOD_CURRENT_LENGTH = MQOD_LENGTH_4
 
 # Obsolete DB2 Messages Options on Inquire Group
 MQOM_NO = 0
@@ -1426,6 +1411,7 @@ MQPMO_CURRENT_VERSION = 3
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQPMO_CURRENT_LENGTH = MQPMO_LENGTH_3
 
 # Put Message Options
 MQPMO_SYNCPOINT = 0x00000002
@@ -1563,6 +1549,7 @@ MQSD_CURRENT_VERSION = 1
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQSD_CURRENT_LENGTH = MQSD_LENGTH_1
 
 # Security Identifier
 MQSID_NONE = b"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"\
@@ -1648,6 +1635,7 @@ MQSTS_CURRENT_VERSION = 2
 
 # Structure Length - Moved to if statement at top
 # due to 32/64 bit differences
+MQSTS_CURRENT_LENGTH = MQSTS_LENGTH_2
 
 
 ##################################################################
