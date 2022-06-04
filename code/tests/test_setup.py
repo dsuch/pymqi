@@ -8,6 +8,7 @@ import utils  # noqa
 
 import pymqi
 
+
 class Tests(TestCase):
     """Setup and tearsdown tests environment."""
 
@@ -26,6 +27,7 @@ class Tests(TestCase):
     qmgr = None  # type: pymqi.QueueManager
     pcf = None  # type: pymqi.PCFExecute
 
+    CHCKLOCL = None
 
     @classmethod
     def setUpClass(cls):
@@ -36,10 +38,14 @@ class Tests(TestCase):
         cls.queue_name = '{prefix}MSG.QUEUE'.format(prefix=config.MQ.QUEUE.PREFIX)
         cls.queue_manager = config.MQ.QM.NAME
         cls.channel = config.MQ.QM.CHANNEL
+        cls.app_channel = config.MQ.QM.APP_CHANNEL
         cls.host = config.MQ.QM.HOST
         cls.port = config.MQ.QM.PORT
         cls.user = config.MQ.QM.USER
         cls.password = config.MQ.QM.PASSWORD
+
+        cls.app_user = config.MQ.QM.APP_USER
+        cls.app_password = config.MQ.QM.APP_PASSWORD
 
         cls.conn_info = '{0}({1})'.format(cls.host, cls.port)
 
@@ -57,8 +63,10 @@ class Tests(TestCase):
     @classmethod
     def tearDownClass(cls):
         """Clear test environment."""
-        cls.pcf.disconnect()
-        cls.qmgr.disconnect()
+        if cls.pcf.is_connected:
+            cls.pcf.disconnect()
+        if cls.qmgr.is_connected:
+            cls.qmgr.disconnect()
 
     def setUp(self):
         """Set up tesing environment."""
