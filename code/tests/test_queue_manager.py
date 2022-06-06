@@ -22,14 +22,14 @@ import pymqi.CMQC
 
 class TestQueueManager(Tests):
 
-    CHCKLOCL = None  # type: int
+    CHCKCLNT = None  # type: int
 
     @classmethod
     def setUpClass(cls):
         """Initialize test environment."""
         super(TestQueueManager, cls).setUpClass()
 
-        # Get CHCKLOCL value
+        # Get CHCKCLNT value
         attrs = []  # type: List[pymqi.MQOpts]
         attrs.append(pymqi.CFIL(Parameter=pymqi.CMQCFC.MQIACF_Q_MGR_ATTRS,
                                 Values=[pymqi.CMQC.MQCA_CONN_AUTH]))
@@ -43,10 +43,10 @@ class TestQueueManager(Tests):
         attrs.append(pymqi.CFIN(Parameter=pymqi.CMQC.MQIA_AUTH_INFO_TYPE,
                                 Value=pymqi.CMQC.MQAIT_IDPW_OS))
         attrs.append(pymqi.CFIL(Parameter=pymqi.CMQCFC.MQIACF_AUTH_INFO_ATTRS,
-                                Values=[pymqi.CMQC.MQIA_CHECK_LOCAL_BINDING]))
+                                Values=[pymqi.CMQC.MQIA_CHECK_CLIENT_BINDING]))
 
         results = cls.pcf.MQCMD_INQUIRE_AUTH_INFO(attrs)
-        cls.CHCKLOCL = results[0][pymqi.CMQC.MQIA_CHECK_LOCAL_BINDING]
+        cls.CHCKCLNT = results[0][pymqi.CMQC.MQIA_CHECK_CLIENT_BINDING]
 
         # Add required rights for pinging QMGR
         attrs = []  # type: List[pymqi.MQOpts]
@@ -96,7 +96,7 @@ class TestQueueManager(Tests):
     def test_init_name(self):
         # As the connect method provides no way to supply user & password, this
         # cannot work if the queue manager requires it
-        if self.CHCKLOCL == pymqi.CMQCFC.MQCHK_REQUIRED:
+        if self.CHCKCLNT == pymqi.CMQCFC.MQCHK_REQUIRED:
             self.skipTest('Test not viable for user/password-requiring queue manager')
             return
 
@@ -111,7 +111,7 @@ class TestQueueManager(Tests):
     def test_connect(self):
         # As the connect method provides no way to supply user & password, this
         # cannot work if the queue manager requires it
-        if self.CHCKLOCL == pymqi.CMQCFC.MQCHK_REQUIRED:
+        if self.CHCKCLNT == pymqi.CMQCFC.MQCHK_REQUIRED:
             self.skipTest('Test not viable for user/password-requiring queue manager')
             return
 
@@ -132,7 +132,7 @@ class TestQueueManager(Tests):
             qmgr.disconnect()
 
     def test_connect_tcp_client_without_cred(self):
-        if self.CHCKLOCL == pymqi.CMQCFC.MQCHK_REQUIRED:
+        if self.CHCKCLNT == pymqi.CMQCFC.MQCHK_REQUIRED:
             self.skipTest('Test not viable for user/password-requiring queue manager')
             return
 
@@ -161,7 +161,7 @@ class TestQueueManager(Tests):
     # test_mq80.test_successful_connect_without_optional_credentials,
     # but hey, why not
     def test_connect_tcp_client_with_none_credentials(self):
-        if self.CHCKLOCL == pymqi.CMQCFC.MQCHK_REQUIRED:
+        if self.CHCKCLNT == pymqi.CMQCFC.MQCHK_REQUIRED:
             self.skipTest('Test not viable for user/password-requiring queue manager')
             return
 
