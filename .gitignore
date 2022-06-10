@@ -1,5 +1,7 @@
+.coverage
 .idea
 .idea/*
+.tox
 build/*
 code/dist
 code/develop-eggs/*
