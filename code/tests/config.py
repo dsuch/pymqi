@@ -13,10 +13,13 @@ class MQ:
         NAME = os.environ.get('PYMQI_TEST_QM_NAME', 'MQTEST')
         HOST = os.environ.get('PYMQI_TEST_QM_HOST', '127.0.0.1')
         PORT = os.environ.get('PYMQI_TEST_QM_PORT', '8887')
-        CHANNEL = os.environ.get('PYMQI_TEST_QM_CHANNEL', 'CH1')
         TRANSPORT = os.environ.get('PYMQI_TEST_QM_TRANSPORT', 'TCP')
+        CHANNEL = os.environ.get('PYMQI_TEST_QM_CHANNEL', 'CH1')
         USER = os.environ.get('PYMQI_TEST_QM_USER', '')
         PASSWORD = os.environ.get('PYMQI_TEST_QM_PASSWORD', '')
+        APP_CHANNEL = os.environ.get('PYMQI_TEST_QM_APP_CHANNEL', 'CH1')
+        APP_USER = os.environ.get('PYMQI_TEST_QM_APP_USER', '')
+        APP_PASSWORD = os.environ.get('PYMQI_TEST_QM_APP_PASSWORD', '')
 
         MIN_COMMAND_LEVEL = os.environ.get(
             'PYMQI_TEST_QM_MIN_COMMAND_LEVEL', '800')
@@ -40,7 +43,7 @@ class MQ:
             # auth.
             FAIL_DELAY = os.environ.get(
                 'PYMQI_TEST_QM_CONN_AUTH_FAIL_DELAY', '0')
-            
+
     # Queue naming setup
     class QUEUE:
         PREFIX = os.environ.get('PYMQI_TEST_QUEUE_PREFIX', '')
@@ -54,6 +57,13 @@ class MQ:
     # E.g. MQSERVER="SVRCONN.1/TCP/mq.example.org(1777)"
     MQSERVER = '%(channel)s/%(transport)s/%(host)s(%(port)s)' % {
         'channel': QM.CHANNEL,
+        'transport': QM.TRANSPORT,
+        'host': QM.HOST,
+        'port': QM.PORT,
+        }
+
+    APP_MQSERVER = '%(channel)s/%(transport)s/%(host)s(%(port)s)' % {
+        'channel': QM.APP_CHANNEL,
         'transport': QM.TRANSPORT,
         'host': QM.HOST,
         'port': QM.PORT,
