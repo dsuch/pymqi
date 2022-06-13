@@ -1,0 +1,8 @@
+flake8
+mypy
+pylint
+pyright
+types-markdown
+types-pyyaml
+types-ujson
+yapf
