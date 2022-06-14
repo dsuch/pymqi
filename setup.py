@@ -16,7 +16,7 @@ from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
-version = '1.12.7'
+version = '1.12.8'
 
 # Build either in bindings or client mode.
 bindings_mode = 0
@@ -248,8 +248,8 @@ setup(name = 'pymqi',
     long_description = long_description,
     author='Zato Source s.r.o.',
     author_email='pymqi@zato.io',
-    url='https://zato.io/en/docs/3.2/pymqi/index.html',
-    download_url='https://zato.io/en/docs/3.2/pymqi/install.html',
+    url='https://zato.io/pymqi',
+    download_url='https://zato.io/pymqi/install.html',
     platforms='OS Independent',
     package_dir = {'': 'code'},
     packages = ['pymqi'],
