@@ -1,8 +1,9 @@
 
 # Python library for IBM MQ
 
-PyMQI is a production-ready Python extension for IBM MQ (formerly known as WebSphere MQ and MQSeries),
-which for 20+ years has been used by thousands of companies around the world with their queue managers running on
+PyMQI is a production-ready, open-source Python extension for IBM MQ (formerly known as WebSphere MQ and MQSeries).
+
+For 20+ years, the library has been used by thousands of companies around the world with their queue managers running on
 Linux, Windows, UNIX and z/OS.
 
 ## Sample code
@@ -35,7 +36,7 @@ print('Here is the message:', msg)
 PyMQI is a low-level library that requires one to know IBM MQ APIs well.
 
 It serves, however, as the basis for
-IBM MQ]
+IBM MQ
 support
 in
 [Zato](https://zato.io/?gh),
@@ -45,8 +46,8 @@ with little or no programming.
 
 This includes IBM MQ queue managers as well as the ability to seamlessly integrate with Java JMS systems.
 
-![]({{ gfx_prefix }}/api/screenshots/conn1.png)
-![]({{ gfx_prefix }}/api/screenshots/mq.png)
+![](https://zato.io/en/docs/3.2/gfx/api/screenshots/conn1.png?gh)
+![](https://zato.io/en/docs/3.2/gfx/api/screenshots/mq.png?gh)
 
 ## Learn more
 
