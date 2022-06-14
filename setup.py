@@ -16,7 +16,7 @@ from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
-version = '1.12.5'
+version = '1.12.6'
 
 # Build either in bindings or client mode.
 bindings_mode = 0
@@ -223,7 +223,7 @@ It serves, however, as the basis for
 IBM MQ
 support
 in
-[Zato](https://zato.io),
+`Zato <https://zato.io>`_,
 which is an enterprise
 API platform and backend application server in Python that lets one connect to many technologies
 with little or no programming.
