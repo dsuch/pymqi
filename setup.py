@@ -16,7 +16,7 @@ from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
-version = '1.12.6'
+version = '1.12.7'
 
 # Build either in bindings or client mode.
 bindings_mode = 0
@@ -195,7 +195,8 @@ Sample code
 
 To put a message on a queue:
 
-::
+.. code-block:: python
+
     import pymqi
 
     queue_manager = pymqi.connect('QM.1', 'SVRCONN.CHANNEL.1', '192.168.1.121(1434)')
@@ -205,7 +206,8 @@ To put a message on a queue:
 
 To read the message back from the queue:
 
-::
+.. code-block:: python
+
     import pymqi
 
     queue_manager = pymqi.connect('QM.1', 'SVRCONN.CHANNEL.1', '192.168.1.121(1434)')
@@ -234,7 +236,8 @@ This includes IBM MQ queue managers as well as the ability to seamlessly integra
 
 .. image:: https://zato.io/en/docs/3.2/gfx/api/screenshots/mq.png
 
-## Learn more
+Learn more
+==========
 
 Visit the `documentation <https://zato.io/en/docs/3.2/pymqi/index.html?gh>`_ for more information and usage examples.
 """
