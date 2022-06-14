@@ -8,7 +8,9 @@ build/*
 code/dist
 code/develop-eggs/*
 code/MANIFEST
+dist
 docs/_build/
+MANIFEST
 
 *pymqe.so
 
