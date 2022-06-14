@@ -46,10 +46,8 @@ with little or no programming.
 
 This includes IBM MQ queue managers as well as the ability to seamlessly integrate with Java JMS systems.
 
-<center>
 ![](https://zato.io/en/docs/3.2/gfx/api/screenshots/conn1.png?gh)
 ![](https://zato.io/en/docs/3.2/gfx/api/screenshots/mq.png?gh)
-</center>
 
 ## Learn more
 
