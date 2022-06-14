@@ -330,7 +330,7 @@ class MQOpts(object):
 
             if isinstance(i[1], list):
                 l = []
-                for j in range(i[3]):
+                for _j in range(i[3]):
                     ensure_not_unicode(r[x])  # Python 3 bytes check
                     l.append(r[x])
                     x = x + 1
@@ -1416,7 +1416,7 @@ class _MQConst2String(object):
         # Lazily build the dictionary of consts vs. their
         # mnemonic strings from the given module dict. Only those
         # attribute that begins with the prefix are considered.
-        self.__lock.acquire()
+        _ = self.__lock.acquire()
         if len(self.__stringDict) == 0:
             pfxlen = len(self.__prefix)
             for i in self.__module.__dict__.keys():
@@ -1739,8 +1739,8 @@ class QueueManager(object):
         rv = pymqe.MQPUT1(self.__handle, make_q_desc(qDesc).pack(), m_desc.pack(), put_opts.pack(), msg)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
-        m_desc.unpack(rv[0])
-        put_opts.unpack(rv[1])
+        _ = m_desc.unpack(rv[0])
+        _ = put_opts.unpack(rv[1])
 
     def inquire(self, attribute):
         # type: (str) -> Any
@@ -1771,7 +1771,7 @@ class QueueManager(object):
 
         try:
             pcf = PCFExecute(self)
-            pcf.MQCMD_PING_Q_MGR()
+            _ = pcf.MQCMD_PING_Q_MGR()
         except Exception:
             return False
         else:
@@ -1931,8 +1931,8 @@ class Queue:
         rv = pymqe.MQPUT(self.__qMgr.get_handle(), self.__qHandle, m_desc.pack(), put_opts.pack(), msg)
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
-        m_desc.unpack(rv[0])
-        put_opts.unpack(rv[1])
+        _ = m_desc.unpack(rv[0])
+        _ = put_opts.unpack(rv[1])
 
     def put_rfh2(self, msg, *opts):
         """ Put a RFH2 message. opts[2] is a list of RFH2 headers. MQMD and RFH2's must be correct.
@@ -2004,8 +2004,8 @@ class Queue:
 
         if not rv[-2]:
             # Everything is OK
-            m_desc.unpack(rv[1])
-            get_opts.unpack(rv[2])
+            _ = m_desc.unpack(rv[1])
+            _ = get_opts.unpack(rv[2])
             return rv[0]
 
         # Accept truncated message
@@ -2015,8 +2015,8 @@ class Queue:
                 # Other errors
                 (rv[-1] != CMQC.MQRC_TRUNCATED_MSG_FAILED)):
             if rv[-2] == CMQC.MQCC_WARNING:
-                m_desc.unpack(rv[1])
-                get_opts.unpack(rv[2])
+                _ = m_desc.unpack(rv[1])
+                _ = get_opts.unpack(rv[2])
 
             raise MQMIError(rv[-2], rv[-1], message=rv[0], original_length=rv[-3])
 
@@ -2026,8 +2026,8 @@ class Queue:
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
 
-        m_desc.unpack(rv[1])
-        get_opts.unpack(rv[2])
+        _ = m_desc.unpack(rv[1])
+        _ = get_opts.unpack(rv[2])
 
         return rv[0]
 
@@ -2147,8 +2147,8 @@ class Topic:
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
 
-        self.__topic_handle = rv[0]
-        self.__topic_desc.unpack(rv[1])
+        _ = self.__topic_handle = rv[0]
+        _ = self.__topic_desc.unpack(rv[1])
 
     def __init__(self, queue_manager, topic_name=None, topic_string=None, topic_desc=None, open_opts=None):
         """ Associate a Topic instance with the QueueManager object 'queue_manager'
@@ -2280,8 +2280,8 @@ class Topic:
         if rv[-2]:
             raise MQMIError(rv[-2], rv[-1])
 
-        msg_desc.unpack(rv[0])
-        put_opts.unpack(rv[1])
+        _ = msg_desc.unpack(rv[0])
+        _ = put_opts.unpack(rv[1])
 
     def pub_rfh2(self, msg, *opts):
         # type: (bytes, *MQOpts) -> None
@@ -2452,7 +2452,7 @@ class Subscription:
         self.__open_opts = None
 
         if close_sub_queue:
-            self.sub_queue.close(close_sub_queue_options)
+            _ = self.sub_queue.close(close_sub_queue_options)
 
     def __del__(self):
         """ Close the Subscription, if it has been opened.
@@ -2605,8 +2605,8 @@ class FilterOperator(object):
         elif CMQC.MQCA_FIRST <= selector <= CMQC.MQCA_LAST:
             self.filter_cls = StringFilter
         else:
-            msg = 'selector [%s] is of an unsupported type (neither integer ' \
-                'nor a string attribute). Please see' \
+            msg = 'selector [%s] is of an unsupported type (neither integer ' + \
+                'nor a string attribute). Please see' + \
                 'https://dsuch.github.io/pymqi/support.html'
             raise Error(msg % selector)
         self.selector = selector
@@ -2659,10 +2659,10 @@ class _Method:
             self.__name = self.__name[7:]
         if self.__pcf.qm:
             bytes_encoding = self.__pcf.bytes_encoding
-            qm_handle = self.__pcf.qm.getHandle()
+            _ = self.__pcf.qm.getHandle()
         else:
             bytes_encoding = 'utf8'
-            qm_handle = self.__pcf.getHandle()
+            _ = self.__pcf.getHandle()
 
         len_args = len(args)
 
@@ -2720,7 +2720,7 @@ class _Method:
                                     item = item.encode(bytes_encoding)
                                 _value.append(item)
                             value = _value
-                            
+
                             parameter = CFSL(Parameter=key, Strings=value)
 
                     message = message + parameter.pack()
@@ -2903,7 +2903,7 @@ class PCFExecute(QueueManager):
         try:
             if self.__reply_queue and self.__reply_queue.get_handle():
                 self.__reply_queue.close()
-        except MQMIError as ex:
+        except MQMIError:
             pass
         finally:
             self.__reply_queue = None
