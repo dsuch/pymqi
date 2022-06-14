@@ -16,7 +16,7 @@ from distutils.core import Extension
 from distutils import spawn
 from struct import calcsize
 
-version = '1.12.3'
+version = '1.12.4'
 
 # Build either in bindings or client mode.
 bindings_mode = 0
@@ -240,7 +240,7 @@ Visit the [documentation](https://zato.io/en/docs/3.2/pymqi/index.html?gh) for m
 setup(name = 'pymqi',
     version = version,
     description = 'Python IBM MQI Extension for IBM MQ (formerly WebSphere MQ and MQSeries).',
-    long_description= 'PyMQI is a Python library for working with IBM MQ (formerly WebSphere MQ and MQSeries) implementing MQI and PCF protocols.',
+    long_description = long_description,
     author='Zato Source s.r.o.',
     author_email='pymqi@zato.io',
     url='https://zato.io/en/docs/3.2/pymqi/index.html',
