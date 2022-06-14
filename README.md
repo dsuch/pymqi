@@ -51,4 +51,4 @@ This includes IBM MQ queue managers as well as the ability to seamlessly integra
 
 ## Learn more
 
-Visit the [documentation](https://zato.io/en/docs/3.2/pymqi/index.html?gh) for more information and usage examples.
+Visit the [documentation](https://zato.io/pymqi/index.html?gh) for more information and usage examples.
