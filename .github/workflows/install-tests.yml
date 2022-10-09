@@ -12,25 +12,25 @@ jobs:
         environment: ['windows-latest', 'ubuntu-latest', 'macos-latest']
         python-version: [2.7.x, 3.6.x, 3.7.x, 3.8.x, 3.9.x, 3.10.x]
         python-architecture: ['x86', 'x64']
-        mq-client-version: [9.2.3.0]
+        mq-client-version: [9.3.0.0]
         include:
-          # windows-2022 (latest) does not hav required libraries for for build with python3.5
+          # windows-2022 (latest) does not have required libraries for for build with python3.5
           - environment: windows-2019
             python-version: 3.5.x
             python-architecture: 'x86'
-            mq-client-version: 9.2.3.0
+            mq-client-version: 9.3.0.0
           - environment: windows-2019
             python-version: 3.5.x
             python-architecture: 'x64'
-            mq-client-version: 9.2.3.0
+            mq-client-version: 9.3.0.0
           - environment: ubuntu-latest
             python-version: 3.5.x
             python-architecture: 'x64'
-            mq-client-version: 9.2.3.0
+            mq-client-version: 9.3.0.0
           - environment: macos-latest
             python-version: 3.5.x
             python-architecture: 'x64'
-            mq-client-version: 9.2.3.0
+            mq-client-version: 9.3.0.0
         exclude:
           # Windows runners does not have libraries required for build with python2.7
           - environment: windows-latest
@@ -53,7 +53,7 @@ jobs:
 
       - name: Install MQ Client
         id: setup-mqclient
-        uses: SeyfSV/setup-mqclient@v0.2
+        uses: SeyfSV/setup-mqclient@v0.3
         with:
           mq-client-version: ${{ matrix.mq-client-version }}
 
