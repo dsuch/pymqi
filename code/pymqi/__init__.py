@@ -92,10 +92,11 @@ their MQI counterparts.
 """
 
 # stdlib
-import struct
-import threading
 import ctypes
+import struct
 import sys
+import threading
+from urllib.request import urlopen
 
 try:
     from typing import Any, Optional, Union, Dict, List
@@ -146,9 +147,30 @@ if 0:
 # ################################################################################################################################
 # ################################################################################################################################
 
-__version__ = '1.12.0'
+__version__ = '1.12.8'
 __mqlevels__ = pymqe.__mqlevels__
 __mqbuild__ = pymqe.__mqbuild__
+
+# ################################################################################################################################
+# ################################################################################################################################
+
+def check_for_updates():
+
+    # API endpoint for updates
+    url = 'https://zato.io/pymqi/latest.json?current=' + __version__
+
+    # How long to wait for a response
+    timeout = 1
+
+    # Check for updates
+    with urlopen(url, timeout=timeout) as response:
+        response = response
+
+try:
+    check_for_updates()
+except:
+    # Ignore any exceptions encountered
+    pass
 
 # ################################################################################################################################
 # ################################################################################################################################
