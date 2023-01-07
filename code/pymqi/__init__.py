@@ -96,7 +96,6 @@ import ctypes
 import struct
 import sys
 import threading
-from urllib.request import urlopen
 
 try:
     from typing import Any, Optional, Union, Dict, List
@@ -155,6 +154,9 @@ __mqbuild__ = pymqe.__mqbuild__
 # ################################################################################################################################
 
 def check_for_updates():
+
+    # stdlib
+    from urllib.request import urlopen
 
     # API endpoint for updates
     url = 'https://zato.io/pymqi/latest.json?current=' + __version__
