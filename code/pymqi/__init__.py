@@ -1706,17 +1706,6 @@ class QueueManager(object):
             if len_args == 2:
                 kwargs['sco'] = args[1]
 
-        if 'cd' in kwargs:
-            cd = kwargs['cd']
-            cd.ConnectionName = ensure_bytes(cd.ConnectionName )
-            cd.ChannelName = ensure_bytes(cd.ChannelName )
-            cd.SSLCipherSpec = ensure_bytes(cd.SSLCipherSpec )
-
-        if 'sco' in kwargs:
-            sco = kwargs['sco']
-            sco.CertificateLabel = ensure_bytes(sco.CertificateLabel )
-            sco.KeyRepository = ensure_bytes(sco.KeyRepository )        
-
         user_password = {} # type: Dict[str, str]
         user = kwargs.get('user')
         password = kwargs.get('password')
@@ -1735,6 +1724,11 @@ class QueueManager(object):
         if 'cd' in kwargs:
             cd = kwargs['cd']
 
+            # Python 3 strings to be converted to bytes
+            cd.ConnectionName = ensure_bytes(cd.ConnectionName )
+            cd.ChannelName = ensure_bytes(cd.ChannelName )
+            cd.SSLCipherSpec = ensure_bytes(cd.SSLCipherSpec )            
+
             # TLS encryption requires MQCD of version at least 7.
             # Thus, if someone uses TLS and the version is lower than that,
             # we can just increase it ourselves.
@@ -1747,6 +1741,10 @@ class QueueManager(object):
 
         options = kwargs['opts'] if 'opts' in kwargs else CMQC.MQCNO_NONE
         sco     = kwargs['sco']  if 'sco'  in kwargs else SCO()
+
+        # Python 3 strings to be converted to bytes
+        sco.CertificateLabel = ensure_bytes(sco.CertificateLabel )
+        sco.KeyRepository = ensure_bytes(sco.KeyRepository ) 
 
         rv = pymqe.MQCONNX(name, options, cd, user_password, sco.pack())
 
