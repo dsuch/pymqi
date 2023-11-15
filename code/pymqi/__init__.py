@@ -1706,6 +1706,17 @@ class QueueManager(object):
             if len_args == 2:
                 kwargs['sco'] = args[1]
 
+        if 'cd' in kwargs:
+            cd = kwargs['cd']
+            cd.ConnectionName = ensure_bytes(cd.ConnectionName )
+            cd.ChannelName = ensure_bytes(cd.ChannelName )
+            cd.SSLCipherSpec = ensure_bytes(cd.SSLCipherSpec )
+
+        if 'sco' in kwargs:
+            sco = kwargs['sco']
+            sco.CertificateLabel = ensure_bytes(sco.CertificateLabel )
+            sco.KeyRepository = ensure_bytes(sco.KeyRepository )        
+
         user_password = {} # type: Dict[str, str]
         user = kwargs.get('user')
         password = kwargs.get('password')
