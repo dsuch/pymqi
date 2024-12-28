@@ -57,6 +57,7 @@ class MyService(Service):
         self.outgoing.ibm_mq.send('my-message', 'outgoing-connection-name', 'QUEUE.1')
 ```
 
-## Learn more
+## More resources
 
-Visit the [documentation](https://zato.io/pymqi/index.html?gh) for more information and usage examples.
+* Learn more about [Zato](https://zato.io)
+* PyMQI [documentation](https://zato.io/pymqi/index.html)
