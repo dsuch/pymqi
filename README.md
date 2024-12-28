@@ -35,14 +35,14 @@ print('Here is the message:', msg)
 
 PyMQI is a low-level library that requires one to know IBM MQ APIs well.
 
-It serves, however, as the basis for
-IBM MQ
-support
-in
-[Zato](https://zato.io/?gh),
-which is an enterprise
-API platform and backend application server in Python that lets one connect to many technologies
-with little or no programming.
+If you'd like to have an easy to use IBM MQ interface that doesn't require an extensive knowledge of MQ,
+use
+[Zato],
+which is a Python-based
+[IPaaS](https://zato.io/articles/integration-platform.html)
+and
+[enterprise service bus](https://zato.io/en/docs/3.3/intro/esb-soa.html)
+that supports MQ, among other protocols.
 
 This includes IBM MQ queue managers as well as the ability to seamlessly integrate with Java JMS systems.
 
