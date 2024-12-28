@@ -31,7 +31,7 @@ msg = q.get()
 print('Here is the message:', msg)
 ```
 
-## The backbone of IBM MQ Python messaging
+## High-level MQ messaging in Python
 
 PyMQI is a low-level library that requires one to know IBM MQ APIs well.
 
