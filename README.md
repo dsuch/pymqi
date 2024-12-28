@@ -46,6 +46,17 @@ that supports MQ, among other protocols.
 
 ![](https://upcdn.io/kW15bqq/raw/root/en/docs/3.3/gfx/api/screenshots/mq.png)
 
+
+```python
+# Zato
+from zato.server.service import Service
+
+class MyService(Service):
+
+    def handle(self):
+        self.outgoing.ibm_mq.send('my-message', 'outgoing-connection-name', 'QUEUE.1')
+```
+
 ## Learn more
 
 Visit the [documentation](https://zato.io/pymqi/index.html?gh) for more information and usage examples.
