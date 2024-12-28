@@ -172,7 +172,7 @@ else:
             library_dirs, include_dirs, libraries = get_locations_by_command_path(dspmqver_path)
 
         else:
-            raise Exception('MQ libraries could not be found')
+            library_dirs, include_dirs, libraries = get_generic_unix_settings()
 
 if bindings_mode:
     print('Building PyMQI bindings mode %sbits' % bits)
@@ -242,7 +242,7 @@ Learn more
 Visit the `documentation <https://zato.io/en/docs/3.2/pymqi/index.html?gh>`_ for more information and usage examples.
 """
 
-setup(name = 'pymqi',
+_ = setup(name = 'pymqi',
     version = version,
     description = 'Python IBM MQI Extension for IBM MQ (formerly WebSphere MQ and MQSeries).',
     long_description = long_description,
