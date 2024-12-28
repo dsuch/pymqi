@@ -44,8 +44,6 @@ and
 [enterprise service bus](https://zato.io/en/docs/3.3/intro/esb-soa.html)
 that supports MQ, among other protocols.
 
-This includes IBM MQ queue managers as well as the ability to seamlessly integrate with Java JMS systems.
-
 ![](https://upcdn.io/kW15bqq/raw/root/en/docs/3.3/gfx/api/screenshots/mq.png)
 
 ## Learn more
