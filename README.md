@@ -54,7 +54,7 @@ from zato.server.service import Service
 class MyService(Service):
 
     def handle(self):
-        self.outgoing.ibm_mq.send('my-message', 'outgoing-connection-name', 'QUEUE.1')
+        self.outgoing.ibm_mq.send('my-message', 'CORE', 'QUEUE.1')
 ```
 
 ## More resources
