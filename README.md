@@ -35,7 +35,7 @@ print('Here is the message:', msg)
 
 PyMQI is a low-level library that requires one to know IBM MQ APIs well.
 
-If you'd like to have an easy to use IBM MQ interface that doesn't require an extensive knowledge of MQ,
+If you'd like to have an easy to use IBM MQ Python interface that doesn't require an extensive knowledge of MQ,
 use
 [Zato](https://zato.io),
 which is a Python-based
