@@ -46,7 +46,9 @@ with little or no programming.
 
 This includes IBM MQ queue managers as well as the ability to seamlessly integrate with Java JMS systems.
 
+<center>
 ![](https://upcdn.io/kW15bqq/raw/root/en/docs/3.3/gfx/api/screenshots/mq.png)
+</center>
 
 ## Learn more
 
